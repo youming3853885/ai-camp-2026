@@ -6,156 +6,237 @@
   <title>AI 建站一日營</title>
   <meta name="description" content="6 小時，帶一個公開網址回家。這個網站就是用今天要教的方法做的。">
 
-  <!-- 全站無外部字型／框架／CDN，校網不穩也能開。深色投影主題，正文 ≥ 20px。 -->
+  <!-- 全站無外部字型／框架／CDN，校網不穩也能開。瑞士課表海報主題，正文 ≥ 20px。 -->
   <style>
     :root {
-      --bg: #0b1221;          /* 深底 */
-      --bg2: #111b30;         /* 卡片底 */
-      --line: #22304d;        /* 邊框 */
-      --ink: #eef3fb;         /* 主要文字 */
-      --muted: #9fb0cc;       /* 次要文字 */
-      --accent: #ffd23f;      /* 亮色 accent（暖黃，深底上跳） */
-      --accent2: #38e1c4;     /* 輔助亮色（青綠） */
-      --radius: 16px;
+      --paper: #f4f1ea;      /* 紙白底 */
+      --ink: #111111;        /* 近黑 */
+      --blue: #002FA7;       /* 克萊因藍 IKB · 唯一 accent */
+      --rule: #111111;       /* 分隔線 */
+      --muted: #6b6a63;      /* 淡化（午休） */
     }
 
-    * { box-sizing: border-box; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
+    html, body { background: var(--paper); color: var(--ink); }
     body {
-      margin: 0;
-      font-family: system-ui, "Microsoft JhengHei", "PingFang TC", sans-serif;
-      color: var(--ink);
-      background: var(--bg);
-      line-height: 1.7;
-      font-size: 21px;
+      font-family: "Noto Sans TC", "Microsoft JhengHei", "PingFang TC", system-ui, -apple-system, "Segoe UI", sans-serif;
       -webkit-font-smoothing: antialiased;
+      font-feature-settings: "tnum" 1;
+      line-height: 1.5;
+      font-size: 21px;
     }
+    .num { font-variant-numeric: tabular-nums; }
 
-    a { color: var(--accent2); }
+    main { max-width: 1280px; margin: 0 auto; padding: 48px 56px 72px; }
 
-    /* ---------- Hero ---------- */
+    /* ---------- masthead ---------- */
+    .mast {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      padding-bottom: 14px;
+      border-bottom: 4px solid var(--rule);
+      gap: 24px;
+    }
+    .mast .lot {
+      font-size: 13px;
+      letter-spacing: .24em;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+    .mast .meta {
+      font-size: 13px;
+      letter-spacing: .12em;
+      font-weight: 800;
+      text-align: right;
+      line-height: 1.6;
+      white-space: nowrap;
+    }
+    .mast .meta b { color: var(--blue); }
+
+    /* ---------- hero ---------- */
     .hero {
-      padding: 84px 24px 68px;
-      text-align: center;
-      background:
-        radial-gradient(60% 90% at 50% 0%, rgba(255,210,63,.14), transparent 70%),
-        var(--bg);
-      border-bottom: 1px solid var(--line);
+      display: grid;
+      grid-template-columns: 8fr 4fr;
+      column-gap: 40px;
+      align-items: end;
+      padding: 40px 0 30px;
+      border-bottom: 4px solid var(--rule);
     }
     .kicker {
-      display: inline-block;
-      font-size: 18px;
-      letter-spacing: 3px;
-      color: var(--accent);
-      border: 1px solid var(--accent);
-      border-radius: 999px;
-      padding: 6px 18px;
-      margin-bottom: 26px;
+      font-size: 14px;
+      letter-spacing: .3em;
+      font-weight: 900;
+      text-transform: uppercase;
+      color: var(--blue);
+      margin-bottom: 16px;
     }
     .hero h1 {
-      margin: 0 0 18px;
-      font-size: clamp(44px, 9vw, 84px);
-      line-height: 1.05;
-      letter-spacing: 2px;
+      font-size: clamp(64px, 8.5vw, 116px);
+      font-weight: 900;
+      letter-spacing: -.03em;
+      line-height: .9;
     }
-    .hero h1 .hl { color: var(--accent); }
     .hero .sub {
-      margin: 0 auto 22px;
-      max-width: 720px;
-      font-size: clamp(22px, 3.4vw, 30px);
-      color: var(--ink);
+      margin-top: 20px;
+      font-size: clamp(24px, 3vw, 32px);
+      font-weight: 900;
+      letter-spacing: -.01em;
     }
-    .hero .meta {
-      margin: 0 auto;
-      max-width: 640px;
+    .hero .fine {
+      margin-top: 14px;
       font-size: 20px;
-      color: var(--muted);
+      font-weight: 500;
+      max-width: 40ch;
+      line-height: 1.5;
     }
-    .hero .meta b { color: var(--accent2); }
+    .hero .fine b {
+      color: var(--blue);
+      font-weight: 800;
+      box-shadow: inset 0 -8px 0 rgba(0,47,167,.14);
+    }
+    .hero-side {
+      border-left: 3px solid var(--rule);
+      padding-left: 28px;
+      align-self: stretch;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+    }
+    .hero-side .lbl {
+      font-size: 12px;
+      letter-spacing: .24em;
+      font-weight: 900;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .hero-side .bignum {
+      font-size: clamp(96px, 11vw, 148px);
+      font-weight: 900;
+      letter-spacing: -.05em;
+      line-height: .78;
+      color: var(--blue);
+    }
+    .hero-side .bignum small {
+      display: block;
+      font-size: 18px;
+      color: var(--ink);
+      letter-spacing: .02em;
+      font-weight: 800;
+      margin-top: 12px;
+      line-height: 1.4;
+    }
 
-    /* ---------- Layout ---------- */
-    main { max-width: 900px; margin: 0 auto; padding: 20px 20px 40px; }
-    section { margin: 60px 0; }
+    /* ---------- section headings ---------- */
     h2 {
-      font-size: clamp(28px, 4.5vw, 40px);
-      margin: 0 0 24px;
-      padding-left: 16px;
-      border-left: 6px solid var(--accent);
+      font-size: 15px;
+      letter-spacing: .28em;
+      font-weight: 900;
+      text-transform: uppercase;
+      display: flex;
+      align-items: baseline;
+      gap: 16px;
+      padding: 28px 0 12px;
+      border-bottom: 2px solid var(--rule);
+    }
+    h2 .c {
+      font-size: 12px;
+      letter-spacing: .18em;
+      font-weight: 800;
+      color: var(--blue);
+      margin-left: auto;
     }
 
-    /* ---------- 議程時間軸 ---------- */
-    .timeline { margin: 0; padding: 0; list-style: none; }
-    .tl-item {
-      position: relative;
-      padding: 0 0 14px 34px;
-      border-left: 2px solid var(--line);
-    }
-    .tl-item:last-child { border-left-color: transparent; }
-    .tl-item::before {
-      content: "";
-      position: absolute; left: -9px; top: 22px;
-      width: 16px; height: 16px; border-radius: 50%;
-      background: var(--accent);
-      box-shadow: 0 0 0 5px rgba(255,210,63,.15);
-    }
-    .tl-item.is-break::before { background: var(--muted); box-shadow: none; }
+    /* ---------- 議程 ---------- */
+    .timeline { list-style: none; }
 
-    details.slot {
-      background: var(--bg2);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      overflow: hidden;
-    }
-    details.slot[open] { border-color: var(--accent); }
+    details.slot { border-bottom: 2px solid var(--rule); }
+
     details.slot > summary {
       list-style: none;
       cursor: pointer;
-      padding: 16px 20px;
-      display: flex;
-      align-items: baseline;
-      gap: 16px;
-      flex-wrap: wrap;
+      display: grid;
+      grid-template-columns: 3fr 6fr auto;
+      column-gap: 32px;
+      align-items: start;
+      padding: 24px 0 26px;
     }
     details.slot > summary::-webkit-details-marker { display: none; }
+
     .time {
-      color: var(--accent);
-      font-variant-numeric: tabular-nums;
-      font-weight: 700;
-      font-size: 20px;
+      font-size: clamp(52px, 5.6vw, 84px);
+      font-weight: 900;
+      letter-spacing: -.05em;
+      line-height: .86;
       white-space: nowrap;
     }
-    .title { font-size: 22px; font-weight: 700; flex: 1 1 220px; }
-    .desc { color: var(--muted); font-size: 18px; flex-basis: 100%; }
-    .chev { color: var(--muted); font-size: 18px; transition: transform .2s; }
-    details.slot[open] .chev { transform: rotate(90deg); color: var(--accent); }
+    details.slot.blue .time { color: var(--blue); }
+
+    .slot-body .title {
+      font-size: 24px;
+      font-weight: 900;
+      letter-spacing: -.01em;
+      line-height: 1.2;
+    }
+    .slot-body .desc {
+      margin-top: 8px;
+      font-size: 18px;
+      font-weight: 500;
+      line-height: 1.5;
+      max-width: 46ch;
+      color: var(--ink);
+    }
+    .toggle {
+      font-size: 34px;
+      font-weight: 900;
+      line-height: 1;
+      color: var(--blue);
+      align-self: center;
+      user-select: none;
+    }
+    details.slot[open] .toggle .plus { display: none; }
+    details.slot:not([open]) .toggle .minus { display: none; }
 
     /* 任務卡（展開內容） */
     .task {
-      margin: 0 20px 20px;
+      grid-column: 2 / 3;
+      margin: 0 0 26px;
+      border: 2px solid var(--blue);
       padding: 16px 20px;
-      background: rgba(56,225,196,.08);
-      border: 1px solid var(--accent2);
-      border-radius: 12px;
+      max-width: 52ch;
     }
     .task .tag {
-      display: inline-block;
-      font-size: 16px;
-      letter-spacing: 2px;
-      color: var(--accent2);
-      margin-bottom: 6px;
+      display: block;
+      font-size: 11px;
+      letter-spacing: .24em;
+      font-weight: 900;
+      text-transform: uppercase;
+      color: var(--blue);
+      margin-bottom: 8px;
     }
-    .task p { margin: 0; font-size: 20px; }
+    .task p { font-size: 19px; font-weight: 600; line-height: 1.5; }
+    .task strong { font-weight: 900; box-shadow: inset 0 -7px 0 rgba(0,47,167,.14); }
 
-    /* 午休段：無任務卡，樣式淡化 */
+    /* 午休段：淡化、無任務卡 */
     .break {
-      background: var(--bg2);
-      border: 1px dashed var(--line);
-      border-radius: var(--radius);
-      padding: 14px 20px;
-      color: var(--muted);
-      display: flex;
-      gap: 16px;
+      border-bottom: 2px solid var(--rule);
+      display: grid;
+      grid-template-columns: 3fr 6fr auto;
+      column-gap: 32px;
       align-items: baseline;
+      padding: 16px 0 18px;
+      color: var(--muted);
+    }
+    .break .time {
+      font-size: clamp(28px, 3vw, 44px);
+      color: var(--muted);
+      letter-spacing: -.03em;
+    }
+    .break .lbl {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: .04em;
     }
 
     /* ---------- 互動大按鈕 ---------- */
@@ -163,236 +244,316 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 20px;
+      padding-top: 28px;
     }
     .btn {
-      display: block;
-      text-align: center;
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 16px;
       text-decoration: none;
-      padding: 32px 20px;
-      border-radius: var(--radius);
-      font-size: 30px;
-      font-weight: 700;
-      border: 2px solid transparent;
-      transition: transform .12s, box-shadow .12s;
+      padding: 26px 24px;
+      font-size: 28px;
+      font-weight: 900;
+      letter-spacing: -.01em;
     }
-    .btn:hover { transform: translateY(-3px); }
+    .btn .ar { font-size: 28px; font-weight: 900; }
+    .btn small {
+      display: block;
+      font-size: 16px;
+      font-weight: 600;
+      margin-top: 8px;
+      letter-spacing: .02em;
+    }
     .btn-vote {
-      background: var(--accent);
-      color: #14203a;
-      box-shadow: 0 8px 30px rgba(255,210,63,.25);
+      background: var(--blue);
+      color: var(--paper);
     }
     .btn-handout {
       background: transparent;
       color: var(--ink);
-      border-color: var(--accent2);
+      border: 3px solid var(--ink);
     }
-    .btn small { display: block; font-size: 17px; font-weight: 400; opacity: .8; margin-top: 6px; }
 
     /* ---------- 雙成果 ---------- */
-    .takeaways { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .takeaways {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      border-top: 2px solid var(--rule);
+    }
     .ta {
-      background: var(--bg2);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      padding: 26px 24px;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      column-gap: 20px;
+      align-items: start;
+      padding: 24px 24px 24px 0;
+      border-bottom: 2px solid var(--rule);
     }
-    .ta .num {
-      font-size: 40px;
-      line-height: 1;
-      color: var(--accent);
-      font-weight: 800;
+    .ta:first-child { border-right: 2px solid var(--rule); padding-right: 32px; }
+    .ta:last-child { padding-left: 32px; }
+    .ta .n {
+      font-size: 48px;
+      font-weight: 900;
+      line-height: .8;
+      color: var(--blue);
+      letter-spacing: -.04em;
     }
-    .ta h3 { margin: 12px 0 8px; font-size: 24px; }
-    .ta p { margin: 0; color: var(--muted); font-size: 19px; }
+    .ta h3 { font-size: 24px; font-weight: 900; letter-spacing: -.01em; }
+    .ta p { margin-top: 8px; font-size: 18px; font-weight: 500; line-height: 1.5; }
 
     /* ---------- Footer ---------- */
     footer {
-      border-top: 1px solid var(--line);
-      padding: 40px 24px 56px;
-      text-align: center;
-      color: var(--muted);
-      font-size: 19px;
+      margin-top: 48px;
+      padding-top: 20px;
+      border-top: 4px solid var(--rule);
     }
-    footer .cert { color: var(--ink); }
-    footer .cert b { color: var(--accent); }
-    footer .ipas { margin-top: 14px; font-size: 18px; }
+    footer .cert { font-size: 20px; font-weight: 600; line-height: 1.6; }
+    footer .cert b { color: var(--blue); font-weight: 900; }
+    footer .ipas { margin-top: 12px; font-size: 18px; font-weight: 500; color: var(--muted); }
+    footer .strip {
+      margin-top: 28px;
+      padding-top: 14px;
+      border-top: 2px solid var(--rule);
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 16px;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+    footer .strip .blue { color: var(--blue); }
 
     /* ---------- 手機 ---------- */
     @media (max-width: 640px) {
       body { font-size: 20px; }
-      .hero { padding: 56px 18px 44px; }
+      main { padding: 28px 20px 48px; }
+      .mast { flex-direction: column; align-items: flex-start; gap: 10px; }
+      .mast .meta { text-align: left; }
+      .hero { grid-template-columns: 1fr; row-gap: 28px; }
+      .hero-side { border-left: 0; border-top: 3px solid var(--rule); padding-left: 0; padding-top: 20px; }
+      .hero .fine { font-size: 20px; max-width: none; }
+
+      details.slot > summary {
+        grid-template-columns: 1fr auto;
+        column-gap: 16px;
+        row-gap: 10px;
+      }
+      .time { font-size: clamp(48px, 15vw, 68px); }
+      .slot-body { grid-column: 1 / 3; }
+      .task { grid-column: 1 / 3; max-width: none; }
+      .break { grid-template-columns: 1fr auto; }
+
       .actions, .takeaways { grid-template-columns: 1fr; }
-      .btn { font-size: 26px; padding: 26px 18px; }
-      details.slot > summary { padding: 14px 16px; }
-      .task { margin: 0 16px 16px; }
+      .ta:first-child { border-right: 0; padding-right: 24px; }
+      .ta:last-child { padding-left: 0; }
+      footer .strip { flex-direction: column; gap: 6px; }
     }
   </style>
 </head>
 <body>
+<main>
 
-  <!-- ===== Hero ===== -->
-  <header class="hero">
-    <span class="kicker">AI 素養 · vibe coding · 部署上線</span>
-    <h1>AI 建站<span class="hl">一日營</span></h1>
-    <p class="sub">6 小時，帶一個公開網址回家</p>
-    <p class="meta">你現在看的這個網站，<b>就是用今天要教的方法做的</b>。</p>
+  <!-- ===== masthead ===== -->
+  <header class="mast">
+    <div class="lot">AI 建站一日營 · One-Day Workshop</div>
+    <div class="meta num">
+      6 HRS · 09:00—16:00<br>
+      OUTPUT <b>1 URL + 1 PDF</b>
+    </div>
   </header>
 
-  <main>
+  <!-- ===== Hero ===== -->
+  <section class="hero">
+    <div class="hero-title">
+      <div class="kicker">AI 素養 · vibe coding · 部署上線</div>
+      <h1>AI 建站<br>一日營</h1>
+      <p class="sub">6 小時，帶一個公開網址回家</p>
+      <p class="fine">你現在看的這個網站，<b>就是用今天要教的方法做的</b>。</p>
+    </div>
+    <div class="hero-side">
+      <div class="lbl">Total Runtime</div>
+      <div class="bignum num">06<small>小時完整實作 / 一個公開網址</small></div>
+    </div>
+  </section>
 
-    <!-- ===== 今日議程 ===== -->
-    <section id="agenda">
-      <h2>今日議程</h2>
-      <ul class="timeline">
+  <!-- ===== 今日議程 ===== -->
+  <section id="agenda">
+    <h2>今日議程 / Agenda <span class="c num">08 ROWS · 09:00—16:00</span></h2>
+    <ul class="timeline">
 
-        <li class="tl-item">
-          <details class="slot">
-            <summary>
-              <span class="time">9:00–9:30</span>
+      <li>
+        <details class="slot blue">
+          <summary>
+            <span class="time num">09:00</span>
+            <span class="slot-body">
               <span class="title">震撼開場</span>
-              <span class="chev" aria-hidden="true">▸</span>
               <span class="desc">老師現場用 Claude Code 五分鐘生一個網站。</span>
-            </summary>
-            <div class="task">
-              <span class="tag">你的任務</span>
-              <p>先連上教室 Wi-Fi，打開兩個分頁：Gemini（gemini.google.com）和這個網站。看老師表演就好。</p>
-            </div>
-          </details>
-        </li>
-
-        <li class="tl-item">
-          <details class="slot">
-            <summary>
-              <span class="time">9:30–10:30</span>
-              <span class="title">AI 素養 ＋ 提示詞實戰</span>
-              <span class="chev" aria-hidden="true">▸</span>
-              <span class="desc">角色／脈絡／格式三要素、迭代追問、辨識幻覺。</span>
-            </summary>
-            <div class="task">
-              <span class="tag">你的任務</span>
-              <p>打開講義第 1 篇，複製「AI 訪談你」的 prompt 貼給 Gemini，跟它聊出你的自介 —— 下午網頁要用。</p>
-            </div>
-          </details>
-        </li>
-
-        <li class="tl-item">
-          <details class="slot">
-            <summary>
-              <span class="time">10:40–12:00</span>
-              <span class="title">vibe coding 初體驗</span>
-              <span class="chev" aria-hidden="true">▸</span>
-              <span class="desc">Gemini Canvas 生你的第一個網頁。</span>
-            </summary>
-            <div class="task">
-              <span class="tag">你的任務</span>
-              <p>用講義的起手 prompt 讓 Canvas 生一頁網站，然後用「說的」改三個地方：標題、主色、一張卡片。</p>
-            </div>
-          </details>
-        </li>
-
-        <li class="tl-item is-break">
-          <div class="break">
-            <span class="time">12:00–13:00</span>
-            <span>午休 · 吃飽再戰</span>
+            </span>
+            <span class="toggle" aria-hidden="true"><span class="plus">＋</span><span class="minus">－</span></span>
+          </summary>
+          <div class="task">
+            <span class="tag">你的任務 / Task</span>
+            <p>先連上教室 Wi-Fi，打開兩個分頁：Gemini（gemini.google.com）和這個網站。看老師表演就好。</p>
           </div>
-        </li>
+        </details>
+      </li>
 
-        <li class="tl-item">
-          <details class="slot">
-            <summary>
-              <span class="time">13:00–14:10</span>
+      <li>
+        <details class="slot">
+          <summary>
+            <span class="time num">09:30</span>
+            <span class="slot-body">
+              <span class="title">AI 素養 ＋ 提示詞實戰</span>
+              <span class="desc">角色／脈絡／格式三要素、迭代追問、辨識幻覺。</span>
+            </span>
+            <span class="toggle" aria-hidden="true"><span class="plus">＋</span><span class="minus">－</span></span>
+          </summary>
+          <div class="task">
+            <span class="tag">你的任務 / Task</span>
+            <p>打開講義第 1 篇，複製「AI 訪談你」的 prompt 貼給 Gemini，跟它聊出你的自介 —— 下午網頁要用。</p>
+          </div>
+        </details>
+      </li>
+
+      <li>
+        <details class="slot">
+          <summary>
+            <span class="time num">10:40</span>
+            <span class="slot-body">
+              <span class="title">vibe coding 初體驗</span>
+              <span class="desc">Gemini Canvas 生你的第一個網頁。</span>
+            </span>
+            <span class="toggle" aria-hidden="true"><span class="plus">＋</span><span class="minus">－</span></span>
+          </summary>
+          <div class="task">
+            <span class="tag">你的任務 / Task</span>
+            <p>用講義的起手 prompt 讓 Canvas 生一頁網站，然後用「說的」改三個地方：標題、主色、一張卡片。</p>
+          </div>
+        </details>
+      </li>
+
+      <li>
+        <div class="break">
+          <span class="time num">12:00</span>
+          <span class="lbl">午休 · 吃飽再戰（12:00–13:00）</span>
+        </div>
+      </li>
+
+      <li>
+        <details class="slot blue">
+          <summary>
+            <span class="time num">13:00</span>
+            <span class="slot-body">
               <span class="title">主專案：學習歷程網頁</span>
-              <span class="chev" aria-hidden="true">▸</span>
               <span class="desc">把模板變成你自己的作品。</span>
-            </summary>
-            <div class="task">
-              <span class="tag">你的任務</span>
-              <p>打開模板骨架（在講義裡，整份複製），把裡面<strong>所有【請填入】</strong>換成你的內容——共五個區塊（用上午的自介 ＋ 截圖），丟給 Canvas 迭代到你滿意。</p>
-            </div>
-          </details>
-        </li>
+            </span>
+            <span class="toggle" aria-hidden="true"><span class="plus">＋</span><span class="minus">－</span></span>
+          </summary>
+          <div class="task">
+            <span class="tag">你的任務 / Task</span>
+            <p>打開模板骨架（在講義裡，整份複製），把裡面<strong>所有【請填入】</strong>換成你的內容——共五個區塊（用上午的自介 ＋ 截圖），丟給 Canvas 迭代到你滿意。</p>
+          </div>
+        </details>
+      </li>
 
-        <li class="tl-item">
-          <details class="slot">
-            <summary>
-              <span class="time">14:10–15:00</span>
+      <li>
+        <details class="slot blue">
+          <summary>
+            <span class="time num">14:10</span>
+            <span class="slot-body">
               <span class="title">部署上線</span>
-              <span class="chev" aria-hidden="true">▸</span>
               <span class="desc">GitHub Pages 拿到你的公開網址。</span>
-            </summary>
-            <div class="task">
-              <span class="tag">你的任務</span>
-              <p>照講義第 2 篇：GitHub 建 repo → 上傳 index.html → 開 Pages → 拿到你的公開網址。舉手讓老師看你的網址！</p>
-            </div>
-          </details>
-        </li>
+            </span>
+            <span class="toggle" aria-hidden="true"><span class="plus">＋</span><span class="minus">－</span></span>
+          </summary>
+          <div class="task">
+            <span class="tag">你的任務 / Task</span>
+            <p>照講義第 2 篇：GitHub 建 repo → 上傳 index.html → 開 Pages → 拿到你的公開網址。舉手讓老師看你的網址！</p>
+          </div>
+        </details>
+      </li>
 
-        <li class="tl-item">
-          <details class="slot">
-            <summary>
-              <span class="time">15:00–15:35</span>
+      <li>
+        <details class="slot">
+          <summary>
+            <span class="time num">15:00</span>
+            <span class="slot-body">
               <span class="title">NotebookLM 打包 PDF</span>
-              <span class="chev" aria-hidden="true">▸</span>
               <span class="desc">把今天的東西變成一份學習報告。</span>
-            </summary>
-            <div class="task">
-              <span class="tag">你的任務</span>
-              <p>把講義 ＋ 你的筆記餵給 NotebookLM，生成學習報告，加上反思和你的網站 QR code，匯出 PDF。</p>
-            </div>
-          </details>
-        </li>
+            </span>
+            <span class="toggle" aria-hidden="true"><span class="plus">＋</span><span class="minus">－</span></span>
+          </summary>
+          <div class="task">
+            <span class="tag">你的任務 / Task</span>
+            <p>把講義 ＋ 你的筆記餵給 NotebookLM，生成學習報告，加上反思和你的網站 QR code，匯出 PDF。</p>
+          </div>
+        </details>
+      </li>
 
-        <li class="tl-item">
-          <details class="slot">
-            <summary>
-              <span class="time">15:35–16:00</span>
+      <li>
+        <details class="slot">
+          <summary>
+            <span class="time num">15:35</span>
+            <span class="slot-body">
               <span class="title">發表 ＋ 認證</span>
-              <span class="chev" aria-hidden="true">▸</span>
               <span class="desc">唸出你的網址，領走今天的成果。</span>
-            </summary>
-            <div class="task">
-              <span class="tag">你的任務</span>
-              <p>輪流唸出你的網址 ＋ 一句今天最有感的事。想拿認證的看下方認證說明。</p>
-            </div>
-          </details>
-        </li>
+            </span>
+            <span class="toggle" aria-hidden="true"><span class="plus">＋</span><span class="minus">－</span></span>
+          </summary>
+          <div class="task">
+            <span class="tag">你的任務 / Task</span>
+            <p>輪流唸出你的網址 ＋ 一句今天最有感的事。想拿認證的看下方認證說明。</p>
+          </div>
+        </details>
+      </li>
 
-      </ul>
-    </section>
+    </ul>
+  </section>
 
-    <!-- ===== 互動區 ===== -->
-    <section id="interact">
-      <h2>現在動手</h2>
-      <div class="actions">
-        <a class="btn btn-vote" id="link-vote" href="vote.html?room=class1">📊 現在投票<small>把手機拿出來</small></a>
-        <a class="btn btn-handout" id="link-handout" href="#" target="_blank" rel="noopener">📖 學生講義<small>今天照著走</small></a>
-      </div>
-    </section>
+  <!-- ===== 互動區 ===== -->
+  <section id="interact">
+    <h2>現在動手 / Action</h2>
+    <div class="actions">
+      <a class="btn btn-vote" id="link-vote" href="vote.html?room=class1">現在投票 · 把手機拿出來<span class="ar" aria-hidden="true">→</span></a>
+      <a class="btn btn-handout" id="link-handout" href="#" target="_blank" rel="noopener">學生講義 · 今天照著走<span class="ar" aria-hidden="true">→</span></a>
+    </div>
+  </section>
 
-    <!-- ===== 雙成果 ===== -->
-    <section id="takeaways">
-      <h2>今天你會帶走</h2>
-      <div class="takeaways">
-        <div class="ta">
-          <div class="num">①</div>
+  <!-- ===== 雙成果 ===== -->
+  <section id="takeaways">
+    <h2>今天你會帶走 / Deliverables</h2>
+    <div class="takeaways">
+      <div class="ta">
+        <div class="n num">01</div>
+        <div>
           <h3>一個公開網址</h3>
           <p>部署上線、任何人都打得開的個人網站，履歷／社群都能貼。</p>
         </div>
-        <div class="ta">
-          <div class="num">②</div>
+      </div>
+      <div class="ta">
+        <div class="n num">02</div>
+        <div>
           <h3>一份學習歷程 PDF</h3>
           <p>可直接上傳學習歷程平台的成果報告，含你的網站與反思。</p>
         </div>
       </div>
-    </section>
-
-  </main>
+    </div>
+  </section>
 
   <!-- ===== Footer ===== -->
   <footer>
     <p class="cert">課後通過<b>素養筆試</b> ＋ <b>48 小時實作任務</b>，即發「AI 應用能力認證（初級）」。</p>
     <p class="ipas">想考國家級證照？問老師 iPAS 初級怎麼準備。</p>
+    <div class="strip">
+      <span>暑期 AI 新手課 · 高中場</span>
+      <span class="blue num">IKB #002FA7 / 09:00—16:00</span>
+    </div>
   </footer>
+
+</main>
 
   <script>
     /* ============================================================
