@@ -532,9 +532,10 @@ function esc(s){ return String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;'
     };
 
     // 載入題庫（兩種擺法都試：quiz/ 與本頁同層，或在上一層）
-    fetch('quiz/questions.json')
+    // no-store：繞過瀏覽器與 Pages 的 10 分鐘快取，老師改完題目部署即生效
+    fetch('quiz/questions.json', {cache:'no-store'})
       .then(r => { if(!r.ok) throw 0; return r; })
-      .catch(() => fetch('../quiz/questions.json'))
+      .catch(() => fetch('../quiz/questions.json', {cache:'no-store'}))
       .then(r => { if(!r.ok) throw 0; return r.json(); })
       .then(data => {
         const list = root.querySelector('#qlist');
