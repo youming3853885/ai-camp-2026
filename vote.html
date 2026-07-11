@@ -475,6 +475,8 @@ function esc(s){ return String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;'
     let current = null;        // {q, options}
     const votes = new Map();   // uid -> choice
     const stage = root.querySelector('#hstage');
+    const qItems = [];         // 題庫清單的 li（照側欄順序）
+    let qIndex = -1;           // 目前題目的清單位置；自訂題 = -1
 
     function studentCount(){ return peerListCount(); }
     function peerListCount(){ return peerList.filter(p=>!p.host).length; }
@@ -565,7 +567,13 @@ function esc(s){ return String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;'
     function next(){
       current = null; votes.clear();
       transport.send({ type:'reset' });
-      stage.innerHTML = `<div class="hint" style="font-size:20px;padding:40px 0;text-align:center;">← 選一題開始，或用自訂題目。</div>`;
+      // 順著題庫清單自動接下一題；最後一題或自訂題才回選題畫面
+      if(qIndex >= 0 && qIndex + 1 < qItems.length){
+        qItems[qIndex + 1].click();
+        return;
+      }
+      qIndex = -1;
+      stage.innerHTML = `<div class="hint" style="font-size:20px;padding:40px 0;text-align:center;">← 選一題開始，或用自訂題目。${qItems.length ? '（題庫已跑完一輪）' : ''}</div>`;
       updateStats();
     }
 
@@ -586,6 +594,7 @@ function esc(s){ return String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;'
       const lines = root.querySelector('#custom').value.trim().split('\n').filter(l=>l.trim());
       if(!lines.length){ alert('請輸入題目'); return; }
       const q = lines[0].trim();
+      qIndex = -1; // 自訂題不參與清單自動接題
       root.querySelectorAll('#qlist li').forEach(li=>li.classList.remove('sel'));
       // 只有一行 = 開放文字題（學生打字回答，CHECK 後上牆）
       if(lines.length === 1){ showQuestion(q, null); return; }
@@ -605,12 +614,15 @@ function esc(s){ return String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;'
         list.innerHTML = '';
         const add = (item, label) => {
           const li = document.createElement('li');
+          const idx = qItems.length;
           li.innerHTML = `<span class="tag">${label}</span><br>${esc(item.q)}`;
           li.onclick = () => {
+            qIndex = idx;
             root.querySelectorAll('#qlist li').forEach(x=>x.classList.remove('sel'));
             li.classList.add('sel');
             showQuestion(item.q, item.options);
           };
+          qItems.push(li);
           list.appendChild(li);
         };
         (data.warmup||[]).forEach((it,i)=>add(it,`暖身 ${i+1}`));
