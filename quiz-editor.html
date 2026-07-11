@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>編題目 · AI 建站一日營</title>
+<style>
+  :root{
+    --stage:#0e0d12; --panel:#17151d; --panel2:#201d29; --line:#2c2836;
+    --ink:#ffffff; --muted:#a5a1b3; --radius:18px;
+    --c0:#ff3366; --c1:#2f7bff; --c2:#22c55e; --c3:#ffb300;
+    --c4:#ff6ac1; --c5:#7c5cff;
+    --ok:#22c55e; --bad:#ff3366;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;min-height:100%;}
+  body{
+    font-family:system-ui,"Microsoft JhengHei","PingFang TC",sans-serif;
+    color:var(--ink); line-height:1.4; -webkit-font-smoothing:antialiased;
+    background:var(--stage);
+    background-image:radial-gradient(120% 90% at 50% 0%, rgba(255,255,255,.045), transparent 55%),
+                     radial-gradient(140% 120% at 50% 120%, rgba(0,0,0,.55), transparent 60%);
+    background-attachment:fixed;
+  }
+  .wrap{max-width:820px; margin:0 auto; padding:24px 20px 80px;}
+  button{font-family:inherit; cursor:pointer;}
+  .hidden{display:none !important;}
+  a{color:var(--c1);}
+
+  h1{font-size:clamp(24px,3.2vw,34px); font-weight:900; margin:0; letter-spacing:.5px;}
+  h1 .hl{color:var(--c3);}
+  .sub{color:var(--muted); font-size:15px; margin:8px 0 4px;}
+  .sub a{font-weight:700;}
+
+  /* 狀態列 */
+  .statusbar{
+    display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+    background:var(--panel); border:1px solid var(--line); border-radius:14px;
+    padding:12px 16px; margin:16px 0 20px; font-size:14px; color:var(--muted);
+  }
+  .statusbar .grow{flex:1;}
+  #saveMsg{font-weight:800;}
+  #saveMsg.ok{color:var(--ok);}
+  #saveMsg.bad{color:var(--bad);}
+  #loadMsg.bad{color:var(--c3);}
+
+  /* 題卡 */
+  .card{
+    background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
+    padding:16px 16px 14px; margin-bottom:16px; position:relative;
+  }
+  .card.invalid{border-color:var(--bad); box-shadow:0 0 0 1px var(--bad);}
+  .card-head{display:flex; align-items:center; gap:10px; margin-bottom:10px;}
+  .badge{
+    font-size:12px; letter-spacing:1.5px; font-weight:800; padding:4px 12px; border-radius:999px;
+  }
+  .badge.choice{background:rgba(47,123,255,.16); color:#7fb0ff; border:1px solid #2f7bff;}
+  .badge.text{background:rgba(124,92,255,.16); color:#b6a4ff; border:1px solid #7c5cff;}
+  .qnum{font-size:13px; color:var(--muted); font-weight:700;}
+  .card-head .spacer{flex:1;}
+  .icobtn{
+    background:var(--panel2); border:1px solid var(--line); color:#e7e4f0;
+    border-radius:9px; font-size:15px; padding:6px 11px; line-height:1;
+  }
+  .icobtn:hover{border-color:var(--c1);}
+  .icobtn.del:hover{border-color:var(--bad); color:var(--bad);}
+
+  textarea{
+    width:100%; min-height:70px; background:var(--panel2); color:var(--ink);
+    border:1px solid var(--line); border-radius:12px; padding:11px; font-size:16px;
+    font-family:inherit; resize:vertical;
+  }
+  textarea:focus,input:focus{outline:2px solid var(--c1); outline-offset:1px;}
+
+  /* 選項列 */
+  .opts{margin-top:12px; display:flex; flex-direction:column; gap:8px;}
+  .opt-row{display:flex; align-items:center; gap:10px;}
+  .opt-key{
+    flex:0 0 auto; width:34px; height:34px; border-radius:9px; color:#fff;
+    display:flex; align-items:center; justify-content:center; font-weight:900; font-size:16px;
+    text-shadow:0 1px 2px rgba(0,0,0,.35);
+  }
+  .opt-row input{
+    flex:1; background:var(--panel2); color:var(--ink); border:1px solid var(--line);
+    border-radius:10px; padding:10px 12px; font-size:15px; font-family:inherit;
+  }
+  .opt-row .rm{
+    flex:0 0 auto; background:none; border:1px solid var(--line); color:var(--muted);
+    border-radius:9px; width:34px; height:34px; font-size:16px; line-height:1;
+  }
+  .opt-row .rm:hover{border-color:var(--bad); color:var(--bad);}
+  .opt-row .rm:disabled{opacity:.3; cursor:default;}
+  .addopt{
+    align-self:flex-start; margin-top:2px; background:var(--panel2); border:1px dashed var(--line);
+    color:var(--muted); border-radius:10px; padding:8px 14px; font-size:14px; font-weight:700;
+  }
+  .addopt:hover{border-color:var(--c2); color:var(--c2);}
+  .addopt:disabled{opacity:.35; cursor:default;}
+
+  .c0{background:var(--c0);} .c1{background:var(--c1);}
+  .c2{background:var(--c2);} .c3{background:var(--c3);}
+  .c4{background:var(--c4);} .c5{background:var(--c5);}
+
+  /* 底部操作列 */
+  .addrow{display:flex; gap:12px; flex-wrap:wrap; margin:8px 0 26px;}
+  .btn{
+    border:none; border-radius:12px; padding:12px 20px; font-size:16px; font-weight:800;
+    background:var(--panel2); color:var(--ink); border:1px solid var(--line);
+  }
+  .btn:hover{border-color:var(--c1);}
+  .btn.add{border-style:dashed;}
+  .btn.primary{
+    background:linear-gradient(180deg,#ffc53d,#ffb300); color:#241a00; border:none;
+    box-shadow:0 6px 0 #b87f00, 0 10px 22px rgba(255,179,0,.26);
+  }
+  .btn.primary:active{transform:translateY(3px); box-shadow:0 3px 0 #b87f00;}
+  .toolbar{display:flex; gap:12px; flex-wrap:wrap; align-items:center; margin-top:8px;}
+  .empty{color:var(--muted); text-align:center; padding:40px 0; font-size:16px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>編題目 <span class="hl">· 雲端題庫</span></h1>
+  <p class="sub">這裡編的題目，老師台（<a href="vote.html?room=class1&host=1" target="_blank">開啟老師台</a>）開啟時會自動載入。</p>
+
+  <div class="statusbar">
+    <span id="loadMsg">載入中…</span>
+    <span class="grow"></span>
+    <span id="saveMsg"></span>
+  </div>
+
+  <div id="list"></div>
+
+  <div class="addrow">
+    <button class="btn add" id="addChoice">＋ 新增選擇題</button>
+    <button class="btn add" id="addText">＋ 新增文字題</button>
+  </div>
+
+  <div class="toolbar">
+    <button class="btn primary" id="save">☁ 儲存到雲端</button>
+    <button class="btn" id="export">⬇ 匯出備份</button>
+    <button class="btn" id="import">⬆ 匯入</button>
+    <input type="file" id="file" accept="application/json,.json" class="hidden">
+  </div>
+</div>
+
+<script>
+const SUPABASE = {
+  url: 'https://iwbwhwivmcjnmmalcssd.supabase.co',
+  key: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml3Yndod2l2bWNqbm1tYWxjc3NkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcwNTA3NTEsImV4cCI6MjA5MjYyNjc1MX0.IZFJsl_cA6pCNSmudaBHBYhBkyHGo_j0gI4D-UK5yIg'
+};
+const H = { apikey: SUPABASE.key, Authorization: 'Bearer ' + SUPABASE.key };
+const KEYS = 'ABCDEF';
+
+// 資料模型：questions = [{q, options:[...]}, {q, mode:'text'}]
+let questions = [];
+const listEl = document.getElementById('list');
+const loadMsg = document.getElementById('loadMsg');
+const saveMsg = document.getElementById('saveMsg');
+
+function esc(s){ return String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function fmt(iso){
+  const d = new Date(iso); if(isNaN(d)) return iso;
+  const p = n => String(n).padStart(2,'0');
+  return `${p(d.getMonth()+1)}/${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
+}
+
+/* ---------- 渲染 ---------- */
+function render(){
+  if(!questions.length){
+    listEl.innerHTML = '<div class="empty">還沒有題目。點下方「新增選擇題／文字題」開始。</div>';
+    return;
+  }
+  listEl.innerHTML = '';
+  questions.forEach((item, i) => listEl.appendChild(card(item, i)));
+}
+
+function card(item, i){
+  const isText = item.mode === 'text';
+  const el = document.createElement('div');
+  el.className = 'card';
+  el.dataset.i = i;
+
+  const optsHTML = isText ? '' : `
+    <div class="opts">
+      ${(item.options||[]).map((o,j)=>`
+        <div class="opt-row">
+          <span class="opt-key c${j%6}">${KEYS[j]||j+1}</span>
+          <input type="text" value="${esc(o)}" data-opt="${j}" placeholder="選項 ${KEYS[j]||j+1}">
+          <button class="rm" data-rm="${j}" title="刪除選項">✕</button>
+        </div>`).join('')}
+      <button class="addopt" data-addopt>＋ 選項</button>
+    </div>`;
+
+  el.innerHTML = `
+    <div class="card-head">
+      <span class="badge ${isText?'text':'choice'}">${isText?'文字題':'選擇題'}</span>
+      <span class="qnum">第 ${i+1} 題</span>
+      <span class="spacer"></span>
+      <button class="icobtn" data-mv="-1" title="上移">▲</button>
+      <button class="icobtn" data-mv="1" title="下移">▼</button>
+      <button class="icobtn del" data-del title="刪除整題">🗑</button>
+    </div>
+    <textarea data-q placeholder="${isText?'請輸入開放式題目（學生打字回答）':'請輸入題目'}">${esc(item.q||'')}</textarea>
+    ${optsHTML}`;
+
+  // 題目
+  el.querySelector('[data-q]').addEventListener('input', e => { item.q = e.target.value; el.classList.remove('invalid'); });
+
+  // 移動 / 刪除
+  el.querySelector('[data-mv="-1"]').onclick = () => move(i, -1);
+  el.querySelector('[data-mv="1"]').onclick  = () => move(i, 1);
+  el.querySelector('[data-del]').onclick = () => { if(confirm('刪除這一題？')){ questions.splice(i,1); render(); } };
+
+  if(!isText){
+    el.querySelectorAll('[data-opt]').forEach(inp => {
+      inp.addEventListener('input', e => { item.options[+e.target.dataset.opt] = e.target.value; el.classList.remove('invalid'); });
+    });
+    el.querySelectorAll('[data-rm]').forEach(btn => {
+      btn.disabled = item.options.length <= 2;
+      btn.onclick = () => { item.options.splice(+btn.dataset.rm, 1); render(); };
+    });
+    const add = el.querySelector('[data-addopt]');
+    add.disabled = item.options.length >= 6;
+    add.onclick = () => { item.options.push(''); render(); };
+  }
+  return el;
+}
+
+function move(i, dir){
+  const j = i + dir;
+  if(j < 0 || j >= questions.length) return;
+  [questions[i], questions[j]] = [questions[j], questions[i]];
+  render();
+}
+
+/* ---------- 載入 ---------- */
+async function load(){
+  try{
+    const r = await fetch(`${SUPABASE.url}/rest/v1/camp_quiz?id=eq.1&select=questions,updated_at`, { headers: H, cache:'no-store' });
+    if(!r.ok) throw new Error('HTTP ' + r.status);
+    const rows = await r.json();
+    if(rows.length){
+      questions = Array.isArray(rows[0].questions) ? rows[0].questions : [];
+      loadMsg.className = '';
+      loadMsg.textContent = `上次更新：${rows[0].updated_at ? fmt(rows[0].updated_at) : '（尚無）'}　·　共 ${questions.length} 題`;
+    } else {
+      questions = [];
+      loadMsg.className = 'bad';
+      loadMsg.textContent = '雲端尚無題目（id=1 那列不存在）。新增後按儲存即可建立。';
+    }
+  }catch(e){
+    questions = [];
+    loadMsg.className = 'bad';
+    loadMsg.textContent = `⚠ 讀不到雲端題庫（${e.message}）。請先在 Supabase 跑建表 SQL（見 README）。你仍可離線編輯與匯出備份。`;
+  }
+  render();
+}
+
+/* ---------- 驗證 + 儲存 ---------- */
+function validate(){
+  let ok = true;
+  listEl.querySelectorAll('.card').forEach(c => c.classList.remove('invalid'));
+  questions.forEach((item, i) => {
+    let bad = false;
+    if(!String(item.q||'').trim()) bad = true;
+    if(item.mode !== 'text'){
+      const filled = (item.options||[]).filter(o => String(o||'').trim()).length;
+      if(filled < 2) bad = true;
+    }
+    if(bad){ ok = false; const c = listEl.querySelector(`.card[data-i="${i}"]`); if(c) c.classList.add('invalid'); }
+  });
+  return ok;
+}
+
+// 匯出/儲存前清成約定格式：文字題只留 q+mode；選擇題去掉空選項、不存 mode
+function clean(){
+  return questions.map(item => {
+    if(item.mode === 'text') return { q: String(item.q||'').trim(), mode: 'text' };
+    return { q: String(item.q||'').trim(), options: (item.options||[]).map(o=>String(o||'').trim()).filter(Boolean) };
+  });
+}
+
+async function save(){
+  saveMsg.className = '';
+  if(!questions.length){ saveMsg.className='bad'; saveMsg.textContent='沒有題目可存'; return; }
+  if(!validate()){
+    saveMsg.className = 'bad';
+    saveMsg.textContent = '有題目不完整（紅框）：題目需非空，選擇題需至少 2 個非空選項';
+    return;
+  }
+  saveMsg.textContent = '儲存中…';
+  try{
+    const r = await fetch(`${SUPABASE.url}/rest/v1/camp_quiz?id=eq.1`, {
+      method: 'PATCH',
+      headers: { ...H, 'Content-Type':'application/json', Prefer:'return=minimal' },
+      body: JSON.stringify({ questions: clean(), updated_at: new Date().toISOString() })
+    });
+    if(!r.ok){ const t = await r.text().catch(()=> ''); throw new Error('HTTP ' + r.status + (t?' · '+t.slice(0,120):'')); }
+    const p = n => String(n).padStart(2,'0'); const d = new Date();
+    saveMsg.className = 'ok';
+    saveMsg.textContent = `已儲存 ✓ ${p(d.getHours())}:${p(d.getMinutes())}`;
+  }catch(e){
+    saveMsg.className = 'bad';
+    saveMsg.textContent = '儲存失敗：' + e.message;
+  }
+}
+
+/* ---------- 匯出 / 匯入 ---------- */
+function exportJSON(){
+  const blob = new Blob([JSON.stringify(clean(), null, 2)], { type:'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = 'quiz-backup.json';
+  a.click(); URL.revokeObjectURL(a.href);
+}
+
+const fileInput = document.getElementById('file');
+document.getElementById('import').onclick = () => fileInput.click();
+fileInput.onchange = () => {
+  const f = fileInput.files[0]; if(!f) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try{
+      const data = JSON.parse(reader.result);
+      if(!Array.isArray(data)) throw new Error('格式不是題目陣列');
+      if(!confirm(`匯入 ${data.length} 題？會覆蓋目前所有編輯內容。`)){ fileInput.value=''; return; }
+      // 正規化：文字題留 mode:text，其餘視為選擇題
+      questions = data.map(it => it && it.mode === 'text'
+        ? { q: String(it.q||''), mode:'text' }
+        : { q: String(it.q||''), options: Array.isArray(it.options) ? it.options.map(String) : ['',''] });
+      saveMsg.className=''; saveMsg.textContent='已匯入（尚未儲存到雲端）';
+      render();
+    }catch(e){ alert('匯入失敗：' + e.message); }
+    fileInput.value = '';
+  };
+  reader.readAsText(f);
+};
+
+/* ---------- 新增 ---------- */
+document.getElementById('addChoice').onclick = () => { questions.push({ q:'', options:['',''] }); render(); scrollBottom(); };
+document.getElementById('addText').onclick   = () => { questions.push({ q:'', mode:'text' }); render(); scrollBottom(); };
+document.getElementById('save').onclick = save;
+document.getElementById('export').onclick = exportJSON;
+function scrollBottom(){ window.scrollTo({ top: document.body.scrollHeight, behavior:'smooth' }); }
+
+load();
+</script>
+</body>
+</html>

@@ -454,6 +454,7 @@ function esc(s){ return String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;'
             <div class="lab">學生掃碼加入</div>
             <div class="url" id="joinurl"></div>
           </div>
+          <p class="hint" style="text-align:center;margin-top:12px;"><a href="quiz-editor.html" style="color:var(--c1);">✎ 編輯題目</a></p>
         </div>
         <div class="panel stage">
           <div class="stat-row">
@@ -603,36 +604,67 @@ function esc(s){ return String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;'
       showQuestion(q, options);
     };
 
-    // 載入題庫（兩種擺法都試：quiz/ 與本頁同層，或在上一層）
-    // no-store：繞過瀏覽器與 Pages 的 10 分鐘快取，老師改完題目部署即生效
-    fetch('quiz/questions.json', {cache:'no-store'})
-      .then(r => { if(!r.ok) throw 0; return r; })
-      .catch(() => fetch('../quiz/questions.json', {cache:'no-store'}))
-      .then(r => { if(!r.ok) throw 0; return r.json(); })
-      .then(data => {
-        const list = root.querySelector('#qlist');
+    // 清單建構：所有來源（雲端／questions.json）都走這個 add，接上 qItems/qIndex 自動接題
+    const list = root.querySelector('#qlist');
+    const add = (item, label) => {
+      const li = document.createElement('li');
+      const idx = qItems.length;
+      li.innerHTML = `<span class="tag">${label}</span><br>${esc(item.q)}`;
+      li.onclick = () => {
+        qIndex = idx;
+        root.querySelectorAll('#qlist li').forEach(x=>x.classList.remove('sel'));
+        li.classList.add('sel');
+        showQuestion(item.q, item.options); // 文字題 item.options 為 undefined，showQuestion 已支援
+      };
+      qItems.push(li);
+      list.appendChild(li);
+    };
+
+    // 三層載入：① 雲端題庫（camp_quiz）→ ② quiz/questions.json → ③ 失敗提示
+    async function loadQuestions(){
+      // ① 先讀雲端（只有填了金鑰才試）
+      if(SUPABASE.url && SUPABASE.key){
+        try{
+          const r = await fetch(SUPABASE.url + '/rest/v1/camp_quiz?id=eq.1&select=questions,updated_at',
+            { headers:{ apikey:SUPABASE.key, Authorization:'Bearer '+SUPABASE.key }, cache:'no-store' });
+          if(r.ok){
+            const rows = await r.json();
+            const qs = rows.length && Array.isArray(rows[0].questions) ? rows[0].questions : [];
+            if(qs.length > 0){
+              list.innerHTML = '';
+              qs.forEach((item, i) => {
+                const isText = item.mode === 'text' || !item.options || !item.options.length;
+                add(item, isText ? `文字 ${i+1}` : `題 ${i+1}`);
+              });
+              const upd = rows[0].updated_at ? new Date(rows[0].updated_at) : null;
+              const p = n => String(n).padStart(2,'0');
+              root.querySelector('#loadHint').textContent = upd
+                ? `☁ 雲端題庫 · ${p(upd.getMonth()+1)}/${p(upd.getDate())} ${p(upd.getHours())}:${p(upd.getMinutes())} 更新`
+                : '☁ 雲端題庫';
+              return; // 用雲端，結束
+            }
+          }
+        }catch(e){ /* 雲端失敗 → 落到 questions.json */ }
+      }
+
+      // ② 雲端沒有/空/失敗 → questions.json（兩種擺法都試：本頁同層或上一層）
+      // no-store：繞過瀏覽器與 Pages 的 10 分鐘快取，老師改完題目部署即生效
+      try{
+        let res = await fetch('quiz/questions.json', {cache:'no-store'});
+        if(!res.ok) res = await fetch('../quiz/questions.json', {cache:'no-store'});
+        if(!res.ok) throw 0;
+        const data = await res.json();
         list.innerHTML = '';
-        const add = (item, label) => {
-          const li = document.createElement('li');
-          const idx = qItems.length;
-          li.innerHTML = `<span class="tag">${label}</span><br>${esc(item.q)}`;
-          li.onclick = () => {
-            qIndex = idx;
-            root.querySelectorAll('#qlist li').forEach(x=>x.classList.remove('sel'));
-            li.classList.add('sel');
-            showQuestion(item.q, item.options);
-          };
-          qItems.push(li);
-          list.appendChild(li);
-        };
         (data.warmup||[]).forEach((it,i)=>add(it,`暖身 ${i+1}`));
         (data.literacy||[]).forEach((it,i)=>add(it,`素養 ${i+1}`));
-      })
-      .catch(()=> {
+      }catch(e){
+        // ③ 都失敗
         root.querySelector('#loadHint').textContent =
           '⚠ 讀不到題庫（可能是用 file:// 開啟）。請改用左下「自訂題目」框，或起一個本機伺服器。';
-        root.querySelector('#qlist').innerHTML = '<li>題庫載入失敗</li>';
-      });
+        list.innerHTML = '<li>題庫載入失敗</li>';
+      }
+    }
+    loadQuestions();
 
     next();
   }
