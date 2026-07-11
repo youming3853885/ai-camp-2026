@@ -6,111 +6,206 @@
 <title>即時投票 · AI 建站一日營</title>
 <style>
   :root{
-    --bg:#0b1221; --bg2:#111b30; --line:#22304d; --ink:#eef3fb;
-    --muted:#9fb0cc; --accent:#ffd23f; --accent2:#38e1c4; --radius:16px;
+    --stage:#0e0d12; --panel:#17151d; --panel2:#201d29; --line:#2c2836;
+    --ink:#ffffff; --muted:#a5a1b3; --radius:18px;
+    /* 選項四色（A/B/C/D）——Kahoot 語彙，自己的調 */
+    --c0:#ff3366; --c1:#2f7bff; --c2:#22c55e; --c3:#ffb300;
+    --c4:#ff6ac1; --c5:#7c5cff; /* 5+ 選項備援色 */
   }
   *{box-sizing:border-box;}
   html,body{margin:0;height:100%;}
   body{
     font-family:system-ui,"Microsoft JhengHei","PingFang TC",sans-serif;
-    color:var(--ink); background:var(--bg); line-height:1.5;
-    -webkit-font-smoothing:antialiased;
+    color:var(--ink); line-height:1.4; -webkit-font-smoothing:antialiased;
+    background:var(--stage);
+    /* 極淡 vignette：舞台感，不用霓虹漸層 */
+    background-image:radial-gradient(120% 90% at 50% 0%, rgba(255,255,255,.045), transparent 55%),
+                     radial-gradient(140% 120% at 50% 120%, rgba(0,0,0,.55), transparent 60%);
+    background-attachment:fixed;
   }
-  .banner{
-    background:#3a2f00; color:var(--accent); border-bottom:1px solid #6b5400;
-    padding:10px 16px; font-size:16px; text-align:center;
-  }
-  .wrap{max-width:1100px; margin:0 auto; padding:24px 20px 60px;}
-  h1{font-size:clamp(26px,4vw,40px); margin:0 0 4px;}
-  h1 .hl{color:var(--accent);}
-  .sub{color:var(--muted); font-size:17px; margin:0 0 22px;}
+  .wrap{max-width:1180px; margin:0 auto; padding:20px 22px 60px;}
   button{font-family:inherit; cursor:pointer;}
+  .hidden{display:none !important;}
+
+  /* ===== 示範模式橫幅（重新配色，訊息保留） ===== */
+  .banner{
+    background:linear-gradient(90deg,#3a2a00,#4a3500); color:#ffd23f;
+    border-bottom:1px solid #6b5400; padding:11px 16px; font-size:15px;
+    text-align:center; letter-spacing:.3px;
+  }
+
+  h1{font-size:clamp(24px,3.2vw,36px); font-weight:900; margin:0; letter-spacing:.5px;}
+  h1 .hl{color:var(--c3);}
+  .sub{color:var(--muted); font-size:15px; margin:6px 0 20px;}
 
   /* ===== 老師佈局 ===== */
-  .host-grid{display:grid; grid-template-columns:300px 1fr; gap:24px;}
-  .panel{background:var(--bg2); border:1px solid var(--line); border-radius:var(--radius); padding:18px;}
-  .qlist{list-style:none; margin:0; padding:0; max-height:340px; overflow:auto;}
+  .host-grid{display:grid; grid-template-columns:280px 1fr; gap:22px;}
+  .panel{background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:18px;}
+  .panel .ptitle{font-weight:800; margin-bottom:12px; font-size:16px; color:#e7e4f0;}
+  .qlist{list-style:none; margin:0; padding:0; max-height:360px; overflow:auto;}
   .qlist li{
-    padding:11px 12px; border:1px solid var(--line); border-radius:10px; margin-bottom:8px;
-    font-size:16px; background:var(--bg); cursor:pointer; transition:border-color .15s;
+    padding:11px 13px; border:1px solid var(--line); border-radius:12px; margin-bottom:8px;
+    font-size:15px; background:var(--panel2); cursor:pointer; transition:border-color .15s, transform .1s;
   }
-  .qlist li:hover{border-color:var(--accent2);}
-  .qlist li.sel{border-color:var(--accent); background:rgba(255,210,63,.08);}
-  .qlist .tag{font-size:13px; letter-spacing:1px; color:var(--accent2);}
+  .qlist li:hover{border-color:var(--c1); transform:translateX(2px);}
+  .qlist li.sel{border-color:var(--c3); background:rgba(255,179,0,.12);}
+  .qlist .tag{font-size:12px; letter-spacing:1.5px; color:var(--c3); font-weight:700;}
   textarea{
-    width:100%; min-height:90px; background:var(--bg); color:var(--ink);
-    border:1px solid var(--line); border-radius:10px; padding:10px; font-size:15px; font-family:inherit;
+    width:100%; min-height:92px; background:var(--panel2); color:var(--ink);
+    border:1px solid var(--line); border-radius:12px; padding:11px; font-size:15px; font-family:inherit;
   }
-  .hint{color:var(--muted); font-size:14px; margin:6px 0 0;}
+  .hint{color:var(--muted); font-size:14px; margin:8px 0 0;}
 
-  .stage{min-height:420px; display:flex; flex-direction:column;}
-  .stat-row{display:flex; gap:14px; flex-wrap:wrap; margin-bottom:16px;}
-  .stat{background:var(--bg); border:1px solid var(--line); border-radius:12px; padding:10px 16px; font-size:16px;}
-  .stat b{color:var(--accent); font-size:22px; font-variant-numeric:tabular-nums;}
+  .stage{min-height:460px; display:flex; flex-direction:column;
+    background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:22px;}
 
-  .bigq{font-size:clamp(24px,3.4vw,38px); font-weight:800; margin:6px 0 20px; line-height:1.3;}
+  /* 計分板膠囊 */
+  .stat-row{display:flex; gap:12px; flex-wrap:wrap; margin-bottom:18px;}
+  .pill{
+    display:flex; align-items:center; gap:8px; background:var(--panel2);
+    border:1px solid var(--line); border-radius:999px; padding:8px 16px; font-size:14px; color:var(--muted);
+  }
+  .pill b{color:var(--ink); font-size:22px; font-weight:900; font-variant-numeric:tabular-nums; line-height:1;}
+  .pill.live b{color:#ff5470;}
+  .pill .dot{width:9px;height:9px;border-radius:50%;background:#ff5470;box-shadow:0 0 8px #ff5470;
+    animation:pulse 1.4s infinite;}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
 
+  /* 超大題目 */
+  .bigq{font-size:clamp(28px,3.6vw,46px); font-weight:900; margin:4px 0 24px; line-height:1.22; color:#fff;}
+
+  /* 節目感按鈕 */
   .btn{
-    border:none; border-radius:12px; padding:16px 26px; font-size:20px; font-weight:700;
-    background:var(--accent); color:#14203a; box-shadow:0 6px 22px rgba(255,210,63,.22);
+    border:none; border-radius:14px; padding:16px 30px; font-size:20px; font-weight:800;
+    background:linear-gradient(180deg,#ffc53d,#ffb300); color:#241a00;
+    box-shadow:0 8px 0 #b87f00, 0 12px 28px rgba(255,179,0,.28); transition:transform .08s, box-shadow .08s;
   }
-  .btn.ghost{background:transparent; color:var(--ink); border:2px solid var(--accent2); box-shadow:none;}
-  .btn.big{font-size:26px; padding:20px 40px;}
-  .btn:disabled{opacity:.4; cursor:default; box-shadow:none;}
-  .btn-row{display:flex; gap:14px; flex-wrap:wrap; margin-top:10px;}
+  .btn:active{transform:translateY(4px); box-shadow:0 4px 0 #b87f00, 0 6px 16px rgba(255,179,0,.28);}
+  .btn.big{font-size:26px; padding:20px 48px;}
+  .btn.ghost{background:transparent; color:var(--ink); border:2px solid var(--line);
+    box-shadow:none; font-weight:700;}
+  .btn.ghost:active{transform:translateY(2px);}
+  .btn:disabled{opacity:.35; cursor:default; box-shadow:none; transform:none;}
+  .btn-row{display:flex; gap:14px; flex-wrap:wrap; margin-top:22px;}
 
-  /* ===== 結果圖 ===== */
-  .duel{display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:18px; margin-top:10px;}
-  .duel .side{text-align:center; padding:26px 14px; border-radius:16px; border:2px solid var(--line);}
-  .duel .side.win{border-color:var(--accent);}
-  .duel .pct{font-size:clamp(48px,9vw,90px); font-weight:900; line-height:1; color:var(--accent);}
-  .duel .opt{font-size:20px; margin-top:10px; color:var(--ink);}
-  .duel .votes{font-size:15px; color:var(--muted);}
-  .duel .vs{font-size:26px; color:var(--muted); font-weight:700;}
+  /* ===== 出題中：選項色條預覽（未開牌） ===== */
+  .prebars{display:flex; flex-direction:column; gap:12px; margin-top:6px;}
+  .prebar{
+    display:flex; align-items:center; gap:16px; border-radius:14px; padding:16px 20px;
+    color:#fff; font-size:22px; font-weight:800; box-shadow:inset 0 0 0 1px rgba(255,255,255,.14);
+  }
+  .prebar .kk{
+    flex:0 0 auto; font-size:26px; font-weight:900; width:40px; text-align:center;
+    text-shadow:0 1px 2px rgba(0,0,0,.35);
+  }
 
-  .bars{margin-top:10px;}
-  .bar-item{margin-bottom:14px;}
-  .bar-lab{display:flex; justify-content:space-between; font-size:18px; margin-bottom:6px;}
-  .bar-lab .n{color:var(--muted); font-size:15px;}
-  .bar-track{background:var(--bg); border:1px solid var(--line); border-radius:10px; height:34px; overflow:hidden;}
+  /* ===== 結果：長條圖（3+ 選項） ===== */
+  .bars{display:flex; flex-direction:column; gap:16px; margin-top:6px;}
+  .bar-item{position:relative;}
+  .bar-track{
+    position:relative; height:64px; border-radius:14px; overflow:hidden;
+    background:var(--panel2); box-shadow:inset 0 0 0 1px var(--line);
+    display:flex; align-items:center;
+  }
   .bar-fill{
-    height:100%; background:linear-gradient(90deg,var(--accent2),var(--accent));
-    width:0; transition:width .7s ease; border-radius:10px 0 0 10px;
-    display:flex; align-items:center; justify-content:flex-end; padding-right:10px;
-    color:#0b1221; font-weight:800; font-size:15px;
+    position:absolute; left:0; top:0; bottom:0; width:0;
+    border-radius:14px; transition:width .8s cubic-bezier(.2,.8,.2,1);
   }
+  .bar-lab{
+    position:relative; z-index:2; display:flex; align-items:center; gap:14px;
+    padding:0 20px; width:100%; font-weight:800;
+  }
+  .bar-lab .kk{font-size:30px; font-weight:900; width:34px; text-shadow:0 1px 2px rgba(0,0,0,.4);}
+  .bar-lab .opt{font-size:24px; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+    text-shadow:0 1px 3px rgba(0,0,0,.5);}
+  .bar-lab .num{display:flex; align-items:baseline; gap:8px; text-shadow:0 1px 3px rgba(0,0,0,.5);}
+  .bar-lab .num .v{font-size:64px; font-weight:900; line-height:1; font-variant-numeric:tabular-nums;}
+  .bar-lab .num .u{font-size:16px; color:rgba(255,255,255,.75);}
+  .bar-lab .num .pct{font-size:26px; font-weight:900; margin-left:4px;}
 
-  /* ===== 學生連結角落 ===== */
+  /* ===== 結果：2 選項對決 ===== */
+  .duel{display:grid; grid-template-columns:1fr auto 1fr; align-items:stretch; gap:0; margin-top:6px;
+    min-height:340px;}
+  .duel .side{
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    padding:30px 18px; border-radius:20px; color:#fff; position:relative;
+    box-shadow:inset 0 0 0 2px rgba(255,255,255,.14);
+  }
+  .duel .side.win{box-shadow:inset 0 0 0 4px #fff, 0 0 40px rgba(255,255,255,.15);}
+  .duel .side .crown{position:absolute; top:12px; font-size:26px;}
+  .duel .pct{font-size:clamp(64px,11vw,120px); font-weight:900; line-height:.95; text-shadow:0 3px 12px rgba(0,0,0,.4);}
+  .duel .opt{font-size:26px; margin-top:12px; font-weight:800; text-align:center; text-shadow:0 1px 4px rgba(0,0,0,.4);}
+  .duel .votes{font-size:20px; margin-top:6px; opacity:.85; font-weight:700;}
+  .duel .vs{display:flex; align-items:center; justify-content:center; font-size:34px; font-weight:900;
+    color:var(--muted); padding:0 18px;}
+
+  /* ===== 學生連結（側欄固定面板，不浮動、不會蓋到票數） ===== */
   .join-box{
-    position:fixed; right:16px; bottom:16px; background:var(--bg2);
-    border:1px solid var(--line); border-radius:14px; padding:14px; text-align:center; max-width:220px;
+    background:var(--panel);
+    border:1px solid var(--line); border-radius:16px; padding:14px; text-align:center;
+    margin-top:14px;
   }
-  .join-box .qr{background:#fff; padding:8px; border-radius:8px; display:inline-block; line-height:0;}
+  .join-box .qr{background:#fff; padding:8px; border-radius:10px; display:inline-block; line-height:0;}
   .join-box .lab{font-size:13px; color:var(--muted); margin:8px 0 2px;}
-  .join-box .url{font-size:12px; color:var(--accent2); word-break:break-all;}
+  .join-box .url{font-size:12px; color:var(--c1); word-break:break-all;}
 
-  /* ===== 學生佈局 ===== */
-  .student{max-width:520px; margin:0 auto;}
-  .waiting{text-align:center; padding:60px 20px;}
-  .waiting .big{font-size:30px; font-weight:800; margin-bottom:10px;}
-  .waiting .m{color:var(--muted);}
-  .opts{display:grid; gap:14px; margin-top:20px;}
+  /* ===== 學生佈局（手機） ===== */
+  .student{max-width:560px; margin:0 auto;}
+  .student h1{text-align:center;}
+  .student .sub{text-align:center;}
+
+  /* 等待入場氛圍 */
+  .waiting{text-align:center; padding:40px 16px 30px;}
+  .waiting .room-badge{
+    display:inline-block; font-size:14px; letter-spacing:3px; color:var(--c3); font-weight:800;
+    border:1px solid var(--line); border-radius:999px; padding:7px 20px; margin-bottom:22px;
+  }
+  .waiting .big{font-size:30px; font-weight:900; margin-bottom:8px;}
+  .waiting .m{color:var(--muted); font-size:18px;}
+  .waiting .m b{color:#fff; font-size:26px; font-weight:900;}
+  .waiting .dots{margin-top:26px; display:flex; gap:10px; justify-content:center;}
+  .waiting .dots i{width:12px;height:12px;border-radius:50%;background:var(--c1);animation:bob 1s infinite;}
+  .waiting .dots i:nth-child(2){background:var(--c2);animation-delay:.15s;}
+  .waiting .dots i:nth-child(3){background:var(--c0);animation-delay:.3s;}
+  .waiting .dots i:nth-child(4){background:var(--c3);animation-delay:.45s;}
+  @keyframes bob{0%,100%{transform:translateY(0);opacity:.5}50%{transform:translateY(-10px);opacity:1}}
+
+  /* 滿版色塊按鈕 2×2 自適應 */
+  .opts{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:20px;}
+  .opts.one-col{grid-template-columns:1fr;}
   .opt-btn{
-    display:flex; align-items:center; gap:16px; text-align:left;
-    border:2px solid var(--line); background:var(--bg2); color:var(--ink);
-    border-radius:16px; padding:20px 18px; font-size:22px; font-weight:700; width:100%;
-    transition:transform .1s, border-color .15s;
+    display:flex; align-items:center; gap:14px; text-align:left; color:#fff;
+    border:none; border-radius:18px; padding:26px 20px; font-size:24px; font-weight:800;
+    min-height:120px; width:100%; position:relative;
+    box-shadow:0 8px 0 rgba(0,0,0,.28), inset 0 0 0 1px rgba(255,255,255,.16);
+    transition:transform .1s, box-shadow .1s, filter .12s;
   }
-  .opt-btn:active{transform:scale(.98);}
-  .opt-btn.picked{border-color:var(--accent); background:rgba(255,210,63,.1);}
+  .opt-btn:active{transform:translateY(5px) scale(.99); box-shadow:0 3px 0 rgba(0,0,0,.28), inset 0 0 0 1px rgba(255,255,255,.16);}
+  .opt-btn.picked{filter:brightness(1.06); box-shadow:0 0 0 4px #fff, 0 8px 0 rgba(0,0,0,.28);}
+  .opt-btn.picked::after{content:"✓"; position:absolute; top:10px; right:14px; font-size:26px; font-weight:900;
+    text-shadow:0 1px 3px rgba(0,0,0,.4);}
   .opt-btn .k{
-    flex:0 0 44px; height:44px; border-radius:10px; display:grid; place-items:center;
-    font-size:22px; font-weight:900; color:#0b1221;
+    flex:0 0 auto; font-size:34px; font-weight:900; width:38px; text-align:center;
+    text-shadow:0 1px 3px rgba(0,0,0,.35);
   }
-  .k0{background:#ffd23f;} .k1{background:#38e1c4;} .k2{background:#ff8fab;} .k3{background:#a0c4ff;}
-  .voted-tag{text-align:center; margin-top:18px; font-size:18px; color:var(--accent2);}
-  .youpicked{text-align:center; margin-top:16px; font-size:18px; color:var(--accent);}
-  .hidden{display:none !important;}
+  .opt-btn .txt{flex:1; text-shadow:0 1px 3px rgba(0,0,0,.35); line-height:1.2;}
+
+  /* 選項配色（背景）— 學生按鈕 + 老師色條 + 長條 fill 共用 */
+  .c0{background:var(--c0);} .c1{background:var(--c1);}
+  .c2{background:var(--c2);} .c3{background:var(--c3);}
+  .c4{background:var(--c4);} .c5{background:var(--c5);}
+  /* 字母色鍵（學生舊 .k 保留 class 名，但改為透明由 .cN 上色） */
+  .k0,.k1,.k2,.k3{background:transparent;}
+
+  .voted-tag{text-align:center; margin-top:20px; font-size:18px; color:var(--c2); font-weight:800;}
+  .youpicked{text-align:center; margin-top:22px; font-size:20px; color:var(--c3); font-weight:800;}
+
+  @media (max-width:720px){
+    .host-grid{grid-template-columns:1fr;}
+    .join-box{position:static; max-width:none; margin-top:18px;}
+    .duel{grid-template-columns:1fr; gap:14px; min-height:0;}
+    .duel .vs{padding:6px 0;}
+  }
 </style>
 </head>
 <body>
@@ -248,15 +343,17 @@ function renderResult(container, options, counts, myChoice){
     const win = counts[0] === counts[1] ? -1 : (counts[0] > counts[1] ? 0 : 1);
     container.innerHTML = `
       <div class="duel">
-        <div class="side ${win===0?'win':''}">
+        <div class="side c0 ${win===0?'win':''}">
+          ${win===0?'<div class="crown">👑</div>':''}
           <div class="pct">${p[0]}%</div>
-          <div class="opt">${esc(options[0])}</div>
+          <div class="opt"><b>A</b> ${esc(options[0])}</div>
           <div class="votes">${counts[0]} 票</div>
         </div>
         <div class="vs">VS</div>
-        <div class="side ${win===1?'win':''}">
+        <div class="side c1 ${win===1?'win':''}">
+          ${win===1?'<div class="crown">👑</div>':''}
           <div class="pct">${p[1]}%</div>
-          <div class="opt">${esc(options[1])}</div>
+          <div class="opt"><b>B</b> ${esc(options[1])}</div>
           <div class="votes">${counts[1]} 票</div>
         </div>
       </div>`;
@@ -264,8 +361,14 @@ function renderResult(container, options, counts, myChoice){
     const rows = options.map((o,i)=>{
       const pct = Math.round(counts[i]/total*100);
       return `<div class="bar-item">
-        <div class="bar-lab"><span>${esc(o)}</span><span class="n">${counts[i]} 票 · ${pct}%</span></div>
-        <div class="bar-track"><div class="bar-fill" data-w="${pct}">${pct>8?pct+'%':''}</div></div>
+        <div class="bar-track">
+          <div class="bar-fill c${i%6}" data-w="${pct}"></div>
+          <div class="bar-lab">
+            <span class="kk">${'ABCD'[i]||i+1}</span>
+            <span class="opt">${esc(o)}</span>
+            <span class="num"><span class="v">${counts[i]}</span><span class="u">票</span><span class="pct">${pct}%</span></span>
+          </div>
+        </div>
       </div>`;
     }).join('');
     container.innerHTML = `<div class="bars">${rows}</div>`;
@@ -302,25 +405,25 @@ function esc(s){ return String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;'
       <p class="sub">房間：${esc(ROOM)}　·　${transport.mode==='supabase'?'雲端即時模式':'本機示範模式'}</p>
       <div class="host-grid">
         <div class="panel">
-          <div style="font-weight:800;margin-bottom:10px;">選一題</div>
+          <div class="ptitle">選一題</div>
           <ul id="qlist" class="qlist"><li>載入題目中…</li></ul>
-          <div style="font-weight:800;margin:14px 0 6px;">或自訂題目</div>
+          <div class="ptitle" style="margin-top:16px;">或自訂題目</div>
           <textarea id="custom" placeholder="第一行：題目&#10;第二行：選項（用逗號分隔）&#10;例如：&#10;你今天午餐吃什麼？&#10;便當,麵,不吃"></textarea>
-          <button class="btn ghost" id="useCustom" style="margin-top:8px;font-size:16px;padding:10px 18px;">用這題</button>
+          <button class="btn ghost" id="useCustom" style="margin-top:10px;font-size:16px;padding:11px 20px;">用這題</button>
           <p class="hint" id="loadHint"></p>
+          <div class="join-box">
+            <div class="qr" id="qr"></div>
+            <div class="lab">學生掃碼加入</div>
+            <div class="url" id="joinurl"></div>
+          </div>
         </div>
         <div class="panel stage">
           <div class="stat-row">
-            <div class="stat">在線 <b id="s-online">0</b></div>
-            <div class="stat">已投 <b id="s-voted">0</b> / <b id="s-need">0</b></div>
+            <div class="pill live"><span class="dot"></span>在線 <b id="s-online">0</b></div>
+            <div class="pill">已投 <b id="s-voted">0</b> / <b id="s-need">0</b></div>
           </div>
           <div id="hstage"></div>
         </div>
-      </div>
-      <div class="join-box">
-        <div class="qr" id="qr"></div>
-        <div class="lab">學生掃碼加入</div>
-        <div class="url" id="joinurl"></div>
       </div>`;
 
     const joinURL = location.origin + location.pathname + '?room=' + encodeURIComponent(ROOM);
@@ -352,11 +455,13 @@ function esc(s){ return String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;'
       current = { q, options, revealed:false };
       votes.clear();
       transport.send({ type:'question', q, options });
+      const prebars = options.map((o,i)=>`
+        <div class="prebar c${i%6}"><span class="kk">${'ABCD'[i]||i+1}</span><span>${esc(o)}</span></div>`).join('');
       stage.innerHTML = `
         <div class="bigq">${esc(q)}</div>
-        <div class="hint" style="margin-bottom:14px;">選項：${options.map(esc).join('　·　')}</div>
+        <div class="prebars">${prebars}</div>
         <div class="btn-row">
-          <button class="btn big" id="reveal">開牌</button>
+          <button class="btn big" id="reveal">開牌看結果</button>
           <button class="btn ghost" id="next" disabled>下一題</button>
         </div>`;
       stage.querySelector('#reveal').onclick = reveal;
@@ -402,7 +507,7 @@ function esc(s){ return String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;'
     function next(){
       current = null; votes.clear();
       transport.send({ type:'reset' });
-      stage.innerHTML = `<div class="hint" style="font-size:18px;">選一題開始，或用自訂題目。</div>`;
+      stage.innerHTML = `<div class="hint" style="font-size:20px;padding:40px 0;text-align:center;">← 選一題開始，或用自訂題目。</div>`;
       updateStats();
     }
 
@@ -471,8 +576,10 @@ function esc(s){ return String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;'
     function waiting(){
       current = null; myChoice = null;
       stage.innerHTML = `<div class="waiting">
+        <div class="room-badge">房間 ${esc(ROOM)}</div>
         <div class="big">已加入！等老師出題</div>
         <div class="m">在線 <b id="cnt">0</b> 人</div>
+        <div class="dots"><i></i><i></i><i></i><i></i></div>
       </div>`;
     }
     studentPeers = list => {
@@ -484,11 +591,12 @@ function esc(s){ return String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;'
       if(current && current.q === q) return; // 重播同題不覆蓋已選狀態
       current = { q, options }; myChoice = null;
       const opts = options.map((o,i)=>`
-        <button class="opt-btn" data-i="${i}">
-          <span class="k k${i}">${'ABCD'[i]||i+1}</span><span>${esc(o)}</span>
+        <button class="opt-btn c${i%6}" data-i="${i}">
+          <span class="k k${i}">${'ABCD'[i]||i+1}</span><span class="txt">${esc(o)}</span>
         </button>`).join('');
+      // 奇數選項用單欄避免尾巴孤塊；偶數維持 2×2 滿版
       stage.innerHTML = `<div class="bigq">${esc(q)}</div>
-        <div class="opts">${opts}</div>
+        <div class="opts${options.length%2?' one-col':''}">${opts}</div>
         <div class="voted-tag hidden" id="vtag">已投票 ✓　可以改票</div>`;
       stage.querySelectorAll('.opt-btn').forEach(b => b.onclick = () => {
         myChoice = +b.dataset.i;
