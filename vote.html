@@ -168,7 +168,8 @@
   .student .sub{text-align:center;}
 
   /* 等待入場氛圍 */
-  .waiting{text-align:center; padding:40px 16px 30px;}
+  .waiting{text-align:center; padding:40px 16px 30px;
+    flex:1; display:flex; flex-direction:column; justify-content:center;}
   .waiting .room-badge{
     display:inline-block; font-size:14px; letter-spacing:3px; color:var(--c3); font-weight:800;
     border:1px solid var(--line); border-radius:999px; padding:7px 20px; margin-bottom:22px;
@@ -183,9 +184,20 @@
   .waiting .dots i:nth-child(4){background:var(--c3);animation-delay:.45s;}
   @keyframes bob{0%,100%{transform:translateY(0);opacity:.5}50%{transform:translateY(-10px);opacity:1}}
 
-  /* 滿版色塊按鈕 2×2 自適應 */
-  .opts{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:20px;}
+  /* ===== 學生視圖：滿版直向填滿（拇指好按） ===== */
+  .student{display:flex; flex-direction:column; min-height:calc(100dvh - 46px);
+    padding-bottom:max(6px, env(safe-area-inset-bottom));}
+  .student .s-head{display:flex; align-items:baseline; gap:12px; margin:2px 0 10px;}
+  .student .s-head .s-title{font-size:20px; font-weight:900; color:var(--muted);}
+  .student .s-head .s-room{font-size:14px; color:var(--muted); opacity:.8;}
+  #sstage{flex:1; display:flex; flex-direction:column;}
+  #sstage .bigq{font-size:clamp(24px, 6vw, 34px); margin:4px 0 6px;}
+
+  /* 滿版色塊按鈕 2×2 自適應（撐滿剩餘高度） */
+  .opts{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:14px;
+    flex:1; grid-auto-rows:1fr; align-items:stretch;}
   .opts.one-col{grid-template-columns:1fr;}
+  .opts .opt-btn{height:100%;}
   .opt-btn{
     display:flex; align-items:center; gap:14px; text-align:left; color:#fff;
     border:none; border-radius:18px; padding:26px 20px; font-size:24px; font-weight:800;
@@ -210,20 +222,25 @@
   /* 字母色鍵（學生舊 .k 保留 class 名，但改為透明由 .cN 上色） */
   .k0,.k1,.k2,.k3{background:transparent;}
 
-  /* 學生「其他」自由填答卡 */
+  /* 學生「其他」自由填答卡：輸入全寬＋送出全寬大按鈕（不再擠一列斷字） */
   .othercard{margin-top:14px; background:var(--panel); border:1px dashed var(--line);
-    border-radius:18px; padding:16px;}
+    border-radius:18px; padding:14px 16px 16px;}
   .othercard-lab{color:var(--muted); font-size:16px; font-weight:700; margin-bottom:10px;}
-  .othercard-row{display:flex; gap:10px; align-items:stretch;}
+  .othercard-row{display:flex; flex-direction:column; gap:10px;}
   .othercard-row input{
-    flex:1; background:var(--panel2); color:var(--ink); border:1px solid var(--line);
+    width:100%; background:var(--panel2); color:var(--ink); border:1px solid var(--line);
     border-radius:12px; padding:14px 16px; font-size:18px; font-family:inherit;
   }
   .othercard-row input:focus{outline:2px solid var(--c5); outline-offset:1px;}
-  .otherbtn{min-height:0; padding:0 22px; font-size:18px; border-radius:12px; box-shadow:none;}
+  .otherbtn{min-height:52px; height:52px; padding:0 22px; font-size:20px; border-radius:12px;
+    box-shadow:none; white-space:nowrap; justify-content:center;}
 
   .voted-tag{text-align:center; margin-top:20px; font-size:18px; color:var(--c2); font-weight:800;}
   .youpicked{text-align:center; margin-top:22px; font-size:20px; color:var(--c3); font-weight:800;}
+  .change-btn{
+    margin-top:26px; align-self:center; background:none; color:var(--muted);
+    border:1px solid var(--line); border-radius:12px; font-size:17px; padding:12px 28px;
+  }
 
   /* ===== 文字題（開放回答／文字牆） ===== */
   .askbox{margin-top:20px; display:flex; flex-direction:column; gap:14px;}
@@ -399,7 +416,7 @@ function renderResult(container, options, counts, myChoice, others){
         <div class="bar-track">
           <div class="bar-fill ${isOther?'':'c'+(i%6)}" style="${isOther?'background:#6b6880':''}" data-w="${pct}"></div>
           <div class="bar-lab">
-            <span class="kk">${isOther?'✎':('ABCD'[i]||i+1)}</span>
+            <span class="kk">${isOther?'✎':('ABCDEFGH'[i]||i+1)}</span>
             <span class="opt">${esc(o)}</span>
             <span class="num"><span class="v">${n}</span><span class="u">票</span><span class="pct">${pct}%</span></span>
           </div>
@@ -562,7 +579,7 @@ function esc(s){ return String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;'
       const middle = isText
         ? `<div class="hint" style="font-size:20px;padding:18px 0;">✏ 文字題：學生正在打字回答。收到幾則看上方「已投」。<br>看好內容後按 CHECK 上牆——<b>文字題不會自動開牌</b>。</div>`
         : `<div class="prebars">${options.map((o,i)=>`
-        <div class="prebar c${i%6}"><span class="kk">${'ABCD'[i]||i+1}</span><span>${esc(o)}</span></div>`).join('')}${otherPre}</div>`;
+        <div class="prebar c${i%6}"><span class="kk">${'ABCDEFGH'[i]||i+1}</span><span>${esc(o)}</span></div>`).join('')}${otherPre}</div>`;
       stage.innerHTML = `
         <div class="bigq">${esc(q)}</div>
         ${middle}
@@ -751,8 +768,7 @@ function esc(s){ return String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;'
     root.classList.add('student');
     root.classList.remove('hidden');
     root.innerHTML = `
-      <h1>即時投票</h1>
-      <p class="sub">房間：${esc(ROOM)}　·　匿名，不用留名字</p>
+      <div class="s-head"><span class="s-title">即時投票</span><span class="s-room">房間 ${esc(ROOM)} · 匿名</span></div>
       <div id="sstage"></div>`;
     const stage = root.querySelector('#sstage');
     let current = null, myChoice = null;
@@ -774,58 +790,76 @@ function esc(s){ return String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;'
     function showQuestion(q, options, mode, other){
       if(current && current.q === q) return; // 重播同題不覆蓋已選狀態
       current = { q, options, mode, other }; myChoice = null;
+      if(mode === 'text' || !options || !options.length) current.mode = 'text';
+      renderQuestion();
+    }
 
-      // 文字題：輸入框＋送出（可重送修改，同人以最後一則為準）
-      if(mode === 'text' || !options || !options.length){
-        current.mode = 'text';
+    // 已作答 → 收畫面等開牌（開牌前可改答案）
+    function answeredScreen(){
+      let mine = '';
+      if(typeof myChoice === 'number') mine = '你選了：' + ('ABCDEFGH'[myChoice]||myChoice+1) + '　' + current.options[myChoice];
+      else if(myChoice && myChoice.t) mine = '你寫了：' + myChoice.t;
+      stage.innerHTML = `<div class="waiting">
+        <div class="room-badge">已作答 ✓</div>
+        <div class="big">等老師開牌…</div>
+        <div class="m">${esc(mine)}</div>
+        <div class="dots"><i></i><i></i><i></i><i></i></div>
+        <button class="change-btn" id="changeans">改答案</button>
+      </div>`;
+      stage.querySelector('#changeans').onclick = renderQuestion;
+    }
+
+    function renderQuestion(){
+      const { q, options, mode, other } = current;
+
+      // 文字題：輸入框＋送出
+      if(mode === 'text'){
+        const prev = (myChoice && myChoice.t) ? myChoice.t : '';
         stage.innerHTML = `<div class="bigq">${esc(q)}</div>
           <div class="askbox">
-            <textarea id="myans" maxlength="80" rows="3" placeholder="打字回答（80 字內）…"></textarea>
+            <textarea id="myans" maxlength="80" rows="3" placeholder="打字回答（80 字內）…">${esc(prev)}</textarea>
             <button class="opt-btn c1 send" id="sendans">送出</button>
-          </div>
-          <div class="voted-tag hidden" id="vtag">已送出 ✓　改完可以再按一次送出</div>`;
+          </div>`;
         stage.querySelector('#sendans').onclick = () => {
           const t = stage.querySelector('#myans').value.trim().slice(0, 80);
           if(!t) return;
+          myChoice = { t };
           transport.send({ type:'answer', text: t, uid: UID });
-          stage.querySelector('#vtag').classList.remove('hidden');
+          answeredScreen();
         };
         return;
       }
 
       const opts = options.map((o,i)=>`
-        <button class="opt-btn c${i%6}" data-i="${i}">
-          <span class="k k${i}">${'ABCD'[i]||i+1}</span><span class="txt">${esc(o)}</span>
+        <button class="opt-btn c${i%6}${myChoice===i?' picked':''}" data-i="${i}">
+          <span class="k k${i}">${'ABCDEFGH'[i]||i+1}</span><span class="txt">${esc(o)}</span>
         </button>`).join('');
       // 奇數選項用單欄避免尾巴孤塊；偶數維持 2×2 滿版
+      const prevOther = (myChoice && myChoice.t) ? myChoice.t : '';
       const otherCard = other
         ? `<div class="othercard">
              <div class="othercard-lab">✎ 其他：想說什麼自己打</div>
              <div class="othercard-row">
-               <input id="otherinput" maxlength="80" placeholder="打一句話（80 字內）…">
+               <input id="otherinput" maxlength="80" placeholder="打一句話（80 字內）…" value="${esc(prevOther)}">
                <button class="opt-btn c5 otherbtn" id="othersend">送出</button>
              </div>
            </div>`
         : '';
       stage.innerHTML = `<div class="bigq">${esc(q)}</div>
         <div class="opts${options.length%2?' one-col':''}">${opts}</div>
-        ${otherCard}
-        <div class="voted-tag hidden" id="vtag">已投票 ✓　可以改票</div>`;
+        ${otherCard}`;
       stage.querySelectorAll('.opt-btn:not(.otherbtn)').forEach(b => b.onclick = () => {
         myChoice = +b.dataset.i;
-        stage.querySelectorAll('.opt-btn').forEach(x=>x.classList.remove('picked'));
-        b.classList.add('picked');
-        stage.querySelector('#vtag').classList.remove('hidden');
         transport.send({ type:'vote', choice: myChoice, uid: UID });
+        answeredScreen();
       });
       if(other){
         stage.querySelector('#othersend').onclick = () => {
           const t = stage.querySelector('#otherinput').value.trim().slice(0,80);
           if(!t) return;
           myChoice = { t };
-          stage.querySelectorAll('.opt-btn:not(.otherbtn)').forEach(x=>x.classList.remove('picked'));
-          stage.querySelector('#vtag').classList.remove('hidden');
           transport.send({ type:'vote', choice:'other', text:t, uid: UID });
+          answeredScreen();
         };
       }
     }
