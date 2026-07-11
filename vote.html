@@ -40,6 +40,19 @@
 
   /* ===== 老師佈局 ===== */
   .host-grid{display:grid; grid-template-columns:280px 1fr; gap:22px;}
+  /* 側欄收合：投影時全螢幕留給舞台 */
+  #host.side-collapsed .host-grid{grid-template-columns:1fr;}
+  #host.side-collapsed .panel.side{display:none;}
+  .ptitle .fold{
+    float:right; background:none; border:1px solid var(--line); color:var(--muted);
+    border-radius:8px; font-size:13px; padding:3px 10px; cursor:pointer;
+  }
+  .reopen{
+    display:none; position:fixed; left:12px; top:12px; z-index:30;
+    background:var(--panel); border:1px solid var(--line); color:#e7e4f0;
+    border-radius:10px; font-size:15px; padding:8px 14px; cursor:pointer;
+  }
+  #host.side-collapsed .reopen{display:inline-block;}
   .panel{background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:18px;}
   .panel .ptitle{font-weight:800; margin-bottom:12px; font-size:16px; color:#e7e4f0;}
   .qlist{list-style:none; margin:0; padding:0; max-height:360px; overflow:auto;}
@@ -403,9 +416,10 @@ function esc(s){ return String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;'
     root.innerHTML = `
       <h1>即時投票 <span class="hl">· 老師台</span></h1>
       <p class="sub">房間：${esc(ROOM)}　·　${transport.mode==='supabase'?'雲端即時模式':'本機示範模式'}</p>
+      <button id="openSide" class="reopen" title="展開題目側欄">☰ 題目</button>
       <div class="host-grid">
-        <div class="panel">
-          <div class="ptitle">選一題</div>
+        <div class="panel side">
+          <div class="ptitle">選一題 <button id="collapseSide" class="fold" title="收合側欄">⟨ 收合</button></div>
           <ul id="qlist" class="qlist"><li>載入題目中…</li></ul>
           <div class="ptitle" style="margin-top:16px;">或自訂題目</div>
           <textarea id="custom" placeholder="第一行：題目&#10;第二行：選項（用逗號分隔）&#10;例如：&#10;你今天午餐吃什麼？&#10;便當,麵,不吃"></textarea>
@@ -429,6 +443,10 @@ function esc(s){ return String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;'
     const joinURL = location.origin + location.pathname + '?room=' + encodeURIComponent(ROOM);
     root.querySelector('#joinurl').textContent = joinURL;
     drawQR(root.querySelector('#qr'), joinURL);
+
+    // 側欄收合／展開（投影時把整個畫面留給舞台）
+    root.querySelector('#collapseSide').onclick = () => root.classList.add('side-collapsed');
+    root.querySelector('#openSide').onclick = () => root.classList.remove('side-collapsed');
 
     let current = null;        // {q, options}
     const votes = new Map();   // uid -> choice
@@ -461,8 +479,8 @@ function esc(s){ return String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;'
         <div class="bigq">${esc(q)}</div>
         <div class="prebars">${prebars}</div>
         <div class="btn-row">
-          <button class="btn big" id="reveal">開牌看結果</button>
-          <button class="btn ghost" id="next" disabled>下一題</button>
+          <button class="btn big" id="reveal">CHECK</button>
+          <button class="btn ghost" id="next">下一題</button>
         </div>`;
       stage.querySelector('#reveal').onclick = reveal;
       stage.querySelector('#next').onclick = next;
