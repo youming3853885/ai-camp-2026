@@ -484,6 +484,8 @@ function renderResult(container, options, counts, myChoice, others){
   }
 }
 function esc(s){ return String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+/* 題幹顯示用：保留使用者原始換行 */
+function escBr(s){ return esc(s).replace(/\n/g, '<br>'); }
 
 /* ================= 啟動 ================= */
 (async function init(){
@@ -581,7 +583,7 @@ function esc(s){ return String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;'
         : `<div class="prebars">${options.map((o,i)=>`
         <div class="prebar c${i%6}"><span class="kk">${'ABCDEFGH'[i]||i+1}</span><span>${esc(o)}</span></div>`).join('')}${otherPre}</div>`;
       stage.innerHTML = `
-        <div class="bigq">${esc(q)}</div>
+        <div class="bigq">${escBr(q)}</div>
         ${middle}
         <div class="btn-row">
           <button class="btn big" id="reveal">CHECK</button>
@@ -601,14 +603,14 @@ function esc(s){ return String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;'
         const texts = [...votes.values()];
         transport.send({ type:'reveal', mode:'text', texts });
         logResult(texts);
-        stage.innerHTML = `<div class="bigq">${esc(current.q)}</div><div id="res"></div>
+        stage.innerHTML = `<div class="bigq">${escBr(current.q)}</div><div id="res"></div>
           <div class="btn-row"><button class="btn big" id="next">下一題</button></div>`;
         renderWall(stage.querySelector('#res'), texts);
         stage.querySelector('#next').onclick = next;
         return;
       }
 
-      stage.innerHTML = `<div class="bigq">${esc(current.q)}</div><div id="res"></div>
+      stage.innerHTML = `<div class="bigq">${escBr(current.q)}</div><div id="res"></div>
         <div class="btn-row"><button class="btn big" id="next">下一題</button></div>`;
 
       if(current.other){
@@ -815,7 +817,7 @@ function esc(s){ return String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;'
       // 文字題：輸入框＋送出
       if(mode === 'text'){
         const prev = (myChoice && myChoice.t) ? myChoice.t : '';
-        stage.innerHTML = `<div class="bigq">${esc(q)}</div>
+        stage.innerHTML = `<div class="bigq">${escBr(q)}</div>
           <div class="askbox">
             <textarea id="myans" maxlength="80" rows="3" placeholder="打字回答（80 字內）…">${esc(prev)}</textarea>
             <button class="opt-btn c1 send" id="sendans">送出</button>
@@ -845,7 +847,7 @@ function esc(s){ return String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;'
              </div>
            </div>`
         : '';
-      stage.innerHTML = `<div class="bigq">${esc(q)}</div>
+      stage.innerHTML = `<div class="bigq">${escBr(q)}</div>
         <div class="opts${options.length%2?' one-col':''}">${opts}</div>
         ${otherCard}`;
       stage.querySelectorAll('.opt-btn:not(.otherbtn)').forEach(b => b.onclick = () => {
@@ -868,7 +870,7 @@ function esc(s){ return String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;'
       if(m.type === 'question') showQuestion(m.q, m.options, m.mode, m.other);
       else if(m.type === 'reset') waiting();
       else if(m.type === 'reveal' && current){
-        stage.innerHTML = `<div class="bigq">${esc(current.q)}</div><div id="res"></div>`;
+        stage.innerHTML = `<div class="bigq">${escBr(current.q)}</div><div id="res"></div>`;
         if(m.mode === 'text') renderWall(stage.querySelector('#res'), m.texts);
         else renderResult(stage.querySelector('#res'), current.options, m.counts, myChoice, m.others);
       }
