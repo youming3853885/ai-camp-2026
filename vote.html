@@ -561,8 +561,7 @@ function escBr(s){ return esc(s).replace(/\n/g, '<br>'); }
       root.querySelector('#s-online').textContent = online;
       root.querySelector('#s-voted').textContent = votes.size;
       root.querySelector('#s-need').textContent = online;
-      // 自動開牌：已投 ≥ 在線且在線>0，且尚未開牌（文字題不自動開牌——內容要先過老師的眼睛）
-      if(current && !current.revealed && current.mode !== 'text' && online>0 && votes.size >= online) reveal();
+      // 開牌時機一律由老師手動按 CHECK 掌控（2026-07-11 應老師要求移除自動開牌）
     }
     hostPeers = () => {
       updateStats();
@@ -579,7 +578,7 @@ function escBr(s){ return esc(s).replace(/\n/g, '<br>'); }
         ? `<div class="prebar" style="background:#3a3846;color:var(--muted)"><span class="kk">✎</span><span>其他（自由填答）</span></div>`
         : '';
       const middle = isText
-        ? `<div class="hint" style="font-size:20px;padding:18px 0;">✏ 文字題：學生正在打字回答。收到幾則看上方「已投」。<br>看好內容後按 CHECK 上牆——<b>文字題不會自動開牌</b>。</div>`
+        ? `<div class="hint" style="font-size:20px;padding:18px 0;">✏ 文字題：學生正在打字回答。收到幾則看上方「已投」。<br>看好內容後按 CHECK 上牆。</div>`
         : `<div class="prebars">${options.map((o,i)=>`
         <div class="prebar c${i%6}"><span class="kk">${'ABCDEFGH'[i]||i+1}</span><span>${esc(o)}</span></div>`).join('')}${otherPre}</div>`;
       stage.innerHTML = `
