@@ -96,6 +96,9 @@
   }
   .addopt:hover{border-color:var(--c2); color:var(--c2);}
   .addopt:disabled{opacity:.35; cursor:default;}
+  .otheropt{display:flex; align-items:center; gap:8px; margin-top:4px; color:var(--muted);
+    font-size:14px; cursor:pointer;}
+  .otheropt input{width:17px; height:17px; accent-color:var(--c1); cursor:pointer;}
 
   .c0{background:var(--c0);} .c1{background:var(--c1);}
   .c2{background:var(--c2);} .c3{background:var(--c3);}
@@ -190,6 +193,7 @@ function card(item, i){
           <button class="rm" data-rm="${j}" title="刪除選項">✕</button>
         </div>`).join('')}
       <button class="addopt" data-addopt>＋ 選項</button>
+      <label class="otheropt"><input type="checkbox" data-other ${item.other?'checked':''}> 允許「其他」自由填答（學生可以不選選項、改打一句話）</label>
     </div>`;
 
   el.innerHTML = `
@@ -223,6 +227,7 @@ function card(item, i){
     const add = el.querySelector('[data-addopt]');
     add.disabled = item.options.length >= 6;
     add.onclick = () => { item.options.push(''); render(); };
+    el.querySelector('[data-other]').addEventListener('change', e => { item.other = e.target.checked; });
   }
   return el;
 }
@@ -277,7 +282,9 @@ function validate(){
 function clean(){
   return questions.map(item => {
     if(item.mode === 'text') return { q: String(item.q||'').trim(), mode: 'text' };
-    return { q: String(item.q||'').trim(), options: (item.options||[]).map(o=>String(o||'').trim()).filter(Boolean) };
+    const c = { q: String(item.q||'').trim(), options: (item.options||[]).map(o=>String(o||'').trim()).filter(Boolean) };
+    if(item.other) c.other = true;
+    return c;
   });
 }
 
@@ -327,7 +334,7 @@ fileInput.onchange = () => {
       // 正規化：文字題留 mode:text，其餘視為選擇題
       questions = data.map(it => it && it.mode === 'text'
         ? { q: String(it.q||''), mode:'text' }
-        : { q: String(it.q||''), options: Array.isArray(it.options) ? it.options.map(String) : ['',''] });
+        : { q: String(it.q||''), options: Array.isArray(it.options) ? it.options.map(String) : ['',''], other: !!it.other });
       saveMsg.className=''; saveMsg.textContent='已匯入（尚未儲存到雲端）';
       render();
     }catch(e){ alert('匯入失敗：' + e.message); }

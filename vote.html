@@ -210,6 +210,18 @@
   /* 字母色鍵（學生舊 .k 保留 class 名，但改為透明由 .cN 上色） */
   .k0,.k1,.k2,.k3{background:transparent;}
 
+  /* 學生「其他」自由填答卡 */
+  .othercard{margin-top:14px; background:var(--panel); border:1px dashed var(--line);
+    border-radius:18px; padding:16px;}
+  .othercard-lab{color:var(--muted); font-size:16px; font-weight:700; margin-bottom:10px;}
+  .othercard-row{display:flex; gap:10px; align-items:stretch;}
+  .othercard-row input{
+    flex:1; background:var(--panel2); color:var(--ink); border:1px solid var(--line);
+    border-radius:12px; padding:14px 16px; font-size:18px; font-family:inherit;
+  }
+  .othercard-row input:focus{outline:2px solid var(--c5); outline-offset:1px;}
+  .otherbtn{min-height:0; padding:0 22px; font-size:18px; border-radius:12px; box-shadow:none;}
+
   .voted-tag{text-align:center; margin-top:20px; font-size:18px; color:var(--c2); font-weight:800;}
   .youpicked{text-align:center; margin-top:22px; font-size:20px; color:var(--c3); font-weight:800;}
 
@@ -373,8 +385,50 @@ function renderWall(container, texts){
 }
 
 /* ================= 結果圖（老師 / 學生共用） ================= */
-function renderResult(container, options, counts, myChoice){
+function renderResult(container, options, counts, myChoice, others){
   const total = counts.reduce((a,b)=>a+b, 0) || 1;
+  // other:true 的題一律走長條圖：固定選項各一條 + 最後一條灰色「其他」；下方列出自由填答文字
+  if(others){
+    const labels = options.concat(['其他']);
+    const rows = labels.map((o,i)=>{
+      const pct = Math.round(counts[i]/total*100);
+      const isOther = i === options.length;
+      return `<div class="bar-item">
+        <div class="bar-track">
+          <div class="bar-fill ${isOther?'':'c'+(i%6)}" style="${isOther?'background:#6b6880':''}" data-w="${pct}"></div>
+          <div class="bar-lab">
+            <span class="kk">${isOther?'✎':('ABCD'[i]||i+1)}</span>
+            <span class="opt">${esc(o)}</span>
+            <span class="num"><span class="v">${counts[i]}</span><span class="u">票</span><span class="pct">${pct}%</span></span>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+    container.innerHTML = `<div class="bars">${rows}</div>`;
+    requestAnimationFrame(()=> container.querySelectorAll('.bar-fill').forEach(b=> b.style.width = b.dataset.w + '%'));
+    if(others.length){
+      const wallTitle = document.createElement('div');
+      wallTitle.className = 'ptitle';
+      wallTitle.style.cssText = 'margin:22px 0 4px;font-size:20px;';
+      wallTitle.textContent = '✎ 其他的回答';
+      container.appendChild(wallTitle);
+      const wall = document.createElement('div');
+      renderWall(wall, others);
+      container.appendChild(wall);
+    }
+    if(typeof myChoice === 'number' && options[myChoice]!==undefined){
+      const tag = document.createElement('div');
+      tag.className = 'youpicked';
+      tag.textContent = '你投的是：' + options[myChoice];
+      container.appendChild(tag);
+    } else if(myChoice && myChoice.t){
+      const tag = document.createElement('div');
+      tag.className = 'youpicked';
+      tag.textContent = '你投的是：其他（' + myChoice.t + '）';
+      container.appendChild(tag);
+    }
+    return;
+  }
   if(options.length === 2){
     const p = counts.map(c => Math.round(c/total*100));
     const win = counts[0] === counts[1] ? -1 : (counts[0] > counts[1] ? 0 : 1);
@@ -493,18 +547,21 @@ function esc(s){ return String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;'
     hostPeers = () => {
       updateStats();
       // 中途加入者重播當前題目
-      if(current && !current.revealed) transport.send({ type:'question', q:current.q, options:current.options, mode:current.mode });
+      if(current && !current.revealed) transport.send({ type:'question', q:current.q, options:current.options, mode:current.mode, other:current.other });
     };
 
-    function showQuestion(q, options){
+    function showQuestion(q, options, other){
       const isText = !options || !options.length;
-      current = { q, options: isText ? null : options, mode: isText ? 'text' : 'choice', revealed:false };
+      current = { q, options: isText ? null : options, mode: isText ? 'text' : 'choice', other: !isText && !!other, revealed:false };
       votes.clear();
-      transport.send({ type:'question', q, options: current.options, mode: current.mode });
+      transport.send({ type:'question', q, options: current.options, mode: current.mode, other: current.other });
+      const otherPre = current.other
+        ? `<div class="prebar" style="background:#3a3846;color:var(--muted)"><span class="kk">✎</span><span>其他（自由填答）</span></div>`
+        : '';
       const middle = isText
         ? `<div class="hint" style="font-size:20px;padding:18px 0;">✏ 文字題：學生正在打字回答。收到幾則看上方「已投」。<br>看好內容後按 CHECK 上牆——<b>文字題不會自動開牌</b>。</div>`
         : `<div class="prebars">${options.map((o,i)=>`
-        <div class="prebar c${i%6}"><span class="kk">${'ABCD'[i]||i+1}</span><span>${esc(o)}</span></div>`).join('')}</div>`;
+        <div class="prebar c${i%6}"><span class="kk">${'ABCD'[i]||i+1}</span><span>${esc(o)}</span></div>`).join('')}${otherPre}</div>`;
       stage.innerHTML = `
         <div class="bigq">${esc(q)}</div>
         ${middle}
@@ -533,13 +590,30 @@ function esc(s){ return String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;'
         return;
       }
 
+      stage.innerHTML = `<div class="bigq">${esc(current.q)}</div><div id="res"></div>
+        <div class="btn-row"><button class="btn big" id="next">下一題</button></div>`;
+
+      if(current.other){
+        // 固定選項各一格 + 最後一格「其他」；votes 值為數字或 {t:text}
+        const counts = current.options.map(()=>0).concat([0]);
+        const others = [];
+        votes.forEach(v => {
+          if(v && typeof v === 'object' && typeof v.t === 'string'){ counts[counts.length-1]++; others.push(v.t); }
+          else if(counts[v]!==undefined) counts[v]++;
+        });
+        current.counts = counts;
+        transport.send({ type:'reveal', counts, others });
+        logResult({ counts, others });
+        renderResult(stage.querySelector('#res'), current.options, counts, undefined, others);
+        stage.querySelector('#next').onclick = next;
+        return;
+      }
+
       const counts = current.options.map(()=>0);
       votes.forEach(c => { if(counts[c]!==undefined) counts[c]++; });
       current.counts = counts;
       transport.send({ type:'reveal', counts });
       logResult(counts);
-      stage.innerHTML = `<div class="bigq">${esc(current.q)}</div><div id="res"></div>
-        <div class="btn-row"><button class="btn big" id="next">下一題</button></div>`;
       renderResult(stage.querySelector('#res'), current.options, counts);
       stage.querySelector('#next').onclick = next;
     }
@@ -580,13 +654,14 @@ function esc(s){ return String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;'
 
     transport.onMessage(m => {
       if(m.type === 'vote' && current && current.mode !== 'text' && !current.revealed){
-        votes.set(m.uid, m.choice); updateStats();
+        const v = m.choice === 'other' ? { t: String(m.text||'').trim().slice(0,80) } : m.choice;
+        votes.set(m.uid, v); updateStats();
       }
       if(m.type === 'answer' && current && current.mode === 'text' && !current.revealed){
         votes.set(m.uid, String(m.text||'').trim().slice(0, 80)); updateStats();
       }
       if(m.type === 'hello' && current && !current.revealed){
-        transport.send({ type:'question', q:current.q, options:current.options, mode:current.mode });
+        transport.send({ type:'question', q:current.q, options:current.options, mode:current.mode, other:current.other });
       }
     });
 
@@ -614,7 +689,7 @@ function esc(s){ return String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;'
         qIndex = idx;
         root.querySelectorAll('#qlist li').forEach(x=>x.classList.remove('sel'));
         li.classList.add('sel');
-        showQuestion(item.q, item.options); // 文字題 item.options 為 undefined，showQuestion 已支援
+        showQuestion(item.q, item.options, item.other); // 文字題 item.options 為 undefined，showQuestion 已支援
       };
       qItems.push(li);
       list.appendChild(li);
@@ -695,9 +770,9 @@ function esc(s){ return String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;'
       const el = stage.querySelector('#cnt'); if(el) el.textContent = c;
     };
 
-    function showQuestion(q, options, mode){
+    function showQuestion(q, options, mode, other){
       if(current && current.q === q) return; // 重播同題不覆蓋已選狀態
-      current = { q, options, mode }; myChoice = null;
+      current = { q, options, mode, other }; myChoice = null;
 
       // 文字題：輸入框＋送出（可重送修改，同人以最後一則為準）
       if(mode === 'text' || !options || !options.length){
@@ -722,25 +797,45 @@ function esc(s){ return String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;'
           <span class="k k${i}">${'ABCD'[i]||i+1}</span><span class="txt">${esc(o)}</span>
         </button>`).join('');
       // 奇數選項用單欄避免尾巴孤塊；偶數維持 2×2 滿版
+      const otherCard = other
+        ? `<div class="othercard">
+             <div class="othercard-lab">✎ 其他：想說什麼自己打</div>
+             <div class="othercard-row">
+               <input id="otherinput" maxlength="80" placeholder="打一句話（80 字內）…">
+               <button class="opt-btn c5 otherbtn" id="othersend">送出</button>
+             </div>
+           </div>`
+        : '';
       stage.innerHTML = `<div class="bigq">${esc(q)}</div>
         <div class="opts${options.length%2?' one-col':''}">${opts}</div>
+        ${otherCard}
         <div class="voted-tag hidden" id="vtag">已投票 ✓　可以改票</div>`;
-      stage.querySelectorAll('.opt-btn').forEach(b => b.onclick = () => {
+      stage.querySelectorAll('.opt-btn:not(.otherbtn)').forEach(b => b.onclick = () => {
         myChoice = +b.dataset.i;
         stage.querySelectorAll('.opt-btn').forEach(x=>x.classList.remove('picked'));
         b.classList.add('picked');
         stage.querySelector('#vtag').classList.remove('hidden');
         transport.send({ type:'vote', choice: myChoice, uid: UID });
       });
+      if(other){
+        stage.querySelector('#othersend').onclick = () => {
+          const t = stage.querySelector('#otherinput').value.trim().slice(0,80);
+          if(!t) return;
+          myChoice = { t };
+          stage.querySelectorAll('.opt-btn:not(.otherbtn)').forEach(x=>x.classList.remove('picked'));
+          stage.querySelector('#vtag').classList.remove('hidden');
+          transport.send({ type:'vote', choice:'other', text:t, uid: UID });
+        };
+      }
     }
 
     transport.onMessage(m => {
-      if(m.type === 'question') showQuestion(m.q, m.options, m.mode);
+      if(m.type === 'question') showQuestion(m.q, m.options, m.mode, m.other);
       else if(m.type === 'reset') waiting();
       else if(m.type === 'reveal' && current){
         stage.innerHTML = `<div class="bigq">${esc(current.q)}</div><div id="res"></div>`;
         if(m.mode === 'text') renderWall(stage.querySelector('#res'), m.texts);
-        else renderResult(stage.querySelector('#res'), current.options, m.counts, myChoice);
+        else renderResult(stage.querySelector('#res'), current.options, m.counts, myChoice, m.others);
       }
     });
 
