@@ -516,6 +516,13 @@ function esc(s){ return String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;'
     const joinURL = location.origin + location.pathname + '?room=' + encodeURIComponent(ROOM);
     root.querySelector('#joinurl').textContent = joinURL;
     drawQR(root.querySelector('#qr'), joinURL);
+    // 防呆：老師台跑在本機網址時，QR 掃出來手機連不上——直接警告
+    if(/^(127\.|localhost|192\.168\.|10\.|file)/.test(location.hostname || location.protocol)){
+      const warn = document.createElement('div');
+      warn.style.cssText = 'color:#ff5b7e;font-size:14px;font-weight:800;margin-top:8px;line-height:1.5;';
+      warn.textContent = '⚠ 你現在開的是本機網址，手機掃這個 QR 連不上！正式上課請從 youming3853885.github.io/ai-camp-2026/ 開老師台。';
+      root.querySelector('.join-box').appendChild(warn);
+    }
 
     // 側欄收合／展開（投影時把整個畫面留給舞台）
     root.querySelector('#collapseSide').onclick = () => root.classList.add('side-collapsed');
