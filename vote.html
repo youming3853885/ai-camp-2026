@@ -213,6 +213,20 @@
   .voted-tag{text-align:center; margin-top:20px; font-size:18px; color:var(--c2); font-weight:800;}
   .youpicked{text-align:center; margin-top:22px; font-size:20px; color:var(--c3); font-weight:800;}
 
+  /* ===== 文字題（開放回答／文字牆） ===== */
+  .askbox{margin-top:20px; display:flex; flex-direction:column; gap:14px;}
+  .askbox textarea{
+    background:var(--panel2); color:var(--ink); border:1px solid var(--line);
+    border-radius:14px; padding:16px; font-size:22px; font-family:inherit; resize:none;
+  }
+  .askbox .send{min-height:64px; justify-content:center; text-align:center; font-size:24px;}
+  .wall{display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:12px; margin-top:14px;}
+  .wall .say{
+    background:var(--panel); border:1px solid var(--line);
+    border-radius:12px; padding:14px 16px 12px; font-size:20px; font-weight:600;
+    word-break:break-word; border-bottom-width:4px; border-bottom-style:solid;
+  }
+
   @media (max-width:720px){
     .host-grid{grid-template-columns:1fr;}
     .join-box{position:static; max-width:none; margin-top:18px;}
@@ -348,6 +362,16 @@ function drawQR(el, text){
   el.innerHTML = ''; el.appendChild(cvs);
 }
 
+/* ================= 文字牆（老師 / 學生共用） ================= */
+function renderWall(container, texts){
+  if(!texts || !texts.length){
+    container.innerHTML = '<div class="hint" style="text-align:center;padding:30px 0;font-size:20px;">沒有收到任何回答</div>';
+    return;
+  }
+  container.innerHTML = '<div class="wall">' + texts.map((t,i)=>
+    `<div class="say" style="border-bottom-color:var(--c${i%6})">${esc(t)}</div>`).join('') + '</div>';
+}
+
 /* ================= 結果圖（老師 / 學生共用） ================= */
 function renderResult(container, options, counts, myChoice){
   const total = counts.reduce((a,b)=>a+b, 0) || 1;
@@ -422,7 +446,7 @@ function esc(s){ return String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;'
           <div class="ptitle">選一題 <button id="collapseSide" class="fold" title="收合側欄">⟨ 收合</button></div>
           <ul id="qlist" class="qlist"><li>載入題目中…</li></ul>
           <div class="ptitle" style="margin-top:16px;">或自訂題目</div>
-          <textarea id="custom" placeholder="第一行：題目&#10;第二行：選項（用逗號分隔）&#10;例如：&#10;你今天午餐吃什麼？&#10;便當,麵,不吃"></textarea>
+          <textarea id="custom" placeholder="第一行：題目&#10;第二行：選項（用逗號分隔）&#10;只打一行＝文字題，學生自由打字回答&#10;例如：&#10;你今天午餐吃什麼？&#10;便當,麵,不吃"></textarea>
           <button class="btn ghost" id="useCustom" style="margin-top:10px;font-size:16px;padding:11px 20px;">用這題</button>
           <p class="hint" id="loadHint"></p>
           <div class="join-box">
@@ -460,24 +484,27 @@ function esc(s){ return String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;'
       root.querySelector('#s-online').textContent = online;
       root.querySelector('#s-voted').textContent = votes.size;
       root.querySelector('#s-need').textContent = online;
-      // 自動開牌：已投 ≥ 在線且在線>0，且尚未開牌
-      if(current && !current.revealed && online>0 && votes.size >= online) reveal();
+      // 自動開牌：已投 ≥ 在線且在線>0，且尚未開牌（文字題不自動開牌——內容要先過老師的眼睛）
+      if(current && !current.revealed && current.mode !== 'text' && online>0 && votes.size >= online) reveal();
     }
     hostPeers = () => {
       updateStats();
       // 中途加入者重播當前題目
-      if(current && !current.revealed) transport.send({ type:'question', q:current.q, options:current.options });
+      if(current && !current.revealed) transport.send({ type:'question', q:current.q, options:current.options, mode:current.mode });
     };
 
     function showQuestion(q, options){
-      current = { q, options, revealed:false };
+      const isText = !options || !options.length;
+      current = { q, options: isText ? null : options, mode: isText ? 'text' : 'choice', revealed:false };
       votes.clear();
-      transport.send({ type:'question', q, options });
-      const prebars = options.map((o,i)=>`
-        <div class="prebar c${i%6}"><span class="kk">${'ABCD'[i]||i+1}</span><span>${esc(o)}</span></div>`).join('');
+      transport.send({ type:'question', q, options: current.options, mode: current.mode });
+      const middle = isText
+        ? `<div class="hint" style="font-size:20px;padding:18px 0;">✏ 文字題：學生正在打字回答。收到幾則看上方「已投」。<br>看好內容後按 CHECK 上牆——<b>文字題不會自動開牌</b>。</div>`
+        : `<div class="prebars">${options.map((o,i)=>`
+        <div class="prebar c${i%6}"><span class="kk">${'ABCD'[i]||i+1}</span><span>${esc(o)}</span></div>`).join('')}</div>`;
       stage.innerHTML = `
         <div class="bigq">${esc(q)}</div>
-        <div class="prebars">${prebars}</div>
+        ${middle}
         <div class="btn-row">
           <button class="btn big" id="reveal">CHECK</button>
           <button class="btn ghost" id="next">下一題</button>
@@ -490,6 +517,19 @@ function esc(s){ return String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;'
     function reveal(){
       if(!current || current.revealed) return;
       current.revealed = true;
+
+      // 文字題：把收到的回答上牆
+      if(current.mode === 'text'){
+        const texts = [...votes.values()];
+        transport.send({ type:'reveal', mode:'text', texts });
+        logResult(texts);
+        stage.innerHTML = `<div class="bigq">${esc(current.q)}</div><div id="res"></div>
+          <div class="btn-row"><button class="btn big" id="next">下一題</button></div>`;
+        renderWall(stage.querySelector('#res'), texts);
+        stage.querySelector('#next').onclick = next;
+        return;
+      }
+
       const counts = current.options.map(()=>0);
       votes.forEach(c => { if(counts[c]!==undefined) counts[c]++; });
       current.counts = counts;
@@ -530,22 +570,27 @@ function esc(s){ return String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;'
     }
 
     transport.onMessage(m => {
-      if(m.type === 'vote' && current && !current.revealed){
+      if(m.type === 'vote' && current && current.mode !== 'text' && !current.revealed){
         votes.set(m.uid, m.choice); updateStats();
       }
+      if(m.type === 'answer' && current && current.mode === 'text' && !current.revealed){
+        votes.set(m.uid, String(m.text||'').trim().slice(0, 80)); updateStats();
+      }
       if(m.type === 'hello' && current && !current.revealed){
-        transport.send({ type:'question', q:current.q, options:current.options });
+        transport.send({ type:'question', q:current.q, options:current.options, mode:current.mode });
       }
     });
 
     // 自訂題目
     root.querySelector('#useCustom').onclick = () => {
       const lines = root.querySelector('#custom').value.trim().split('\n').filter(l=>l.trim());
-      if(lines.length < 2){ alert('請至少輸入一行題目 + 一行選項'); return; }
+      if(!lines.length){ alert('請輸入題目'); return; }
       const q = lines[0].trim();
-      const options = lines[1].split(/[,，]/).map(s=>s.trim()).filter(Boolean);
-      if(options.length < 2){ alert('至少要兩個選項（用逗號分隔）'); return; }
       root.querySelectorAll('#qlist li').forEach(li=>li.classList.remove('sel'));
+      // 只有一行 = 開放文字題（學生打字回答，CHECK 後上牆）
+      if(lines.length === 1){ showQuestion(q, null); return; }
+      const options = lines[1].split(/[,，]/).map(s=>s.trim()).filter(Boolean);
+      if(options.length < 2){ alert('至少要兩個選項（用逗號分隔）；或只打一行題目變成文字題'); return; }
       showQuestion(q, options);
     };
 
@@ -606,9 +651,28 @@ function esc(s){ return String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;'
       const el = stage.querySelector('#cnt'); if(el) el.textContent = c;
     };
 
-    function showQuestion(q, options){
+    function showQuestion(q, options, mode){
       if(current && current.q === q) return; // 重播同題不覆蓋已選狀態
-      current = { q, options }; myChoice = null;
+      current = { q, options, mode }; myChoice = null;
+
+      // 文字題：輸入框＋送出（可重送修改，同人以最後一則為準）
+      if(mode === 'text' || !options || !options.length){
+        current.mode = 'text';
+        stage.innerHTML = `<div class="bigq">${esc(q)}</div>
+          <div class="askbox">
+            <textarea id="myans" maxlength="80" rows="3" placeholder="打字回答（80 字內）…"></textarea>
+            <button class="opt-btn c1 send" id="sendans">送出</button>
+          </div>
+          <div class="voted-tag hidden" id="vtag">已送出 ✓　改完可以再按一次送出</div>`;
+        stage.querySelector('#sendans').onclick = () => {
+          const t = stage.querySelector('#myans').value.trim().slice(0, 80);
+          if(!t) return;
+          transport.send({ type:'answer', text: t, uid: UID });
+          stage.querySelector('#vtag').classList.remove('hidden');
+        };
+        return;
+      }
+
       const opts = options.map((o,i)=>`
         <button class="opt-btn c${i%6}" data-i="${i}">
           <span class="k k${i}">${'ABCD'[i]||i+1}</span><span class="txt">${esc(o)}</span>
@@ -627,11 +691,12 @@ function esc(s){ return String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;'
     }
 
     transport.onMessage(m => {
-      if(m.type === 'question') showQuestion(m.q, m.options);
+      if(m.type === 'question') showQuestion(m.q, m.options, m.mode);
       else if(m.type === 'reset') waiting();
       else if(m.type === 'reveal' && current){
         stage.innerHTML = `<div class="bigq">${esc(current.q)}</div><div id="res"></div>`;
-        renderResult(stage.querySelector('#res'), current.options, m.counts, myChoice);
+        if(m.mode === 'text') renderWall(stage.querySelector('#res'), m.texts);
+        else renderResult(stage.querySelector('#res'), current.options, m.counts, myChoice);
       }
     });
 
