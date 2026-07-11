@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI 建站一日營</title>
+  <meta name="description" content="6 小時，帶一個公開網址回家。這個網站就是用今天要教的方法做的。">
+
+  <!-- 全站無外部字型／框架／CDN，校網不穩也能開。深色投影主題，正文 ≥ 20px。 -->
+  <style>
+    :root {
+      --bg: #0b1221;          /* 深底 */
+      --bg2: #111b30;         /* 卡片底 */
+      --line: #22304d;        /* 邊框 */
+      --ink: #eef3fb;         /* 主要文字 */
+      --muted: #9fb0cc;       /* 次要文字 */
+      --accent: #ffd23f;      /* 亮色 accent（暖黃，深底上跳） */
+      --accent2: #38e1c4;     /* 輔助亮色（青綠） */
+      --radius: 16px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: system-ui, "Microsoft JhengHei", "PingFang TC", sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+      line-height: 1.7;
+      font-size: 21px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: var(--accent2); }
+
+    /* ---------- Hero ---------- */
+    .hero {
+      padding: 84px 24px 68px;
+      text-align: center;
+      background:
+        radial-gradient(60% 90% at 50% 0%, rgba(255,210,63,.14), transparent 70%),
+        var(--bg);
+      border-bottom: 1px solid var(--line);
+    }
+    .kicker {
+      display: inline-block;
+      font-size: 18px;
+      letter-spacing: 3px;
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      border-radius: 999px;
+      padding: 6px 18px;
+      margin-bottom: 26px;
+    }
+    .hero h1 {
+      margin: 0 0 18px;
+      font-size: clamp(44px, 9vw, 84px);
+      line-height: 1.05;
+      letter-spacing: 2px;
+    }
+    .hero h1 .hl { color: var(--accent); }
+    .hero .sub {
+      margin: 0 auto 22px;
+      max-width: 720px;
+      font-size: clamp(22px, 3.4vw, 30px);
+      color: var(--ink);
+    }
+    .hero .meta {
+      margin: 0 auto;
+      max-width: 640px;
+      font-size: 20px;
+      color: var(--muted);
+    }
+    .hero .meta b { color: var(--accent2); }
+
+    /* ---------- Layout ---------- */
+    main { max-width: 900px; margin: 0 auto; padding: 20px 20px 40px; }
+    section { margin: 60px 0; }
+    h2 {
+      font-size: clamp(28px, 4.5vw, 40px);
+      margin: 0 0 24px;
+      padding-left: 16px;
+      border-left: 6px solid var(--accent);
+    }
+
+    /* ---------- 議程時間軸 ---------- */
+    .timeline { margin: 0; padding: 0; list-style: none; }
+    .tl-item {
+      position: relative;
+      padding: 0 0 14px 34px;
+      border-left: 2px solid var(--line);
+    }
+    .tl-item:last-child { border-left-color: transparent; }
+    .tl-item::before {
+      content: "";
+      position: absolute; left: -9px; top: 22px;
+      width: 16px; height: 16px; border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 0 5px rgba(255,210,63,.15);
+    }
+    .tl-item.is-break::before { background: var(--muted); box-shadow: none; }
+
+    details.slot {
+      background: var(--bg2);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    details.slot[open] { border-color: var(--accent); }
+    details.slot > summary {
+      list-style: none;
+      cursor: pointer;
+      padding: 16px 20px;
+      display: flex;
+      align-items: baseline;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    details.slot > summary::-webkit-details-marker { display: none; }
+    .time {
+      color: var(--accent);
+      font-variant-numeric: tabular-nums;
+      font-weight: 700;
+      font-size: 20px;
+      white-space: nowrap;
+    }
+    .title { font-size: 22px; font-weight: 700; flex: 1 1 220px; }
+    .desc { color: var(--muted); font-size: 18px; flex-basis: 100%; }
+    .chev { color: var(--muted); font-size: 18px; transition: transform .2s; }
+    details.slot[open] .chev { transform: rotate(90deg); color: var(--accent); }
+
+    /* 任務卡（展開內容） */
+    .task {
+      margin: 0 20px 20px;
+      padding: 16px 20px;
+      background: rgba(56,225,196,.08);
+      border: 1px solid var(--accent2);
+      border-radius: 12px;
+    }
+    .task .tag {
+      display: inline-block;
+      font-size: 16px;
+      letter-spacing: 2px;
+      color: var(--accent2);
+      margin-bottom: 6px;
+    }
+    .task p { margin: 0; font-size: 20px; }
+
+    /* 午休段：無任務卡，樣式淡化 */
+    .break {
+      background: var(--bg2);
+      border: 1px dashed var(--line);
+      border-radius: var(--radius);
+      padding: 14px 20px;
+      color: var(--muted);
+      display: flex;
+      gap: 16px;
+      align-items: baseline;
+    }
+
+    /* ---------- 互動大按鈕 ---------- */
+    .actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    .btn {
+      display: block;
+      text-align: center;
+      text-decoration: none;
+      padding: 32px 20px;
+      border-radius: var(--radius);
+      font-size: 30px;
+      font-weight: 700;
+      border: 2px solid transparent;
+      transition: transform .12s, box-shadow .12s;
+    }
+    .btn:hover { transform: translateY(-3px); }
+    .btn-vote {
+      background: var(--accent);
+      color: #14203a;
+      box-shadow: 0 8px 30px rgba(255,210,63,.25);
+    }
+    .btn-handout {
+      background: transparent;
+      color: var(--ink);
+      border-color: var(--accent2);
+    }
+    .btn small { display: block; font-size: 17px; font-weight: 400; opacity: .8; margin-top: 6px; }
+
+    /* ---------- 雙成果 ---------- */
+    .takeaways { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .ta {
+      background: var(--bg2);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 26px 24px;
+    }
+    .ta .num {
+      font-size: 40px;
+      line-height: 1;
+      color: var(--accent);
+      font-weight: 800;
+    }
+    .ta h3 { margin: 12px 0 8px; font-size: 24px; }
+    .ta p { margin: 0; color: var(--muted); font-size: 19px; }
+
+    /* ---------- Footer ---------- */
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 40px 24px 56px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 19px;
+    }
+    footer .cert { color: var(--ink); }
+    footer .cert b { color: var(--accent); }
+    footer .ipas { margin-top: 14px; font-size: 18px; }
+
+    /* ---------- 手機 ---------- */
+    @media (max-width: 640px) {
+      body { font-size: 20px; }
+      .hero { padding: 56px 18px 44px; }
+      .actions, .takeaways { grid-template-columns: 1fr; }
+      .btn { font-size: 26px; padding: 26px 18px; }
+      details.slot > summary { padding: 14px 16px; }
+      .task { margin: 0 16px 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== Hero ===== -->
+  <header class="hero">
+    <span class="kicker">AI 素養 · vibe coding · 部署上線</span>
+    <h1>AI 建站<span class="hl">一日營</span></h1>
+    <p class="sub">6 小時，帶一個公開網址回家</p>
+    <p class="meta">你現在看的這個網站，<b>就是用今天要教的方法做的</b>。</p>
+  </header>
+
+  <main>
+
+    <!-- ===== 今日議程 ===== -->
+    <section id="agenda">
+      <h2>今日議程</h2>
+      <ul class="timeline">
+
+        <li class="tl-item">
+          <details class="slot">
+            <summary>
+              <span class="time">9:00–9:30</span>
+              <span class="title">震撼開場</span>
+              <span class="chev" aria-hidden="true">▸</span>
+              <span class="desc">老師現場用 Claude Code 五分鐘生一個網站。</span>
+            </summary>
+            <div class="task">
+              <span class="tag">你的任務</span>
+              <p>先連上教室 Wi-Fi，打開兩個分頁：Gemini（gemini.google.com）和這個網站。看老師表演就好。</p>
+            </div>
+          </details>
+        </li>
+
+        <li class="tl-item">
+          <details class="slot">
+            <summary>
+              <span class="time">9:30–10:30</span>
+              <span class="title">AI 素養 ＋ 提示詞實戰</span>
+              <span class="chev" aria-hidden="true">▸</span>
+              <span class="desc">角色／脈絡／格式三要素、迭代追問、辨識幻覺。</span>
+            </summary>
+            <div class="task">
+              <span class="tag">你的任務</span>
+              <p>打開講義第 1 篇，複製「AI 訪談你」的 prompt 貼給 Gemini，跟它聊出你的自介 —— 下午網頁要用。</p>
+            </div>
+          </details>
+        </li>
+
+        <li class="tl-item">
+          <details class="slot">
+            <summary>
+              <span class="time">10:40–12:00</span>
+              <span class="title">vibe coding 初體驗</span>
+              <span class="chev" aria-hidden="true">▸</span>
+              <span class="desc">Gemini Canvas 生你的第一個網頁。</span>
+            </summary>
+            <div class="task">
+              <span class="tag">你的任務</span>
+              <p>用講義的起手 prompt 讓 Canvas 生一頁網站，然後用「說的」改三個地方：標題、主色、一張卡片。</p>
+            </div>
+          </details>
+        </li>
+
+        <li class="tl-item is-break">
+          <div class="break">
+            <span class="time">12:00–13:00</span>
+            <span>午休 · 吃飽再戰</span>
+          </div>
+        </li>
+
+        <li class="tl-item">
+          <details class="slot">
+            <summary>
+              <span class="time">13:00–14:10</span>
+              <span class="title">主專案：學習歷程網頁</span>
+              <span class="chev" aria-hidden="true">▸</span>
+              <span class="desc">把模板變成你自己的作品。</span>
+            </summary>
+            <div class="task">
+              <span class="tag">你的任務</span>
+              <p>打開模板骨架（在講義裡，整份複製），把裡面<strong>所有【請填入】</strong>換成你的內容——共五個區塊（用上午的自介 ＋ 截圖），丟給 Canvas 迭代到你滿意。</p>
+            </div>
+          </details>
+        </li>
+
+        <li class="tl-item">
+          <details class="slot">
+            <summary>
+              <span class="time">14:10–15:00</span>
+              <span class="title">部署上線</span>
+              <span class="chev" aria-hidden="true">▸</span>
+              <span class="desc">GitHub Pages 拿到你的公開網址。</span>
+            </summary>
+            <div class="task">
+              <span class="tag">你的任務</span>
+              <p>照講義第 2 篇：GitHub 建 repo → 上傳 index.html → 開 Pages → 拿到你的公開網址。舉手讓老師看你的網址！</p>
+            </div>
+          </details>
+        </li>
+
+        <li class="tl-item">
+          <details class="slot">
+            <summary>
+              <span class="time">15:00–15:35</span>
+              <span class="title">NotebookLM 打包 PDF</span>
+              <span class="chev" aria-hidden="true">▸</span>
+              <span class="desc">把今天的東西變成一份學習報告。</span>
+            </summary>
+            <div class="task">
+              <span class="tag">你的任務</span>
+              <p>把講義 ＋ 你的筆記餵給 NotebookLM，生成學習報告，加上反思和你的網站 QR code，匯出 PDF。</p>
+            </div>
+          </details>
+        </li>
+
+        <li class="tl-item">
+          <details class="slot">
+            <summary>
+              <span class="time">15:35–16:00</span>
+              <span class="title">發表 ＋ 認證</span>
+              <span class="chev" aria-hidden="true">▸</span>
+              <span class="desc">唸出你的網址，領走今天的成果。</span>
+            </summary>
+            <div class="task">
+              <span class="tag">你的任務</span>
+              <p>輪流唸出你的網址 ＋ 一句今天最有感的事。想拿認證的看下方認證說明。</p>
+            </div>
+          </details>
+        </li>
+
+      </ul>
+    </section>
+
+    <!-- ===== 互動區 ===== -->
+    <section id="interact">
+      <h2>現在動手</h2>
+      <div class="actions">
+        <a class="btn btn-vote" id="link-vote" href="vote.html?room=class1">📊 現在投票<small>把手機拿出來</small></a>
+        <a class="btn btn-handout" id="link-handout" href="#" target="_blank" rel="noopener">📖 學生講義<small>今天照著走</small></a>
+      </div>
+    </section>
+
+    <!-- ===== 雙成果 ===== -->
+    <section id="takeaways">
+      <h2>今天你會帶走</h2>
+      <div class="takeaways">
+        <div class="ta">
+          <div class="num">①</div>
+          <h3>一個公開網址</h3>
+          <p>部署上線、任何人都打得開的個人網站，履歷／社群都能貼。</p>
+        </div>
+        <div class="ta">
+          <div class="num">②</div>
+          <h3>一份學習歷程 PDF</h3>
+          <p>可直接上傳學習歷程平台的成果報告，含你的網站與反思。</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===== Footer ===== -->
+  <footer>
+    <p class="cert">課後通過<b>素養筆試</b> ＋ <b>48 小時實作任務</b>，即發「AI 應用能力認證（初級）」。</p>
+    <p class="ipas">想考國家級證照？問老師 iPAS 初級怎麼準備。</p>
+  </footer>
+
+  <script>
+    /* ============================================================
+       老師只改這裡：開課前把 handout 換成真正的講義網址。
+       vote 通常不用動（同一份教材裡的投票頁）。
+       ============================================================ */
+    const LINKS = {
+      vote: 'vote.html?room=class1',
+      handout: 'https://sheer-gymnast-5b2.notion.site/AI-39acd50b225480dfa574c6a673cf2da3'   // Notion 學生講義（公開發布頁）
+    };
+
+    document.getElementById('link-vote').href = LINKS.vote;
+    document.getElementById('link-handout').href = LINKS.handout;
+  </script>
+
+</body>
+</html>
