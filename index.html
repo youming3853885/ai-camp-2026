@@ -6,536 +6,505 @@
   <title>AI 建站一日營</title>
   <meta name="description" content="6 小時，帶一個公開網址回家。這個網站就是用今天要教的方法做的。">
 
-  <!-- 全站無外部字型／框架／CDN，校網不穩也能開。瑞士課表海報主題，正文 ≥ 20px。 -->
+  <!-- 全站無外部字型／框架／CDN，校網不穩也能開。終端機控制台主題，中文內文 ≥ 20px。 -->
   <style>
     :root {
-      --paper: #f4f1ea;      /* 紙白底 */
-      --ink: #111111;        /* 近黑 */
-      --blue: #002FA7;       /* 克萊因藍 IKB · 唯一 accent */
-      --rule: #111111;       /* 分隔線 */
-      --muted: #6b6a63;      /* 淡化（午休） */
+      --bg: #0a0a0a;         /* 近純黑 */
+      --panel: #0d0f0d;      /* 視窗底 */
+      --panel2: #080a08;     /* 更深的框底 */
+      --ink: #c9d1c9;        /* 內文淺灰綠 */
+      --bright: #eafff0;     /* 高亮白綠 */
+      --dim: #5c6a5c;        /* 淡化 */
+      --faint: #3a453a;      /* 更淡（午休 IDLE） */
+      --acc: #33ff66;        /* 磷光綠 · 唯一 accent */
+      --acc-dim: #1f9c40;    /* 暗綠 */
+      --str: #9fe6ac;        /* 字串綠 */
+      --line: #1a2119;       /* 分隔線 */
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
-    html, body { background: var(--paper); color: var(--ink); }
+    html, body { background: var(--bg); color: var(--ink); }
     body {
       font-family: "Noto Sans TC", "Microsoft JhengHei", "PingFang TC", system-ui, -apple-system, "Segoe UI", sans-serif;
       -webkit-font-smoothing: antialiased;
-      font-feature-settings: "tnum" 1;
-      line-height: 1.5;
-      font-size: 21px;
-    }
-    .num { font-variant-numeric: tabular-nums; }
-
-    main { max-width: 1280px; margin: 0 auto; padding: 48px 56px 72px; }
-
-    /* ---------- masthead ---------- */
-    .mast {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      padding-bottom: 14px;
-      border-bottom: 4px solid var(--rule);
-      gap: 24px;
-    }
-    .mast .lot {
-      font-size: 13px;
-      letter-spacing: .24em;
-      font-weight: 900;
-      text-transform: uppercase;
-    }
-    .mast .meta {
-      font-size: 13px;
-      letter-spacing: .12em;
-      font-weight: 800;
-      text-align: right;
       line-height: 1.6;
-      white-space: nowrap;
+      font-size: 21px;
+      position: relative;
     }
-    .mast .meta b { color: var(--blue); }
+    /* 等寬字只給英文/數字/裝飾 */
+    .mono {
+      font-family: "Cascadia Code", "Consolas", "SFMono-Regular", ui-monospace, monospace;
+      font-variant-numeric: tabular-nums;
+    }
 
-    /* ---------- hero ---------- */
-    .hero {
-      display: grid;
-      grid-template-columns: 8fr 4fr;
-      column-gap: 40px;
-      align-items: end;
-      padding: 40px 0 30px;
-      border-bottom: 4px solid var(--rule);
+    /* 極淡掃描線 */
+    body::after {
+      content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 99;
+      background: repeating-linear-gradient(0deg, rgba(255,255,255,.05) 0 1px, transparent 1px 3px);
+      opacity: .04; mix-blend-mode: overlay;
     }
-    .kicker {
-      font-size: 14px;
-      letter-spacing: .3em;
-      font-weight: 900;
-      text-transform: uppercase;
-      color: var(--blue);
-      margin-bottom: 16px;
+    /* 淡角落暈影 */
+    body::before {
+      content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 98;
+      background: radial-gradient(120% 80% at 50% 35%, transparent 58%, rgba(0,0,0,.5));
     }
+
+    main { max-width: 1180px; margin: 0 auto; padding: 40px 28px 72px; }
+
+    /* ── 終端視窗 chrome ── */
+    .win {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      box-shadow: 0 0 0 1px #000, inset 0 0 60px rgba(0,0,0,.4);
+      position: relative;
+      margin-bottom: 28px;
+    }
+    .titlebar {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 14px;
+      border-bottom: 1px solid var(--line);
+      background: #0b0d0b; color: var(--dim);
+      font-size: 13px;
+    }
+    .dots { display: flex; gap: 6px; margin-right: 4px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; border: 1px solid #000; background: var(--faint); }
+    .dot.g { background: var(--acc-dim); }
+    .tb-path { color: var(--dim); }
+    .tb-right { margin-left: auto; color: var(--faint); letter-spacing: .05em; }
+
+    .prompt { color: var(--acc); }
+    .comment { color: var(--faint); }
+    .str { color: var(--str); }
+    .ok { color: var(--acc); }
+
+    /* 打字游標 */
+    .cur {
+      display: inline-block; width: 9px; height: 1.05em;
+      background: var(--acc); transform: translateY(3px);
+      animation: blink 1s steps(1) infinite;
+    }
+    .cur.small { width: 8px; height: .95em; }
+    @keyframes blink { 50% { opacity: 0; } }
+
+    /* ── HERO ── */
+    .hero .body { padding: 26px 26px 30px; }
+    .heroline { display: flex; gap: 30px; align-items: flex-end; flex-wrap: wrap; }
+    .heroL { flex: 1 1 420px; min-width: 0; }
+
+    /* $ claude "…" 打字動畫（唯一動畫） */
+    .cmdline { font-size: 18px; white-space: nowrap; overflow: hidden; }
+    .typed {
+      display: inline-block; overflow: hidden; white-space: nowrap;
+      vertical-align: bottom; width: 0;
+      animation: type 2.4s steps(30, end) .3s forwards;
+    }
+    @keyframes type { to { width: 15.5em; } }
+
     .hero h1 {
-      font-size: clamp(64px, 8.5vw, 116px);
-      font-weight: 900;
-      letter-spacing: -.03em;
-      line-height: .9;
+      font-size: clamp(48px, 8vw, 84px);
+      font-weight: 900; letter-spacing: -.02em; line-height: 1.02;
+      color: var(--bright); text-shadow: 0 0 24px rgba(51,255,102,.16);
+      margin: 18px 0 10px;
     }
-    .hero .sub {
-      margin-top: 20px;
-      font-size: clamp(24px, 3vw, 32px);
-      font-weight: 900;
-      letter-spacing: -.01em;
-    }
-    .hero .fine {
-      margin-top: 14px;
-      font-size: 20px;
-      font-weight: 500;
-      max-width: 40ch;
-      line-height: 1.5;
-    }
-    .hero .fine b {
-      color: var(--blue);
-      font-weight: 800;
-      box-shadow: inset 0 -8px 0 rgba(0,47,167,.14);
-    }
-    .hero-side {
-      border-left: 3px solid var(--rule);
-      padding-left: 28px;
-      align-self: stretch;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-    }
-    .hero-side .lbl {
-      font-size: 12px;
-      letter-spacing: .24em;
-      font-weight: 900;
-      text-transform: uppercase;
-      margin-bottom: 12px;
-    }
-    .hero-side .bignum {
-      font-size: clamp(96px, 11vw, 148px);
-      font-weight: 900;
-      letter-spacing: -.05em;
-      line-height: .78;
-      color: var(--blue);
-    }
-    .hero-side .bignum small {
-      display: block;
-      font-size: 18px;
-      color: var(--ink);
-      letter-spacing: .02em;
-      font-weight: 800;
-      margin-top: 12px;
-      line-height: 1.4;
-    }
+    .hero h1 .k { color: var(--acc); }
+    .hero .sub { font-size: clamp(22px, 3vw, 28px); font-weight: 800; color: var(--ink); margin-bottom: 14px; }
+    .hero .sub .arrow { color: var(--acc); margin-right: 10px; }
+    .hero .fine { font-size: 20px; font-weight: 500; color: var(--ink); max-width: 42ch; line-height: 1.55; }
+    .hero .fine .self { color: var(--acc-dim); }
+    .hero .fine b { color: var(--acc); font-weight: 700; }
 
-    /* ---------- section headings ---------- */
+    /* SESSION/DURATION/OUTPUT 面板 */
+    .stamp {
+      border: 1px solid var(--line); background: var(--panel2);
+      padding: 16px 18px; font-size: 14px; color: var(--dim);
+      min-width: 230px; flex: 0 0 auto;
+      display: flex; flex-direction: column; gap: 9px;
+    }
+    .stamp .row { display: flex; justify-content: space-between; gap: 20px; letter-spacing: .06em; }
+    .stamp b { color: var(--acc); font-weight: 600; }
+    .stamp .hz { color: var(--faint); }
+
+    /* ── section 標題 ── */
     h2 {
-      font-size: 15px;
-      letter-spacing: .28em;
-      font-weight: 900;
-      text-transform: uppercase;
-      display: flex;
-      align-items: baseline;
-      gap: 16px;
-      padding: 28px 0 12px;
-      border-bottom: 2px solid var(--rule);
+      font-size: 14px; letter-spacing: .16em; font-weight: 700;
+      text-transform: uppercase; color: var(--dim);
+      display: flex; align-items: baseline; gap: 14px;
+      padding: 6px 0 16px;
     }
-    h2 .c {
-      font-size: 12px;
-      letter-spacing: .18em;
-      font-weight: 800;
-      color: var(--blue);
-      margin-left: auto;
-    }
+    h2 .hash { color: var(--acc); }
+    h2 .c { font-size: 13px; letter-spacing: .08em; color: var(--faint); margin-left: auto; }
 
-    /* ---------- 議程 ---------- */
+    /* ── 議程 = process log ── */
+    .log .body { padding: 8px 22px 22px; }
     .timeline { list-style: none; }
 
-    details.slot { border-bottom: 2px solid var(--rule); }
+    details.slot { border-bottom: 1px dashed var(--line); }
+    details.slot:last-of-type { border-bottom: 0; }
 
     details.slot > summary {
-      list-style: none;
-      cursor: pointer;
+      list-style: none; cursor: pointer;
       display: grid;
-      grid-template-columns: 3fr 6fr auto;
-      column-gap: 32px;
-      align-items: start;
-      padding: 24px 0 26px;
+      grid-template-columns: auto auto 1fr auto;
+      column-gap: 16px; align-items: baseline;
+      padding: 16px 0;
     }
     details.slot > summary::-webkit-details-marker { display: none; }
 
-    .time {
-      font-size: clamp(52px, 5.6vw, 84px);
-      font-weight: 900;
-      letter-spacing: -.05em;
-      line-height: .86;
-      white-space: nowrap;
+    .ts { color: var(--acc); font-size: 16px; flex: 0 0 auto; }
+    .lvl {
+      color: var(--faint); font-size: 12px; letter-spacing: .08em;
+      align-self: baseline; padding-top: 3px; min-width: 3.5em;
     }
-    details.slot.blue .time { color: var(--blue); }
+    details.slot.lvl-boot .lvl,
+    details.slot.lvl-ship .lvl { color: var(--acc-dim); }
 
-    .slot-body .title {
-      font-size: 24px;
-      font-weight: 900;
-      letter-spacing: -.01em;
-      line-height: 1.2;
-    }
-    .slot-body .desc {
-      margin-top: 8px;
-      font-size: 18px;
-      font-weight: 500;
-      line-height: 1.5;
-      max-width: 46ch;
-      color: var(--ink);
-    }
+    .slot-body { min-width: 0; }
+    .slot-body .title { font-size: 23px; font-weight: 800; line-height: 1.25; color: var(--bright); }
+    .slot-body .desc { margin-top: 6px; font-size: 18px; font-weight: 500; line-height: 1.5; color: var(--ink); max-width: 52ch; }
+
     .toggle {
-      font-size: 34px;
-      font-weight: 900;
-      line-height: 1;
-      color: var(--blue);
-      align-self: center;
-      user-select: none;
+      align-self: center; color: var(--acc); user-select: none;
+      font-size: 18px; letter-spacing: .04em;
     }
     details.slot[open] .toggle .plus { display: none; }
     details.slot:not([open]) .toggle .minus { display: none; }
 
-    /* 任務卡（展開內容） */
+    /* 任務卡（展開） · 綠框 TASK CARD */
     .task {
-      grid-column: 2 / 3;
-      margin: 0 0 26px;
-      border: 2px solid var(--blue);
-      padding: 16px 20px;
-      max-width: 52ch;
+      grid-column: 3 / 4;
+      margin: 2px 0 20px;
+      border: 1px solid var(--acc-dim);
+      background: rgba(51,255,102,.04);
+      padding: 14px 18px; max-width: 56ch;
     }
     .task .tag {
-      display: block;
-      font-size: 11px;
-      letter-spacing: .24em;
-      font-weight: 900;
-      text-transform: uppercase;
-      color: var(--blue);
-      margin-bottom: 8px;
+      display: block; color: var(--acc);
+      font-size: 12px; letter-spacing: .12em; margin-bottom: 8px;
     }
-    .task p { font-size: 19px; font-weight: 600; line-height: 1.5; }
-    .task strong { font-weight: 900; box-shadow: inset 0 -7px 0 rgba(0,47,167,.14); }
+    .task p { font-size: 19px; font-weight: 500; line-height: 1.55; color: var(--ink); }
+    .task strong { color: var(--bright); font-weight: 800; }
+    .task .bang { color: var(--acc); font-weight: 700; }
 
-    /* 午休段：淡化、無任務卡 */
-    .break {
-      border-bottom: 2px solid var(--rule);
-      display: grid;
-      grid-template-columns: 3fr 6fr auto;
-      column-gap: 32px;
-      align-items: baseline;
-      padding: 16px 0 18px;
-      color: var(--muted);
-    }
-    .break .time {
-      font-size: clamp(28px, 3vw, 44px);
-      color: var(--muted);
-      letter-spacing: -.03em;
-    }
-    .break .lbl {
-      font-size: 16px;
-      font-weight: 700;
-      letter-spacing: .04em;
+    /* 午休 = IDLE 灰化 */
+    details.slot.idle > summary { padding: 14px 0; opacity: .72; }
+    details.slot.idle .ts { color: var(--dim); }
+    details.slot.idle .lvl { color: var(--faint); }
+    details.slot.idle .slot-body .title { color: var(--dim); font-size: 19px; font-weight: 600; }
+    details.slot.idle .slot-body .desc { color: var(--faint); }
+
+    /* tail 結尾行 */
+    .tailline {
+      margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line);
+      font-size: 15px; color: var(--dim);
     }
 
-    /* ---------- 互動大按鈕 ---------- */
-    .actions {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
-      padding-top: 28px;
+    /* ── 互動鈕 = 鍵帽 ── */
+    .keys { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .key {
+      text-decoration: none; text-align: left;
+      border: 1px solid var(--line); background: #0c0e0c; color: var(--ink);
+      padding: 22px 22px; font-size: 24px; font-weight: 800;
+      box-shadow: 0 4px 0 #000, inset 0 1px 0 rgba(255,255,255,.03);
+      transition: transform .05s, box-shadow .05s;
+      display: flex; flex-direction: column; gap: 6px;
     }
-    .btn {
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      gap: 16px;
-      text-decoration: none;
-      padding: 26px 24px;
-      font-size: 28px;
-      font-weight: 900;
-      letter-spacing: -.01em;
+    .key:active { transform: translateY(3px); box-shadow: 0 1px 0 #000; }
+    .key .kk {
+      display: block; color: var(--faint);
+      font-size: 12px; letter-spacing: .14em; margin-bottom: 2px;
     }
-    .btn .ar { font-size: 28px; font-weight: 900; }
-    .btn small {
-      display: block;
-      font-size: 16px;
-      font-weight: 600;
-      margin-top: 8px;
-      letter-spacing: .02em;
+    .key .pfx { color: var(--acc); margin-right: 6px; }
+    .key small { font-size: 15px; font-weight: 500; color: var(--dim); letter-spacing: .01em; }
+    .key.primary {
+      border-color: var(--acc-dim); color: var(--acc);
+      background: linear-gradient(180deg, rgba(51,255,102,.08), rgba(51,255,102,.02));
+      box-shadow: 0 4px 0 #071e0e, inset 0 0 22px rgba(51,255,102,.06);
     }
-    .btn-vote {
-      background: var(--blue);
-      color: var(--paper);
-    }
-    .btn-handout {
-      background: transparent;
-      color: var(--ink);
-      border: 3px solid var(--ink);
-    }
+    .key.primary:active { box-shadow: 0 1px 0 #071e0e; }
+    .key.primary .kk { color: var(--acc-dim); }
+    .key.primary small { color: var(--acc-dim); }
 
-    /* ---------- 雙成果 ---------- */
-    .takeaways {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0;
-      border-top: 2px solid var(--rule);
+    /* ── 雙成果 ── */
+    .out2 .body { padding: 18px 22px 22px; }
+    .exit { color: var(--acc); font-size: 15px; margin-bottom: 16px; }
+    .result {
+      display: flex; gap: 16px; padding: 16px 0;
+      border-top: 1px solid var(--line);
     }
-    .ta {
-      display: grid;
-      grid-template-columns: auto 1fr;
-      column-gap: 20px;
-      align-items: start;
-      padding: 24px 24px 24px 0;
-      border-bottom: 2px solid var(--rule);
-    }
-    .ta:first-child { border-right: 2px solid var(--rule); padding-right: 32px; }
-    .ta:last-child { padding-left: 32px; }
-    .ta .n {
-      font-size: 48px;
-      font-weight: 900;
-      line-height: .8;
-      color: var(--blue);
-      letter-spacing: -.04em;
-    }
-    .ta h3 { font-size: 24px; font-weight: 900; letter-spacing: -.01em; }
-    .ta p { margin-top: 8px; font-size: 18px; font-weight: 500; line-height: 1.5; }
+    .result:first-of-type { border-top: 0; }
+    .rnum { color: var(--acc); font-weight: 700; font-size: 22px; flex: 0 0 auto; }
+    .rtxt h3 { font-size: 23px; font-weight: 800; color: var(--bright); line-height: 1.25; }
+    .rtxt p { margin-top: 6px; font-size: 18px; font-weight: 500; color: var(--dim); line-height: 1.5; }
 
-    /* ---------- Footer ---------- */
-    footer {
-      margin-top: 48px;
-      padding-top: 20px;
-      border-top: 4px solid var(--rule);
+    /* ── footer ── */
+    .foot .body { padding: 20px 22px 22px; }
+    .foot .cert { font-size: 20px; font-weight: 500; line-height: 1.6; color: var(--ink); }
+    .foot .cert b { color: var(--acc); font-weight: 700; }
+    .foot .ipas { margin-top: 12px; font-size: 18px; font-weight: 500; color: var(--dim); }
+    .foot .ipas .prompt { margin-right: 8px; }
+    .footbar {
+      margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--line);
+      display: flex; align-items: center; gap: 10px;
+      font-size: 13px; color: var(--faint); letter-spacing: .04em;
     }
-    footer .cert { font-size: 20px; font-weight: 600; line-height: 1.6; }
-    footer .cert b { color: var(--blue); font-weight: 900; }
-    footer .ipas { margin-top: 12px; font-size: 18px; font-weight: 500; color: var(--muted); }
-    footer .strip {
-      margin-top: 28px;
-      padding-top: 14px;
-      border-top: 2px solid var(--rule);
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      gap: 16px;
-      font-size: 12px;
-      font-weight: 800;
-      letter-spacing: .16em;
-      text-transform: uppercase;
-    }
-    footer .strip .blue { color: var(--blue); }
+    .footbar .g { color: var(--acc-dim); }
+    .footbar .sp { margin-left: auto; }
 
-    /* ---------- 手機 ---------- */
+    /* ── 手機 375px ── */
     @media (max-width: 640px) {
       body { font-size: 20px; }
-      main { padding: 28px 20px 48px; }
-      .mast { flex-direction: column; align-items: flex-start; gap: 10px; }
-      .mast .meta { text-align: left; }
-      .hero { grid-template-columns: 1fr; row-gap: 28px; }
-      .hero-side { border-left: 0; border-top: 3px solid var(--rule); padding-left: 0; padding-top: 20px; }
-      .hero .fine { font-size: 20px; max-width: none; }
+      main { padding: 24px 14px 48px; }
+      .win { margin-bottom: 22px; }
+      .hero .body { padding: 20px 16px 24px; }
+      .cmdline { font-size: 15px; }
+      .typed { animation: none; width: auto; }  /* 手機不裁切，避免文字被截 */
+      .heroline { gap: 22px; }
+      .stamp { min-width: 0; width: 100%; }
+      .log .body { padding: 6px 14px 18px; }
 
       details.slot > summary {
-        grid-template-columns: 1fr auto;
-        column-gap: 16px;
-        row-gap: 10px;
+        grid-template-columns: auto 1fr auto;
+        column-gap: 12px; row-gap: 6px;
       }
-      .time { font-size: clamp(48px, 15vw, 68px); }
-      .slot-body { grid-column: 1 / 3; }
-      .task { grid-column: 1 / 3; max-width: none; }
-      .break { grid-template-columns: 1fr auto; }
+      .lvl { display: none; }  /* 手機省略等級標籤避免擠爆 */
+      .slot-body { grid-column: 2 / 3; }
+      .task { grid-column: 1 / 4; max-width: none; }
 
-      .actions, .takeaways { grid-template-columns: 1fr; }
-      .ta:first-child { border-right: 0; padding-right: 24px; }
-      .ta:last-child { padding-left: 0; }
-      footer .strip { flex-direction: column; gap: 6px; }
+      .keys { grid-template-columns: 1fr; }
+      .footbar { flex-wrap: wrap; }
     }
   </style>
 </head>
 <body>
 <main>
 
-  <!-- ===== masthead ===== -->
-  <header class="mast">
-    <div class="lot">AI 建站一日營 · One-Day Workshop</div>
-    <div class="meta num">
-      6 HRS · 09:00—16:00<br>
-      OUTPUT <b>1 URL + 1 PDF</b>
+  <!-- ===== HERO ===== -->
+  <section class="win hero">
+    <div class="titlebar mono">
+      <span class="dots" aria-hidden="true"><i class="dot g"></i><i class="dot"></i><i class="dot"></i></span>
+      <span class="tb-path">student@camp:~/ai-build-camp</span>
+      <span class="tb-right">zsh · UTF-8</span>
     </div>
-  </header>
+    <div class="body">
+      <div class="heroline">
+        <div class="heroL">
+          <div class="cmdline mono"><span class="prompt">$</span> <span class="typed">claude <span class="str">"幫我做一個網站"</span></span><span class="cur" aria-hidden="true"></span></div>
 
-  <!-- ===== Hero ===== -->
-  <section class="hero">
-    <div class="hero-title">
-      <div class="kicker">AI 素養 · vibe coding · 部署上線</div>
-      <h1>AI 建站<br>一日營</h1>
-      <p class="sub">6 小時，帶一個公開網址回家</p>
-      <p class="fine">你現在看的這個網站，<b>就是用今天要教的方法做的</b>。</p>
-    </div>
-    <div class="hero-side">
-      <div class="lbl">Total Runtime</div>
-      <div class="bignum num">06<small>小時完整實作 / 一個公開網址</small></div>
+          <h1>AI 建站<span class="k">一日營</span></h1>
+          <p class="sub"><span class="arrow mono" aria-hidden="true">&gt;&gt;</span>6 小時，帶一個公開網址回家</p>
+          <p class="fine"><span class="self mono" aria-hidden="true">// </span>你現在看的這個網站，<b>就是用今天要教的方法做的</b>。</p>
+        </div>
+
+        <div class="stamp mono">
+          <div class="row"><span>SESSION</span><b>1 DAY</b></div>
+          <div class="row"><span>DURATION</span><b>06:00:00</b></div>
+          <div class="row"><span>OUTPUT</span><b>1 URL + 1 PDF</b></div>
+          <div class="row hz"><span>build</span><span>· vibe-coding</span></div>
+        </div>
+      </div>
     </div>
   </section>
 
   <!-- ===== 今日議程 ===== -->
-  <section id="agenda">
-    <h2>今日議程 / Agenda <span class="c num">08 ROWS · 09:00—16:00</span></h2>
-    <ul class="timeline">
+  <section id="agenda" class="win log">
+    <div class="titlebar mono">
+      <span class="dots" aria-hidden="true"><i class="dot g"></i><i class="dot"></i><i class="dot"></i></span>
+      <span class="tb-path">tail -f agenda.log</span>
+      <span class="tb-right">08 events · 09:00—16:00</span>
+    </div>
+    <div class="body">
+      <h2><span class="hash" aria-hidden="true">//</span> 今日議程 / Agenda <span class="c mono">08 ROWS</span></h2>
+      <ul class="timeline">
 
-      <li>
-        <details class="slot blue">
-          <summary>
-            <span class="time num">09:00</span>
-            <span class="slot-body">
-              <span class="title">震撼開場</span>
-              <span class="desc">老師現場用 Claude Code 五分鐘生一個網站。</span>
-            </span>
-            <span class="toggle" aria-hidden="true"><span class="plus">＋</span><span class="minus">－</span></span>
-          </summary>
-          <div class="task">
-            <span class="tag">你的任務 / Task</span>
-            <p>先連上教室 Wi-Fi，打開兩個分頁：Gemini（gemini.google.com）和這個網站。看老師表演就好。</p>
-          </div>
-        </details>
-      </li>
+        <li>
+          <details class="slot lvl-boot">
+            <summary>
+              <span class="ts mono">[09:00]</span>
+              <span class="lvl mono" aria-hidden="true">BOOT</span>
+              <span class="slot-body">
+                <span class="title">震撼開場</span>
+                <span class="desc">老師現場用 Claude Code 五分鐘生一個網站。</span>
+              </span>
+              <span class="toggle mono" aria-hidden="true"><span class="plus">▸</span><span class="minus">▾</span></span>
+            </summary>
+            <div class="task">
+              <span class="tag mono" aria-hidden="true">▸ TASK CARD · 09:00</span>
+              <p>先連上教室 Wi-Fi，打開兩個分頁：Gemini（gemini.google.com）和這個網站。看老師表演就好。</p>
+            </div>
+          </details>
+        </li>
 
-      <li>
-        <details class="slot">
-          <summary>
-            <span class="time num">09:30</span>
-            <span class="slot-body">
-              <span class="title">AI 素養 ＋ 提示詞實戰</span>
-              <span class="desc">角色／脈絡／格式三要素、迭代追問、辨識幻覺。</span>
-            </span>
-            <span class="toggle" aria-hidden="true"><span class="plus">＋</span><span class="minus">－</span></span>
-          </summary>
-          <div class="task">
-            <span class="tag">你的任務 / Task</span>
-            <p>打開講義第 1 篇，複製「AI 訪談你」的 prompt 貼給 Gemini，跟它聊出你的自介 —— 下午網頁要用。</p>
-          </div>
-        </details>
-      </li>
+        <li>
+          <details class="slot lvl-run">
+            <summary>
+              <span class="ts mono">[09:30]</span>
+              <span class="lvl mono" aria-hidden="true">RUN</span>
+              <span class="slot-body">
+                <span class="title">AI 素養 ＋ 提示詞實戰</span>
+                <span class="desc">角色／脈絡／格式三要素、迭代追問、辨識幻覺。</span>
+              </span>
+              <span class="toggle mono" aria-hidden="true"><span class="plus">▸</span><span class="minus">▾</span></span>
+            </summary>
+            <div class="task">
+              <span class="tag mono" aria-hidden="true">▸ TASK CARD · 09:30</span>
+              <p>打開講義第 1 篇，複製「AI 訪談你」的 prompt 貼給 Gemini，跟它聊出你的自介 —— 下午網頁要用。</p>
+            </div>
+          </details>
+        </li>
 
-      <li>
-        <details class="slot">
-          <summary>
-            <span class="time num">10:40</span>
-            <span class="slot-body">
-              <span class="title">vibe coding 初體驗</span>
-              <span class="desc">Gemini Canvas 生你的第一個網頁。</span>
-            </span>
-            <span class="toggle" aria-hidden="true"><span class="plus">＋</span><span class="minus">－</span></span>
-          </summary>
-          <div class="task">
-            <span class="tag">你的任務 / Task</span>
-            <p>用講義的起手 prompt 讓 Canvas 生一頁網站，然後用「說的」改三個地方：標題、主色、一張卡片。</p>
-          </div>
-        </details>
-      </li>
+        <li>
+          <details class="slot lvl-run">
+            <summary>
+              <span class="ts mono">[10:40]</span>
+              <span class="lvl mono" aria-hidden="true">RUN</span>
+              <span class="slot-body">
+                <span class="title">vibe coding 初體驗</span>
+                <span class="desc">Gemini Canvas 生你的第一個網頁。</span>
+              </span>
+              <span class="toggle mono" aria-hidden="true"><span class="plus">▸</span><span class="minus">▾</span></span>
+            </summary>
+            <div class="task">
+              <span class="tag mono" aria-hidden="true">▸ TASK CARD · 10:40</span>
+              <p>用講義的起手 prompt 讓 Canvas 生一頁網站，然後用「說的」改三個地方：標題、主色、一張卡片。</p>
+            </div>
+          </details>
+        </li>
 
-      <li>
-        <div class="break">
-          <span class="time num">12:00</span>
-          <span class="lbl">午休 · 吃飽再戰（12:00–13:00）</span>
-        </div>
-      </li>
+        <li>
+          <details class="slot idle">
+            <summary>
+              <span class="ts mono">[12:00]</span>
+              <span class="lvl mono" aria-hidden="true">IDLE</span>
+              <span class="slot-body">
+                <span class="title">午休 · 吃飽再戰（12:00–13:00）</span>
+                <span class="desc">process suspended — 休息一小時。</span>
+              </span>
+              <span class="toggle mono" aria-hidden="true"><span class="plus">▸</span><span class="minus">▾</span></span>
+            </summary>
+            <div class="task">
+              <span class="tag mono" aria-hidden="true">▸ TASK CARD · 12:00</span>
+              <p>沒有任務。吃飽、喝水、讓眼睛離開螢幕，13:00 回來繼續。</p>
+            </div>
+          </details>
+        </li>
 
-      <li>
-        <details class="slot blue">
-          <summary>
-            <span class="time num">13:00</span>
-            <span class="slot-body">
-              <span class="title">主專案：學習歷程網頁</span>
-              <span class="desc">把模板變成你自己的作品。</span>
-            </span>
-            <span class="toggle" aria-hidden="true"><span class="plus">＋</span><span class="minus">－</span></span>
-          </summary>
-          <div class="task">
-            <span class="tag">你的任務 / Task</span>
-            <p>打開模板骨架（在講義裡，整份複製），把裡面<strong>所有【請填入】</strong>換成你的內容——共五個區塊（用上午的自介 ＋ 截圖），丟給 Canvas 迭代到你滿意。</p>
-          </div>
-        </details>
-      </li>
+        <li>
+          <details class="slot lvl-run">
+            <summary>
+              <span class="ts mono">[13:00]</span>
+              <span class="lvl mono" aria-hidden="true">RUN</span>
+              <span class="slot-body">
+                <span class="title">主專案：學習歷程網頁</span>
+                <span class="desc">把模板變成你自己的作品。</span>
+              </span>
+              <span class="toggle mono" aria-hidden="true"><span class="plus">▸</span><span class="minus">▾</span></span>
+            </summary>
+            <div class="task">
+              <span class="tag mono" aria-hidden="true">▸ TASK CARD · 13:00</span>
+              <p>打開模板骨架（在講義裡，整份複製），把裡面<strong>所有【請填入】</strong>換成你的內容——共五個區塊（用上午的自介 ＋ 截圖），丟給 Canvas 迭代到你滿意。</p>
+            </div>
+          </details>
+        </li>
 
-      <li>
-        <details class="slot blue">
-          <summary>
-            <span class="time num">14:10</span>
-            <span class="slot-body">
-              <span class="title">部署上線</span>
-              <span class="desc">GitHub Pages 拿到你的公開網址。</span>
-            </span>
-            <span class="toggle" aria-hidden="true"><span class="plus">＋</span><span class="minus">－</span></span>
-          </summary>
-          <div class="task">
-            <span class="tag">你的任務 / Task</span>
-            <p>照講義第 2 篇：GitHub 建 repo → 上傳 index.html → 開 Pages → 拿到你的公開網址。舉手讓老師看你的網址！</p>
-          </div>
-        </details>
-      </li>
+        <li>
+          <details class="slot lvl-ship">
+            <summary>
+              <span class="ts mono">[14:10]</span>
+              <span class="lvl mono" aria-hidden="true">SHIP</span>
+              <span class="slot-body">
+                <span class="title">部署上線</span>
+                <span class="desc">GitHub Pages 拿到你的公開網址。</span>
+              </span>
+              <span class="toggle mono" aria-hidden="true"><span class="plus">▸</span><span class="minus">▾</span></span>
+            </summary>
+            <div class="task">
+              <span class="tag mono" aria-hidden="true">▸ TASK CARD · 14:10</span>
+              <p>照講義第 2 篇：GitHub 建 repo → 上傳 index.html → 開 Pages → 拿到你的公開網址。<span class="bang" aria-hidden="true">$</span> 舉手讓老師看你的網址！</p>
+            </div>
+          </details>
+        </li>
 
-      <li>
-        <details class="slot">
-          <summary>
-            <span class="time num">15:00</span>
-            <span class="slot-body">
-              <span class="title">NotebookLM 打包 PDF</span>
-              <span class="desc">把今天的東西變成一份學習報告。</span>
-            </span>
-            <span class="toggle" aria-hidden="true"><span class="plus">＋</span><span class="minus">－</span></span>
-          </summary>
-          <div class="task">
-            <span class="tag">你的任務 / Task</span>
-            <p>把講義 ＋ 你的筆記餵給 NotebookLM，生成學習報告，加上反思和你的網站 QR code，匯出 PDF。</p>
-          </div>
-        </details>
-      </li>
+        <li>
+          <details class="slot lvl-run">
+            <summary>
+              <span class="ts mono">[15:00]</span>
+              <span class="lvl mono" aria-hidden="true">RUN</span>
+              <span class="slot-body">
+                <span class="title">NotebookLM 打包 PDF</span>
+                <span class="desc">把今天的東西變成一份學習報告。</span>
+              </span>
+              <span class="toggle mono" aria-hidden="true"><span class="plus">▸</span><span class="minus">▾</span></span>
+            </summary>
+            <div class="task">
+              <span class="tag mono" aria-hidden="true">▸ TASK CARD · 15:00</span>
+              <p>把講義 ＋ 你的筆記餵給 NotebookLM，生成學習報告，加上反思和你的網站 QR code，匯出 PDF。</p>
+            </div>
+          </details>
+        </li>
 
-      <li>
-        <details class="slot">
-          <summary>
-            <span class="time num">15:35</span>
-            <span class="slot-body">
-              <span class="title">發表 ＋ 認證</span>
-              <span class="desc">唸出你的網址，領走今天的成果。</span>
-            </span>
-            <span class="toggle" aria-hidden="true"><span class="plus">＋</span><span class="minus">－</span></span>
-          </summary>
-          <div class="task">
-            <span class="tag">你的任務 / Task</span>
-            <p>輪流唸出你的網址 ＋ 一句今天最有感的事。想拿認證的看下方認證說明。</p>
-          </div>
-        </details>
-      </li>
+        <li>
+          <details class="slot lvl-done">
+            <summary>
+              <span class="ts mono">[15:35]</span>
+              <span class="lvl mono" aria-hidden="true">DONE</span>
+              <span class="slot-body">
+                <span class="title">發表 ＋ 認證</span>
+                <span class="desc">唸出你的網址，領走今天的成果。</span>
+              </span>
+              <span class="toggle mono" aria-hidden="true"><span class="plus">▸</span><span class="minus">▾</span></span>
+            </summary>
+            <div class="task">
+              <span class="tag mono" aria-hidden="true">▸ TASK CARD · 15:35</span>
+              <p>輪流唸出你的網址 ＋ 一句今天最有感的事。想拿認證的看下方認證說明。</p>
+            </div>
+          </details>
+        </li>
 
-    </ul>
+      </ul>
+
+      <div class="tailline mono">
+        <span class="prompt">$</span> <span class="comment">git push origin main</span>
+        <span class="ok">✓ deployed</span> <span class="comment">— your-name.github.io</span> <span class="cur small" aria-hidden="true"></span>
+      </div>
+    </div>
   </section>
 
   <!-- ===== 互動區 ===== -->
   <section id="interact">
-    <h2>現在動手 / Action</h2>
-    <div class="actions">
-      <a class="btn btn-vote" id="link-vote" href="vote.html?room=class1">現在投票 · 把手機拿出來<span class="ar" aria-hidden="true">→</span></a>
-      <a class="btn btn-handout" id="link-handout" href="#" target="_blank" rel="noopener">學生講義 · 今天照著走<span class="ar" aria-hidden="true">→</span></a>
+    <h2><span class="hash" aria-hidden="true">//</span> 現在動手 / Action</h2>
+    <div class="keys">
+      <a class="key primary" id="link-vote" href="vote.html?room=class1">
+        <span class="kk mono" aria-hidden="true">ENTER</span>
+        <span><span class="pfx mono" aria-hidden="true">$</span>現在投票</span>
+        <small>把手機拿出來</small>
+      </a>
+      <a class="key" id="link-handout" href="#" target="_blank" rel="noopener">
+        <span class="kk mono" aria-hidden="true">TAB</span>
+        <span>學生講義</span>
+        <small>今天照著走</small>
+      </a>
     </div>
   </section>
 
   <!-- ===== 雙成果 ===== -->
-  <section id="takeaways">
-    <h2>今天你會帶走 / Deliverables</h2>
-    <div class="takeaways">
-      <div class="ta">
-        <div class="n num">01</div>
-        <div>
+  <section id="takeaways" class="win out2" style="margin-top:28px">
+    <div class="titlebar mono">
+      <span class="dots" aria-hidden="true"><i class="dot g"></i><i class="dot"></i><i class="dot"></i></span>
+      <span class="tb-path">./build --output</span>
+    </div>
+    <div class="body">
+      <div class="exit mono">process exited 0 · 你帶走 →</div>
+      <div class="result">
+        <span class="rnum mono" aria-hidden="true">①</span>
+        <div class="rtxt">
           <h3>一個公開網址</h3>
           <p>部署上線、任何人都打得開的個人網站，履歷／社群都能貼。</p>
         </div>
       </div>
-      <div class="ta">
-        <div class="n num">02</div>
-        <div>
+      <div class="result">
+        <span class="rnum mono" aria-hidden="true">②</span>
+        <div class="rtxt">
           <h3>一份學習歷程 PDF</h3>
           <p>可直接上傳學習歷程平台的成果報告，含你的網站與反思。</p>
         </div>
@@ -544,12 +513,19 @@
   </section>
 
   <!-- ===== Footer ===== -->
-  <footer>
-    <p class="cert">課後通過<b>素養筆試</b> ＋ <b>48 小時實作任務</b>，即發「AI 應用能力認證（初級）」。</p>
-    <p class="ipas">想考國家級證照？問老師 iPAS 初級怎麼準備。</p>
-    <div class="strip">
-      <span>暑期 AI 新手課 · 高中場</span>
-      <span class="blue num">IKB #002FA7 / 09:00—16:00</span>
+  <footer class="win foot">
+    <div class="titlebar mono">
+      <span class="dots" aria-hidden="true"><i class="dot g"></i><i class="dot"></i><i class="dot"></i></span>
+      <span class="tb-path">cat CERTIFICATION.md</span>
+    </div>
+    <div class="body">
+      <p class="cert">課後通過<b>素養筆試</b> ＋ <b>48 小時實作任務</b>，即發「AI 應用能力認證（初級）」。</p>
+      <p class="ipas"><span class="prompt mono" aria-hidden="true">$</span>想考國家級證照？問老師 iPAS 初級怎麼準備。</p>
+      <div class="footbar mono">
+        <span class="g" aria-hidden="true">●</span> 暑期 AI 新手課 · 高中場
+        <span>· ready · no internet required to read this</span>
+        <span class="sp" aria-hidden="true">esc :q</span>
+      </div>
     </div>
   </footer>
 
