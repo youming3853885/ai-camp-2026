@@ -387,25 +387,32 @@ function renderWall(container, texts){
 /* ================= 結果圖（老師 / 學生共用） ================= */
 function renderResult(container, options, counts, myChoice, others){
   const total = counts.reduce((a,b)=>a+b, 0) || 1;
-  // other:true 的題一律走長條圖：固定選項各一條 + 最後一條灰色「其他」；下方列出自由填答文字
-  if(others){
-    const labels = options.concat(['其他']);
-    const rows = labels.map((o,i)=>{
-      const pct = Math.round(counts[i]/total*100);
-      const isOther = i === options.length;
-      return `<div class="bar-item">
+
+  // 長條列：票數遞減排序（同票維持原序）；字母/顏色跟著選項走不跟位置
+  const barRows = (labels, otherIdx) => '<div class="bars">' +
+    labels.map((o,i)=>({o, i, n:counts[i]}))
+      .sort((a,b)=> b.n - a.n || a.i - b.i)
+      .map(({o,i,n})=>{
+        const pct = Math.round(n/total*100);
+        const isOther = i === otherIdx;
+        return `<div class="bar-item">
         <div class="bar-track">
           <div class="bar-fill ${isOther?'':'c'+(i%6)}" style="${isOther?'background:#6b6880':''}" data-w="${pct}"></div>
           <div class="bar-lab">
             <span class="kk">${isOther?'✎':('ABCD'[i]||i+1)}</span>
             <span class="opt">${esc(o)}</span>
-            <span class="num"><span class="v">${counts[i]}</span><span class="u">票</span><span class="pct">${pct}%</span></span>
+            <span class="num"><span class="v">${n}</span><span class="u">票</span><span class="pct">${pct}%</span></span>
           </div>
         </div>
       </div>`;
-    }).join('');
-    container.innerHTML = `<div class="bars">${rows}</div>`;
+      }).join('') + '</div>';
+  const animateBars = () =>
     requestAnimationFrame(()=> container.querySelectorAll('.bar-fill').forEach(b=> b.style.width = b.dataset.w + '%'));
+
+  // other:true 的題一律走長條圖：固定選項各一條 + 灰色「其他」；下方列出自由填答文字
+  if(others){
+    container.innerHTML = barRows(options.concat(['其他']), options.length);
+    animateBars();
     if(others.length){
       const wallTitle = document.createElement('div');
       wallTitle.className = 'ptitle';
@@ -449,21 +456,8 @@ function renderResult(container, options, counts, myChoice, others){
         </div>
       </div>`;
   } else {
-    const rows = options.map((o,i)=>{
-      const pct = Math.round(counts[i]/total*100);
-      return `<div class="bar-item">
-        <div class="bar-track">
-          <div class="bar-fill c${i%6}" data-w="${pct}"></div>
-          <div class="bar-lab">
-            <span class="kk">${'ABCD'[i]||i+1}</span>
-            <span class="opt">${esc(o)}</span>
-            <span class="num"><span class="v">${counts[i]}</span><span class="u">票</span><span class="pct">${pct}%</span></span>
-          </div>
-        </div>
-      </div>`;
-    }).join('');
-    container.innerHTML = `<div class="bars">${rows}</div>`;
-    requestAnimationFrame(()=> container.querySelectorAll('.bar-fill').forEach(b=> b.style.width = b.dataset.w + '%'));
+    container.innerHTML = barRows(options, -1);
+    animateBars();
   }
   if(typeof myChoice === 'number' && options[myChoice]!==undefined){
     const tag = document.createElement('div');
