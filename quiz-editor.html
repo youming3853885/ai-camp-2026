@@ -32,6 +32,16 @@
   .sub{color:var(--muted); font-size:15px; margin:8px 0 4px;}
   .sub a{font-weight:700;}
 
+  /* 題組列 */
+  .setbar{display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin:18px 0 0;}
+  .setbar select{
+    flex:1 1 200px; background:var(--panel2); color:var(--ink); border:1px solid var(--line);
+    border-radius:10px; padding:10px 12px; font-size:15px; font-family:inherit; font-weight:700;
+  }
+  .btn.pub{border-color:var(--c2); color:var(--c2);}
+  .btn.pub:hover{background:rgba(34,197,94,.12);}
+  .btn.pub:disabled,.icobtn:disabled{opacity:.35; cursor:default;}
+
   /* 狀態列 */
   .statusbar{
     display:flex; align-items:center; gap:12px; flex-wrap:wrap;
@@ -126,6 +136,13 @@
   <h1>編題目 <span class="hl">· 雲端題庫</span></h1>
   <p class="sub">這裡編的題目，老師台（<a href="vote.html?room=class1&host=1" target="_blank">開啟老師台</a>）開啟時會自動載入。</p>
 
+  <div class="setbar">
+    <select id="setSel" title="切換題組"><option value="1">🎓 老師台上線中</option></select>
+    <button class="icobtn" id="saveAs" title="把目前題目另存成新題組">＋ 另存新題組</button>
+    <button class="icobtn del" id="delSet" title="刪除這個題組">🗑</button>
+    <button class="btn pub" id="publish" title="把這組題目複製到老師台">🚀 發布到老師台</button>
+  </div>
+
   <div class="statusbar">
     <span id="loadMsg">載入中…</span>
     <span class="grow"></span>
@@ -156,10 +173,14 @@ const H = { apikey: SUPABASE.key, Authorization: 'Bearer ' + SUPABASE.key };
 const KEYS = 'ABCDEF';
 
 // 資料模型：questions = [{q, options:[...]}, {q, mode:'text'}]
+// 題組 = camp_quiz 的一列（id + name + questions）；id=1 固定是「老師台上線中」，發布 = 複製到 id=1
 let questions = [];
+let currentSet = 1;   // 正在編輯的 camp_quiz row id
+let dirty = false;    // 有未儲存變更（切換題組前提醒用）
 const listEl = document.getElementById('list');
 const loadMsg = document.getElementById('loadMsg');
 const saveMsg = document.getElementById('saveMsg');
+const setSel = document.getElementById('setSel');
 
 function esc(s){ return String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 function fmt(iso){
@@ -214,7 +235,7 @@ function card(item, i){
   // 移動 / 刪除
   el.querySelector('[data-mv="-1"]').onclick = () => move(i, -1);
   el.querySelector('[data-mv="1"]').onclick  = () => move(i, 1);
-  el.querySelector('[data-del]').onclick = () => { if(confirm('刪除這一題？')){ questions.splice(i,1); render(); } };
+  el.querySelector('[data-del]').onclick = () => { if(confirm('刪除這一題？')){ questions.splice(i,1); dirty = true; render(); } };
 
   if(!isText){
     el.querySelectorAll('[data-opt]').forEach(inp => {
@@ -222,11 +243,11 @@ function card(item, i){
     });
     el.querySelectorAll('[data-rm]').forEach(btn => {
       btn.disabled = item.options.length <= 2;
-      btn.onclick = () => { item.options.splice(+btn.dataset.rm, 1); render(); };
+      btn.onclick = () => { item.options.splice(+btn.dataset.rm, 1); dirty = true; render(); };
     });
     const add = el.querySelector('[data-addopt]');
     add.disabled = item.options.length >= 6;
-    add.onclick = () => { item.options.push(''); render(); };
+    add.onclick = () => { item.options.push(''); dirty = true; render(); };
     el.querySelector('[data-other]').addEventListener('change', e => { item.other = e.target.checked; });
   }
   return el;
@@ -236,23 +257,120 @@ function move(i, dir){
   const j = i + dir;
   if(j < 0 || j >= questions.length) return;
   [questions[i], questions[j]] = [questions[j], questions[i]];
+  dirty = true;
   render();
+}
+
+// 打字 / 勾選都算有變更（事件委派，涵蓋所有題卡的 textarea、input、checkbox）
+listEl.addEventListener('input', () => { dirty = true; });
+listEl.addEventListener('change', () => { dirty = true; });
+
+/* ---------- 題組 ---------- */
+async function loadSets(){
+  let sets = [];
+  try{
+    const r = await fetch(`${SUPABASE.url}/rest/v1/camp_quiz?id=neq.1&select=id,name&order=name`, { headers: H, cache:'no-store' });
+    if(r.ok) sets = await r.json();
+  }catch(e){ /* 沒跑題組 SQL 或離線：下拉只剩老師台，其餘功能照舊 */ }
+  setSel.innerHTML = '<option value="1">🎓 老師台上線中</option>' +
+    sets.map(s => `<option value="${s.id}">${esc(s.name || ('題組 ' + s.id))}</option>`).join('');
+  setSel.value = String(currentSet);
+  const isLive = currentSet === 1;
+  document.getElementById('delSet').disabled = isLive;
+  document.getElementById('publish').disabled = isLive;
+}
+
+setSel.onchange = async () => {
+  const id = +setSel.value;
+  if(id === currentSet) return;
+  if(dirty && !confirm('目前題組有未儲存的變更，切換會丟失。確定切換？')){
+    setSel.value = String(currentSet);
+    return;
+  }
+  currentSet = id;
+  saveMsg.textContent = '';
+  await load();
+  await loadSets();
+};
+
+async function saveAs(){
+  if(!questions.length){ saveMsg.className='bad'; saveMsg.textContent='沒有題目可存'; return; }
+  if(!validate()){ saveMsg.className='bad'; saveMsg.textContent='有題目不完整（紅框），先補齊再另存'; return; }
+  const name = prompt('新題組名稱（例如：數學問題）');
+  if(!name || !name.trim()) return;
+  // ponytail: 亂數 int4 id，單人編輯撞號機率可忽略；撞到 POST 會失敗再按一次即可
+  const id = 2 + Math.floor(Math.random() * 2e9);
+  saveMsg.className = ''; saveMsg.textContent = '另存中…';
+  try{
+    const r = await fetch(`${SUPABASE.url}/rest/v1/camp_quiz`, {
+      method: 'POST',
+      headers: { ...H, 'Content-Type':'application/json', Prefer:'return=minimal' },
+      body: JSON.stringify({ id, name: name.trim(), questions: clean(), updated_at: new Date().toISOString() })
+    });
+    if(!r.ok){ const t = await r.text().catch(()=> ''); throw new Error('HTTP ' + r.status + (t?' · '+t.slice(0,120):'')); }
+    currentSet = id; dirty = false;
+    await loadSets();
+    saveMsg.className = 'ok'; saveMsg.textContent = `已另存為「${name.trim()}」✓`;
+  }catch(e){
+    saveMsg.className = 'bad';
+    saveMsg.textContent = '另存失敗：' + e.message + '（若是 42501/權限問題，需先跑 README 的題組 SQL）';
+  }
+}
+
+async function delSet(){
+  if(currentSet === 1) return;
+  const nm = setSel.options[setSel.selectedIndex]?.text || '這個題組';
+  if(!confirm(`刪除題組「${nm}」？雲端該組會整組刪掉，無法復原。`)) return;
+  try{
+    const r = await fetch(`${SUPABASE.url}/rest/v1/camp_quiz?id=eq.${currentSet}`, { method:'DELETE', headers: H });
+    if(!r.ok) throw new Error('HTTP ' + r.status);
+    currentSet = 1; dirty = false;
+    saveMsg.className = ''; saveMsg.textContent = `已刪除「${nm}」`;
+    await load();
+    await loadSets();
+  }catch(e){
+    saveMsg.className = 'bad'; saveMsg.textContent = '刪除失敗：' + e.message;
+  }
+}
+
+async function publish(){
+  if(currentSet === 1) return;
+  if(!questions.length){ saveMsg.className='bad'; saveMsg.textContent='沒有題目可發布'; return; }
+  if(!validate()){ saveMsg.className='bad'; saveMsg.textContent='有題目不完整（紅框），先補齊再發布'; return; }
+  saveMsg.className = ''; saveMsg.textContent = '發布中…';
+  try{
+    const body = { questions: clean(), updated_at: new Date().toISOString() };
+    await patchRow(currentSet, body);  // 先存回本題組，避免發布的和存的不一致
+    await patchRow(1, body);
+    dirty = false;
+    const p = n => String(n).padStart(2,'0'); const d = new Date();
+    saveMsg.className = 'ok';
+    saveMsg.textContent = `已發布到老師台 🚀 ${p(d.getHours())}:${p(d.getMinutes())}`;
+  }catch(e){
+    saveMsg.className = 'bad'; saveMsg.textContent = '發布失敗：' + e.message;
+  }
 }
 
 /* ---------- 載入 ---------- */
 async function load(){
   try{
-    const r = await fetch(`${SUPABASE.url}/rest/v1/camp_quiz?id=eq.1&select=questions,updated_at`, { headers: H, cache:'no-store' });
+    const r = await fetch(`${SUPABASE.url}/rest/v1/camp_quiz?id=eq.${currentSet}&select=questions,updated_at`, { headers: H, cache:'no-store' });
     if(!r.ok) throw new Error('HTTP ' + r.status);
     const rows = await r.json();
     if(rows.length){
       questions = Array.isArray(rows[0].questions) ? rows[0].questions : [];
       loadMsg.className = '';
       loadMsg.textContent = `上次更新：${rows[0].updated_at ? fmt(rows[0].updated_at) : '（尚無）'}　·　共 ${questions.length} 題`;
-    } else {
+      dirty = false;
+    } else if(currentSet === 1){
       questions = [];
       loadMsg.className = 'bad';
       loadMsg.textContent = '雲端尚無題目（id=1 那列不存在）。新增後按儲存即可建立。';
+    } else {
+      // 題組被刪或不存在 → 退回老師台
+      currentSet = 1;
+      await load();
+      return;
     }
   }catch(e){
     questions = [];
@@ -288,6 +406,15 @@ function clean(){
   });
 }
 
+async function patchRow(id, body){
+  const r = await fetch(`${SUPABASE.url}/rest/v1/camp_quiz?id=eq.${id}`, {
+    method: 'PATCH',
+    headers: { ...H, 'Content-Type':'application/json', Prefer:'return=minimal' },
+    body: JSON.stringify(body)
+  });
+  if(!r.ok){ const t = await r.text().catch(()=> ''); throw new Error('HTTP ' + r.status + (t?' · '+t.slice(0,120):'')); }
+}
+
 async function save(){
   saveMsg.className = '';
   if(!questions.length){ saveMsg.className='bad'; saveMsg.textContent='沒有題目可存'; return; }
@@ -298,12 +425,8 @@ async function save(){
   }
   saveMsg.textContent = '儲存中…';
   try{
-    const r = await fetch(`${SUPABASE.url}/rest/v1/camp_quiz?id=eq.1`, {
-      method: 'PATCH',
-      headers: { ...H, 'Content-Type':'application/json', Prefer:'return=minimal' },
-      body: JSON.stringify({ questions: clean(), updated_at: new Date().toISOString() })
-    });
-    if(!r.ok){ const t = await r.text().catch(()=> ''); throw new Error('HTTP ' + r.status + (t?' · '+t.slice(0,120):'')); }
+    await patchRow(currentSet, { questions: clean(), updated_at: new Date().toISOString() });
+    dirty = false;
     const p = n => String(n).padStart(2,'0'); const d = new Date();
     saveMsg.className = 'ok';
     saveMsg.textContent = `已儲存 ✓ ${p(d.getHours())}:${p(d.getMinutes())}`;
@@ -335,6 +458,7 @@ fileInput.onchange = () => {
       questions = data.map(it => it && it.mode === 'text'
         ? { q: String(it.q||''), mode:'text' }
         : { q: String(it.q||''), options: Array.isArray(it.options) ? it.options.map(String) : ['',''], other: !!it.other });
+      dirty = true;
       saveMsg.className=''; saveMsg.textContent='已匯入（尚未儲存到雲端）';
       render();
     }catch(e){ alert('匯入失敗：' + e.message); }
@@ -344,13 +468,17 @@ fileInput.onchange = () => {
 };
 
 /* ---------- 新增 ---------- */
-document.getElementById('addChoice').onclick = () => { questions.push({ q:'', options:['',''] }); render(); scrollBottom(); };
-document.getElementById('addText').onclick   = () => { questions.push({ q:'', mode:'text' }); render(); scrollBottom(); };
+document.getElementById('addChoice').onclick = () => { questions.push({ q:'', options:['',''] }); dirty = true; render(); scrollBottom(); };
+document.getElementById('addText').onclick   = () => { questions.push({ q:'', mode:'text' }); dirty = true; render(); scrollBottom(); };
 document.getElementById('save').onclick = save;
 document.getElementById('export').onclick = exportJSON;
+document.getElementById('saveAs').onclick = saveAs;
+document.getElementById('delSet').onclick = delSet;
+document.getElementById('publish').onclick = publish;
 function scrollBottom(){ window.scrollTo({ top: document.body.scrollHeight, behavior:'smooth' }); }
 
 load();
+loadSets();
 </script>
 </body>
 </html>
