@@ -280,6 +280,7 @@ const SUPABASE = {
 </script>
 
 <div id="banner" class="banner hidden">⚠ 本機示範模式：只有這台電腦的分頁能互通。開課前請填入 Supabase 金鑰。</div>
+<div id="hostwarn" class="banner hidden" style="background:linear-gradient(90deg,#4a0016,#5c001c);color:#ff9db3;border-bottom:1px solid #8a2038;font-weight:800;">⚠ 偵測到另一個老師台同時在線！學生畫面會在兩邊的題目間閃爍。請只留一個老師台，其餘分頁關掉（投影機、筆電、舊分頁都檢查）。</div>
 
 <div class="wrap">
   <!-- 老師 / 學生視圖由 JS 依 URL 切換 -->
@@ -563,10 +564,12 @@ function escBr(s){ return esc(s).replace(/\n/g, '<br>'); }
       root.querySelector('#s-need').textContent = online;
       // 開牌時機一律由老師手動按 CHECK 掌控（2026-07-11 應老師要求移除自動開牌）
     }
-    hostPeers = () => {
+    hostPeers = list => {
       updateStats();
-      // 中途加入者重播當前題目
-      if(current && !current.revealed) transport.send({ type:'question', q:current.q, options:current.options, mode:current.mode, other:current.other });
+      // 中途加入者的重播只靠 hello（學生載入時發，見下方 onMessage）。
+      // 不能在每次 presence 變動就重播：兩個老師台並存時會輪流重播不同題，全班畫面連續閃爍（2026-07-13 實測 15 秒重繪 14 次）
+      const rivals = list.filter(p => p.host && p.uid !== UID).length;
+      document.getElementById('hostwarn').classList.toggle('hidden', !rivals);
     };
 
     function showQuestion(q, options, other){
