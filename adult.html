@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>給大人的 Claude Code 基礎實作班 × AI 素養考證班</title>
+<meta name="description" content="兩天實體課：零基礎做出可商用的接單系統並上線，考取 AI 應用能力認證。課後專屬群組，老師陪伴繼續學。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;700;900&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F5F0E6; --bg-soft:#FAF7F0; --card:#FFFDF8;
+    --ink:#262421; --muted:#6f6a60; --line:#E5DDCC;
+    --terra:#C6613F; --terra-deep:#A84D2F; --terra-soft:#F3D9CD;
+    --term-bg:#211F1C; --term-green:#8fd48a; --term-dim:#8a857b;
+    --gold:#B98A2F;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:"Noto Sans TC",-apple-system,"Microsoft JhengHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.8}
+  h1,h2,h3{font-family:"Noto Serif TC","Noto Sans TC",serif}
+  img{max-width:100%;display:block}
+  .wrap{max-width:1100px;margin:0 auto;padding:0 24px}
+  section{padding:84px 0}
+  .eyebrow{display:inline-block;color:var(--terra);font-weight:700;font-size:14px;letter-spacing:.28em;text-indent:.28em;margin-bottom:14px}
+  h2{font-size:36px;font-weight:900;letter-spacing:.03em;line-height:1.35}
+  .center{text-align:center}
+  .sub{color:var(--muted);font-size:16.5px;max-width:660px;margin:16px auto 0}
+
+  /* top bar */
+  .topbar{background:var(--bg-soft);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:50}
+  .topbar .wrap{display:flex;justify-content:space-between;align-items:center;height:64px}
+  .brand{font-weight:900;font-size:16px;letter-spacing:.05em}
+  .brand em{font-style:normal;color:var(--terra)}
+  .top-cta{background:var(--ink);color:#fff;text-decoration:none;font-weight:700;font-size:14px;padding:10px 22px;border-radius:999px}
+  .top-cta:hover{background:var(--terra)}
+
+  /* hero */
+  .hero{padding:88px 0 96px;background:
+    radial-gradient(800px 420px at 85% -10%, #F8E3D6 0%, transparent 60%),
+    var(--bg)}
+  .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center}
+  .pill{display:inline-flex;align-items:center;gap:8px;background:var(--terra-soft);color:var(--terra-deep);font-weight:700;font-size:14px;padding:7px 18px;border-radius:999px;margin-bottom:22px}
+  .hero h1{font-size:46px;font-weight:900;line-height:1.32;letter-spacing:.02em}
+  .hero h1 em{font-style:normal;color:var(--terra)}
+  .hero .lead{margin:20px 0 6px;font-size:17.5px;color:var(--muted)}
+  .hero-points{margin:14px 0 32px}
+  .hero-points li{list-style:none;padding-left:30px;position:relative;font-size:16px;margin-bottom:9px}
+  .hero-points li::before{content:"✓";position:absolute;left:0;top:0;width:21px;height:21px;border-radius:50%;background:var(--terra);color:#fff;font-size:12px;display:flex;align-items:center;justify-content:center;margin-top:6px}
+  .cta{display:inline-block;background:var(--terra);color:#fff;font-weight:900;font-size:18px;padding:17px 46px;border-radius:14px;text-decoration:none;letter-spacing:.08em;box-shadow:0 10px 26px rgba(198,97,63,.32);transition:.2s}
+  .cta:hover{background:var(--terra-deep);transform:translateY(-2px)}
+  .cta-note{font-size:13.5px;color:var(--muted);margin-top:12px}
+
+  /* terminal */
+  .term{background:var(--term-bg);border-radius:16px;box-shadow:0 24px 60px rgba(38,36,33,.28);overflow:hidden;font-family:"Cascadia Code",Consolas,monospace}
+  .term-bar{display:flex;align-items:center;gap:7px;padding:13px 18px;background:#2b2925}
+  .term-bar i{width:12px;height:12px;border-radius:50%;display:block}
+  .term-bar i:nth-child(1){background:#f26d5f}.term-bar i:nth-child(2){background:#f2b64c}.term-bar i:nth-child(3){background:#5fc464}
+  .term-bar span{margin-left:10px;color:#7c776d;font-size:12.5px}
+  .term-body{padding:24px 26px 30px;font-size:14.5px;line-height:2.05;min-height:300px;color:#e8e3d8}
+  .t-prompt{color:var(--terra)}
+  .t-user{color:#f0ddb8}
+  .t-ok{color:var(--term-green)}
+  .t-dim{color:var(--term-dim)}
+  .t-cursor{display:inline-block;width:9px;height:19px;background:var(--terra);vertical-align:-3px;animation:blink 1s steps(1) infinite}
+  @keyframes blink{50%{opacity:0}}
+
+  /* 四大重點 */
+  .pillars{background:var(--bg-soft);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .pillar-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;margin-top:48px}
+  .pillar{background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden;transition:.2s}
+  .pillar:hover{transform:translateY(-4px);box-shadow:0 14px 34px rgba(38,36,33,.1)}
+  .pillar img{aspect-ratio:3/2;object-fit:cover;width:100%}
+  .pillar .txt{padding:22px 22px 26px}
+  .pillar .num{color:var(--terra);font-weight:900;font-size:13px;letter-spacing:.2em}
+  .pillar h3{font-size:19.5px;font-weight:900;margin:6px 0 8px}
+  .pillar p{font-size:14.5px;color:var(--muted)}
+
+  /* 作品 */
+  .works .work{display:grid;grid-template-columns:1fr 1fr;gap:52px;align-items:center;margin-top:56px}
+  .works .work img{border-radius:18px;border:1px solid var(--line);box-shadow:0 16px 40px rgba(38,36,33,.12)}
+  .tag{display:inline-block;background:var(--ink);color:#fff;font-size:13px;font-weight:700;padding:5px 16px;border-radius:999px;margin-bottom:14px}
+  .tag.alt{background:var(--terra)}
+  .work h3{font-size:27px;font-weight:900;margin-bottom:12px}
+  .work p{color:var(--muted);font-size:15.5px}
+  .work ul{margin-top:14px}
+  .work li{list-style:none;padding-left:26px;position:relative;font-size:15px;margin-bottom:8px}
+  .work li::before{content:"—";position:absolute;left:0;color:var(--terra);font-weight:900}
+  .work .biz-badge{display:inline-block;background:#FBF3E2;border:1px solid #E9D9AE;color:#8a6a1f;font-size:13.5px;font-weight:700;padding:6px 14px;border-radius:10px;margin-top:16px}
+  .work.flip .txt{order:2}
+
+  /* 議程 */
+  .agenda{background:var(--bg-soft);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .agenda-grid{display:grid;grid-template-columns:1fr 1fr;gap:26px;margin-top:48px}
+  .day{background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden}
+  .day-head{padding:20px 28px;border-bottom:2px solid var(--terra);display:flex;justify-content:space-between;align-items:baseline}
+  .day-head h3{font-size:21px;font-weight:900}
+  .day-head span{font-size:13.5px;color:var(--muted)}
+  .day table{width:100%;border-collapse:collapse;font-size:14.5px}
+  .day td{padding:12px 28px;border-bottom:1px solid #EFE9DB;vertical-align:top}
+  .day td.t{white-space:nowrap;color:var(--terra);font-weight:700;width:118px;font-variant-numeric:tabular-nums}
+  .day tr:last-child td{border-bottom:none}
+  .day .hl td{background:#FBF4EC}
+
+  /* 課後陪伴 */
+  .after .grid{display:grid;grid-template-columns:.95fr 1.05fr;gap:56px;align-items:center;margin-top:20px}
+  .after img{border-radius:18px;border:1px solid var(--line);box-shadow:0 16px 40px rgba(38,36,33,.12)}
+  .after h2{margin-top:8px}
+  .promise{margin-top:26px;display:grid;gap:14px}
+  .promise div{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 20px;display:flex;gap:14px;align-items:flex-start}
+  .promise b{color:var(--terra);font-size:20px;line-height:1.4}
+  .promise p{font-size:15px;color:var(--ink)}
+  .promise p small{display:block;color:var(--muted);font-size:13.5px}
+
+  /* 認證 */
+  .cert{background:var(--ink);color:#F5F0E6}
+  .cert .eyebrow{color:#E8A184}
+  .cert h2{color:#FAF7F0}
+  .cert-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:56px;align-items:center;margin-top:48px}
+  .cert-photo{background:#fff;padding:12px;border-radius:6px;box-shadow:0 26px 60px rgba(0,0,0,.45);position:relative;transform:rotate(-1.2deg)}
+  .cert-photo .stamp{position:absolute;right:-14px;top:-14px;background:var(--terra);color:#fff;font-weight:900;font-size:13px;padding:8px 16px;border-radius:8px;transform:rotate(5deg)}
+  .cert-facts{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:24px}
+  .fact{border:1px solid #4a463f;border-radius:14px;padding:18px 20px;background:rgba(255,255,255,.03)}
+  .fact b{display:block;font-family:"Noto Serif TC",serif;font-size:23px;color:#F0B490}
+  .fact span{font-size:13.5px;color:#b5afa3}
+  .cert p.org{font-size:15.5px;color:#d8d2c4}
+  .cert p.org b{color:#F0B490}
+
+  /* 資訊+FAQ */
+  .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:26px;margin-top:48px}
+  .info-box{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:32px}
+  .info-box h3{font-size:20px;font-weight:900;margin-bottom:16px;color:var(--terra-deep)}
+  .info-box table{width:100%;font-size:15px;border-collapse:collapse}
+  .info-box td{padding:10px 0;border-bottom:1px solid #EFE9DB}
+  .info-box td:first-child{color:var(--muted);width:92px}
+  .tbd{color:var(--terra-deep);background:var(--terra-soft);padding:2px 10px;border-radius:6px;font-size:13px;font-weight:700}
+  .faq details{border-bottom:1px solid #EFE9DB;padding:14px 0}
+  .faq summary{cursor:pointer;font-weight:700;font-size:15.5px}
+  .faq summary::marker{color:var(--terra)}
+  .faq p{font-size:14.5px;color:var(--muted);margin-top:8px}
+
+  /* final */
+  .final{text-align:center;background:
+    radial-gradient(700px 320px at 50% 120%, #F8E3D6 0%, transparent 65%),
+    var(--bg)}
+  .final h2{font-size:38px}
+  .final h2 em{font-style:normal;color:var(--terra)}
+  footer{background:var(--ink);color:#a9a396;padding:32px 0;text-align:center;font-size:13.5px}
+  footer .org{color:#F0B490;font-weight:700;letter-spacing:.08em;margin-bottom:4px}
+
+  @media(max-width:860px){
+    .hero-grid,.pillar-grid,.works .work,.agenda-grid,.after .grid,.cert-grid,.info-grid{grid-template-columns:1fr}
+    .hero h1{font-size:33px}
+    h2{font-size:28px}
+    .work.flip .txt{order:0}
+    section{padding:60px 0}
+    .hero{padding:56px 0 64px}
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="wrap">
+    <div class="brand"><em>Claude Code</em> 給大人的實作班</div>
+    <a class="top-cta" href="#signup">立即報名</a>
+  </div>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="pill">🌱 零基礎專班・沒開過終端機也能上</span>
+      <h1>用說的，<br>讓 AI 幫你把<em>生意搬上網</em></h1>
+      <p class="lead">給大人的 Claude Code 基礎實作班 × AI 素養考證班（兩日）</p>
+      <ul class="hero-points">
+        <li>第一天下課前，你的<b>接單系統</b>已上線、收到第一筆訂單</li>
+        <li>可商用：網站、資料庫、網址都是<b>你自己的</b>，課後直接用</li>
+        <li>課後專屬群組<b>老師陪伴</b>，卡關有人救</li>
+        <li>第二天考取 <b>AI 應用能力認證（初級）</b></li>
+      </ul>
+      <a class="cta" href="#signup">立即報名</a>
+      <div class="cta-note">小班制・名額 <span class="tbd">【待填】</span> 人・報名後寄送行前信</div>
+    </div>
+    <div class="term">
+      <div class="term-bar"><i></i><i></i><i></i><span>你和 AI 的對話 — 上課實況</span></div>
+      <div class="term-body" id="termBody"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 四大重點 -->
+<section class="pillars">
+  <div class="wrap">
+    <div class="center">
+      <span class="eyebrow">WHY THIS COURSE</span>
+      <h2 class="center">這門課的四個承諾</h2>
+    </div>
+    <div class="pillar-grid">
+      <div class="pillar">
+        <img src="img/warm-zero.png" alt="零基礎友善">
+        <div class="txt">
+          <span class="num">01</span>
+          <h3>零基礎</h3>
+          <p>從「終端機是什麼」教起。指令與提示詞全有範本照抄，打字慢用語音輸入，安裝卡關有急救站。</p>
+        </div>
+      </div>
+      <div class="pillar">
+        <img src="img/warm-biz.png" alt="可商用成品上線">
+        <div class="txt">
+          <span class="num">02</span>
+          <h3>可商用成品上線</h3>
+          <p>不是練習題——你的接單系統帶真資料庫、有公開網址，下課直接拿去收單、貼到社群。</p>
+        </div>
+      </div>
+      <div class="pillar">
+        <img src="img/warm-group.png" alt="課後專屬群組">
+        <div class="txt">
+          <span class="num">03</span>
+          <h3>課後才是開始</h3>
+          <p>結業即加入專屬課程群組：老師陪伴答疑、作品持續迭代、同學互相支援，不是上完就散。</p>
+        </div>
+      </div>
+      <div class="pillar">
+        <img src="img/warm-cert.png" alt="AI 素養認證">
+        <div class="txt">
+          <span class="num">04</span>
+          <h3>AI 素養認證</h3>
+          <p>筆試＋影片實作雙關卡，通過獲協會「AI 應用能力認證（初級）」，證書編號可查驗。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 兩個作品 -->
+<section class="works">
+  <div class="wrap">
+    <div class="center">
+      <span class="eyebrow">YOUR WORKS</span>
+      <h2 class="center">兩天，帶走兩個上線作品</h2>
+      <p class="sub">難度階梯設計：上午先用小作品走完「建站 → 上線」全流程，下午同一套流程放大、加上真資料庫。</p>
+    </div>
+
+    <div class="work">
+      <div class="txt">
+        <span class="tag">作品一・Day 1 上午上線</span>
+        <h3>番茄鐘＋抽獎轉盤</h3>
+        <p>辦公室天天用得到的小工具：25 分鐘專注計時＋尾牙抽獎轉盤（名單自己填）。</p>
+        <ul>
+          <li>第一次對 AI 下指令、看它寫出你的網頁</li>
+          <li>第一次把作品部署上網</li>
+          <li>中午前，手機掃自己的 QR code 抽一輪獎</li>
+        </ul>
+      </div>
+      <img src="img/warm-tool.png" alt="番茄鐘與抽獎轉盤">
+    </div>
+
+    <div class="work flip">
+      <div class="txt">
+        <span class="tag alt">作品二・Day 1 下午上線</span>
+        <h3>你的生意的接單系統</h3>
+        <p>便當訂餐、飲料團購、課程報名……骨架統一、品項換成你自己的，這次加上<b>真的資料庫</b>。</p>
+        <ul>
+          <li>下單頁：客人選品項＋數量＋姓名，送出</li>
+          <li>老闆管理頁：訂單即時跳出、自動統計</li>
+          <li>課堂高潮：全班互掃 QR 下單，實測你的系統</li>
+          <li>進度快？現場深化成「預約系統」</li>
+        </ul>
+        <span class="biz-badge">💼 可商用：帳號、資料庫、網址全歸你，課後直接收單</span>
+      </div>
+      <img src="img/warm-biz.png" alt="接單系統">
+    </div>
+  </div>
+</section>
+
+<!-- 議程 -->
+<section class="agenda">
+  <div class="wrap">
+    <div class="center">
+      <span class="eyebrow">AGENDA</span>
+      <h2 class="center">兩天議程</h2>
+    </div>
+    <div class="agenda-grid">
+      <div class="day">
+        <div class="day-head"><h3>Day 1・基礎實作</h3><span>6 小時</span></div>
+        <table>
+          <tr><td class="t">09:00–09:30</td><td>開場示範：老師從零做出訂便當系統、收到第一筆單</td></tr>
+          <tr><td class="t">09:30–10:20</td><td>終端機除魅＋安裝急救站（Windows / Mac 都罩）</td></tr>
+          <tr class="hl"><td class="t">10:30–12:00</td><td><b>作品一：番茄鐘＋抽獎轉盤</b>——做出來、上線、掃 QR 抽獎</td></tr>
+          <tr><td class="t">12:00–13:00</td><td>午休</td></tr>
+          <tr class="hl"><td class="t">13:00–14:40</td><td><b>作品二：接單系統</b>——AI 訪談你的生意、接上資料庫</td></tr>
+          <tr class="hl"><td class="t">14:40–15:20</td><td>上線＋全班互相下單壓力測試</td></tr>
+          <tr><td class="t">15:20–16:00</td><td>回家還能這樣用＋認證任務說明＋加入課程群組</td></tr>
+        </table>
+      </div>
+      <div class="day">
+        <div class="day-head"><h3>Day 2・素養考證</h3><span>3 小時</span></div>
+        <table>
+          <tr><td class="t">第 1 小時</td><td>AI 素養總複習＋即時投票搶答衝刺</td></tr>
+          <tr class="hl"><td class="t">第 2 小時</td><td><b>認證筆試</b>（20 題單選・50 分鐘）</td></tr>
+          <tr><td class="t">第 3 小時</td><td>影片實作任務說明＋進階路線（iPAS）</td></tr>
+          <tr><td class="t" style="color:var(--muted)">課後</td><td>群組陪跑影片實作 → 繳交 → 評分 → 通過發證</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 課後陪伴 -->
+<section class="after">
+  <div class="wrap grid">
+    <img src="img/warm-group.png" alt="課後專屬群組，老師陪伴">
+    <div>
+      <span class="eyebrow">AFTER CLASS</span>
+      <h2>下課那一刻，<br>才是學習真正的開始</h2>
+      <p class="sub" style="margin:14px 0 0;max-width:none">兩天課給你起點，專屬群組陪你走後面的路。結業學員全數加入課程群組：</p>
+      <div class="promise">
+        <div><b>①</b><p>老師陪伴答疑<small>作品迭代卡關、安裝問題、prompt 怎麼下——在群組問，老師和同學都在</small></p></div>
+        <div><b>②</b><p>認證影片陪跑<small>影片實作期間隨時提問，別讓最後一關卡住你的證書</small></p></div>
+        <div><b>③</b><p>持續分享應用場景<small>報表整理、文件自動化、新工具——課堂教不完的，群組慢慢聊</small></p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 認證 -->
+<section class="cert">
+  <div class="wrap">
+    <div class="center">
+      <span class="eyebrow">CERTIFICATION</span>
+      <h2 class="center">考什麼、拿什麼證</h2>
+    </div>
+    <div class="cert-grid">
+      <div class="cert-photo">
+        <img src="img/cert-sample.png" alt="AI 應用能力認證 證書樣張">
+        <div class="stamp">證書樣張</div>
+      </div>
+      <div>
+        <p class="org">發證單位：<b>國際跨域科學探究與教育協會</b><br>證書載有可查驗編號（AIL1－期別－流水號），全程與報名同號。</p>
+        <div class="cert-facts">
+          <div class="fact"><b>筆試 40%</b><span>20 題單選・50 分鐘・門檻 60 分</span></div>
+          <div class="fact"><b>實作 60%</b><span>3–8 分鐘影片：秀你上線的系統＋反思</span></div>
+          <div class="fact"><b>總分 ≥ 70</b><span>即通過認證，寄發證書</span></div>
+          <div class="fact"><b>初級 AIL1</b><span>通過後可續挑戰中級（開發中）</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 資訊 + FAQ -->
+<section>
+  <div class="wrap">
+    <div class="center">
+      <span class="eyebrow">DETAILS</span>
+      <h2 class="center">開課資訊與常見問題</h2>
+    </div>
+    <div class="info-grid">
+      <div class="info-box">
+        <h3>開課資訊</h3>
+        <table>
+          <tr><td>日期</td><td><span class="tbd">【待填】Day 1／Day 2 日期</span></td></tr>
+          <tr><td>時間</td><td>Day 1 09:00–16:00・Day 2 09:00–12:00 <span class="tbd">【暫定】</span></td></tr>
+          <tr><td>地點</td><td><span class="tbd">【待填】</span></td></tr>
+          <tr><td>費用</td><td><span class="tbd">【待填】</span>（含兩日課程、教材、認證報名、課後群組）</td></tr>
+          <tr><td>名額</td><td><span class="tbd">【待填】</span> 人（小班制含助教）</td></tr>
+          <tr><td>自備</td><td>筆電（Win / Mac 皆可）＋ Claude Pro 訂閱（行前信手把手教你辦）</td></tr>
+        </table>
+      </div>
+      <div class="info-box faq">
+        <h3>常見問題</h3>
+        <details open><summary>我完全不會寫程式，真的能上嗎？</summary><p>能。這門課的設計起點就是「沒開過終端機」。程式是 AI 寫的，你負責用中文把需求講清楚——這正是課程要教的能力。</p></details>
+        <details><summary>Claude Pro 是什麼？一定要買嗎？</summary><p>Claude Pro（約 US$20／月）是上課工具的訂閱方案，需自備；行前信會一步步教你註冊。課後你可以繼續用它工作，也可以隨時取消。</p></details>
+        <details><summary>做出來的系統課後還能用嗎？</summary><p>能。網站、資料庫、帳號全部是你自己的，課後直接拿去收單。課堂也會誠實告訴你它的極限在哪、什麼時候該升級。</p></details>
+        <details><summary>下課後卡關了怎麼辦？</summary><p>這正是課程群組存在的理由——老師陪伴答疑、同學互相支援。認證影片實作期間全程可提問。</p></details>
+        <details><summary>認證沒過怎麼辦？</summary><p>筆試未達門檻或影片逾期未繳，本梯次即結束（無重考、無補件），可報名下一梯重新挑戰。</p></details>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="final" id="signup">
+  <div class="wrap">
+    <span class="eyebrow">ENROLL NOW</span>
+    <h2>兩天後：<em>兩個上線作品</em>、一張認證、<br>和一群一起走下去的人</h2>
+    <p class="sub" style="margin-bottom:36px">名額有限，報名依繳費順序錄取。</p>
+    <a class="cta" href="https://forms.gle/【待填-報名表單】" target="_blank" rel="noopener">前往報名表單</a>
+    <div class="cta-note">報名後將寄送行前信（帳號申辦教學＋課前準備清單）</div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="org">國際跨域科學探究與教育協會</div>
+    <div>課程洽詢：service@kut.com.tw</div>
+  </div>
+</footer>
+
+<script>
+// 終端機打字動畫：模擬課堂上「用說的做出系統」
+const SCRIPT = [
+  {t:'$ ',      cls:'t-prompt', instant:true},
+  {t:'claude',  cls:'t-user', nl:true},
+  {t:'> ',      cls:'t-prompt', instant:true, delay:600},
+  {t:'幫我做一個公司訂便當系統，同事手機點餐，我看得到統計', cls:'t-user', nl:true},
+  {t:'✓ 建立下單頁（品項・數量・姓名）', cls:'t-ok', nl:true, delay:800, instant:true},
+  {t:'✓ 建立老闆管理頁（即時訂單統計）', cls:'t-ok', nl:true, delay:600, instant:true},
+  {t:'✓ 連接資料庫', cls:'t-ok', nl:true, delay:600, instant:true},
+  {t:'✓ 部署上線 → https://你的名字.github.io', cls:'t-ok', nl:true, delay:700, instant:true},
+  {t:'🎉 系統上線了。掃 QR code 收第一筆訂單吧！', cls:'t-user', nl:true, delay:900, instant:true},
+  {t:'— 這就是你 Day 1 下午會做到的事 —', cls:'t-dim', nl:true, delay:1200, instant:true},
+];
+const body = document.getElementById('termBody');
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let cursor = document.createElement('span'); cursor.className='t-cursor';
+async function play(){
+  body.innerHTML=''; body.appendChild(cursor);
+  for(const step of SCRIPT){
+    if(step.delay && !reduce) await new Promise(r=>setTimeout(r,step.delay));
+    const span = document.createElement('span'); span.className=step.cls;
+    body.insertBefore(span, cursor);
+    if(step.instant || reduce){ span.textContent = step.t; }
+    else{
+      for(const ch of step.t){ span.textContent += ch; await new Promise(r=>setTimeout(r,70)); }
+    }
+    if(step.nl) body.insertBefore(document.createElement('br'), cursor);
+  }
+  if(!reduce){ await new Promise(r=>setTimeout(r,9000)); play(); }
+}
+play();
+</script>
+
+</body>
+</html>
