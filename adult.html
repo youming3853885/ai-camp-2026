@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI 一日上線實戰班｜用說的，做出你的線上訂餐系統</title>
-<meta name="description" content="AI 開發實務落地：一天搞懂 AI Agent 與一般 AI 的差異，零基礎做出線上訂餐系統＋資料庫並上線。課後專屬群組，老師陪伴繼續學。">
+<title>Claude Code AI 協作開發課程｜初階×進階，兩堂課做出能營運的網站</title>
+<meta name="description" content="Claude Code AI 協作開發雙班課程：初階 6 小時做出可上線網站，進階 6 小時升級成可試營運產品。同一個專案從想法養到商用，課後專屬群組老師陪伴。">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;700;900&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
@@ -40,7 +40,7 @@
     var(--bg)}
   .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center}
   .pill{display:inline-flex;align-items:center;gap:8px;background:var(--terra-soft);color:var(--terra-deep);font-weight:700;font-size:14px;padding:7px 18px;border-radius:999px;margin-bottom:22px}
-  .hero h1{font-size:50px;font-weight:900;line-height:1.28;letter-spacing:.02em}
+  .hero h1{font-size:46px;font-weight:900;line-height:1.32;letter-spacing:.02em}
   .hero h1 em{font-style:normal;color:var(--terra)}
   .hero .lead{margin:18px 0 6px;font-size:19px;font-weight:700}
   .hero .lead-sub{font-size:15px;color:var(--muted)}
@@ -49,6 +49,8 @@
   .hero-points li::before{content:"✓";position:absolute;left:0;top:0;width:21px;height:21px;border-radius:50%;background:var(--terra);color:#fff;font-size:12px;display:flex;align-items:center;justify-content:center;margin-top:6px}
   .cta{display:inline-block;background:var(--terra);color:#fff;font-weight:900;font-size:18px;padding:17px 46px;border-radius:14px;text-decoration:none;letter-spacing:.08em;box-shadow:0 10px 26px rgba(198,97,63,.32);transition:.2s}
   .cta:hover{background:var(--terra-deep);transform:translateY(-2px)}
+  .cta.ghost{background:var(--card);color:var(--terra-deep);border:2px solid var(--terra);box-shadow:none}
+  .cta.ghost:hover{background:var(--terra-soft)}
   .cta-note{font-size:13.5px;color:var(--muted);margin-top:12px}
   .tbd{color:var(--terra-deep);background:var(--terra-soft);padding:2px 10px;border-radius:6px;font-size:13px;font-weight:700}
 
@@ -66,9 +68,26 @@
   .t-cursor{display:inline-block;width:9px;height:19px;background:var(--terra);vertical-align:-3px;animation:blink 1s steps(1) infinite}
   @keyframes blink{50%{opacity:0}}
 
-  /* 四大重點 */
-  .pillars{background:var(--bg-soft);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-  .pillar-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;margin-top:48px}
+  /* 雙班卡 */
+  .tracks{background:var(--bg-soft);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .track-grid{display:grid;grid-template-columns:1fr 1fr;gap:26px;margin-top:48px}
+  .track{background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden;transition:.2s;display:flex;flex-direction:column}
+  .track:hover{transform:translateY(-4px);box-shadow:0 14px 34px rgba(38,36,33,.1)}
+  .track img{aspect-ratio:5/2;object-fit:cover;width:100%}
+  .track .txt{padding:28px 30px 32px;flex:1}
+  .track .lvl{display:inline-block;background:var(--terra-soft);color:var(--terra-deep);font-size:13.5px;font-weight:900;padding:5px 16px;border-radius:999px;letter-spacing:.08em}
+  .track h3{font-size:24px;font-weight:900;margin:14px 0 6px}
+  .track .goal{font-size:15.5px;font-weight:700;color:var(--terra-deep);margin-bottom:14px}
+  .track .flow{font-size:14px;color:var(--muted);background:var(--bg-soft);border:1px solid var(--line);border-radius:10px;padding:12px 16px;margin-bottom:16px;line-height:1.9}
+  .track .flow b{color:var(--ink)}
+  .track ul{margin-top:4px}
+  .track li{list-style:none;padding-left:26px;position:relative;font-size:15px;margin-bottom:8px}
+  .track li::before{content:"—";position:absolute;left:0;color:var(--terra);font-weight:900}
+  .track-rel{text-align:center;margin-top:30px;font-size:17px;font-weight:700}
+  .track-rel em{font-style:normal;color:var(--terra)}
+
+  /* 三個承諾 */
+  .pillar-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:48px}
   .pillar{background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden;transition:.2s}
   .pillar:hover{transform:translateY(-4px);box-shadow:0 14px 34px rgba(38,36,33,.1)}
   .pillar img{aspect-ratio:3/2;object-fit:cover;width:100%}
@@ -77,31 +96,28 @@
   .pillar h3{font-size:19.5px;font-weight:900;margin:6px 0 8px}
   .pillar p{font-size:14.5px;color:var(--muted)}
 
-  /* 作品 */
-  .works .work{display:grid;grid-template-columns:1fr 1fr;gap:52px;align-items:center;margin-top:56px}
-  .works .work img{border-radius:18px;border:1px solid var(--line);box-shadow:0 16px 40px rgba(38,36,33,.12)}
-  .tag{display:inline-block;background:var(--ink);color:#fff;font-size:13px;font-weight:700;padding:5px 16px;border-radius:999px;margin-bottom:14px}
-  .tag.alt{background:var(--terra)}
-  .work h3{font-size:27px;font-weight:900;margin-bottom:12px}
-  .work p{color:var(--muted);font-size:15.5px}
-  .work ul{margin-top:14px}
-  .work li{list-style:none;padding-left:26px;position:relative;font-size:15px;margin-bottom:8px}
-  .work li::before{content:"—";position:absolute;left:0;color:var(--terra);font-weight:900}
-  .work .biz-badge{display:inline-block;background:#FBF3E2;border:1px solid #E9D9AE;color:#8a6a1f;font-size:13.5px;font-weight:700;padding:6px 14px;border-radius:10px;margin-top:16px}
-  .work.flip .txt{order:2}
-
   /* 議程 */
-  .agenda{background:var(--bg-soft);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
   .agenda-grid{display:grid;grid-template-columns:1fr 1fr;gap:26px;margin-top:48px}
   .day{background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden}
   .day-head{padding:20px 28px;border-bottom:2px solid var(--terra);display:flex;justify-content:space-between;align-items:baseline}
   .day-head h3{font-size:21px;font-weight:900}
   .day-head span{font-size:13.5px;color:var(--muted)}
   .day table{width:100%;border-collapse:collapse;font-size:14.5px}
-  .day td{padding:12px 28px;border-bottom:1px solid #EFE9DB;vertical-align:top}
-  .day td.t{white-space:nowrap;color:var(--terra);font-weight:700;width:118px;font-variant-numeric:tabular-nums}
+  .day td{padding:11px 28px;border-bottom:1px solid #EFE9DB;vertical-align:top}
+  .day td.t{white-space:nowrap;color:var(--terra);font-weight:700;width:86px;font-variant-numeric:tabular-nums}
   .day tr:last-child td{border-bottom:none}
   .day .hl td{background:#FBF4EC}
+
+  /* 行前準備 */
+  .prep{background:var(--bg-soft);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .prep-grid{display:grid;grid-template-columns:1fr 1fr;gap:26px;margin-top:48px}
+  .prep-box{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:32px}
+  .prep-box h3{font-size:20px;font-weight:900;margin-bottom:16px;color:var(--terra-deep)}
+  .prep-box li{list-style:none;padding:10px 0 10px 30px;position:relative;font-size:15px;border-bottom:1px solid #EFE9DB}
+  .prep-box li:last-child{border-bottom:none}
+  .prep-box li::before{content:"✓";position:absolute;left:0;top:12px;width:21px;height:21px;border-radius:50%;background:var(--terra);color:#fff;font-size:12px;display:flex;align-items:center;justify-content:center}
+  .prep-box li small{display:block;color:var(--muted);font-size:13.5px}
+  .prep-note{text-align:center;margin-top:28px;font-size:15.5px;font-weight:700;color:var(--terra-deep)}
 
   /* 課後陪伴 */
   .after .grid{display:grid;grid-template-columns:.95fr 1.05fr;gap:56px;align-items:center;margin-top:20px}
@@ -131,14 +147,13 @@
     var(--bg)}
   .final h2{font-size:38px}
   .final h2 em{font-style:normal;color:var(--terra)}
+  .final .btns{display:flex;gap:18px;justify-content:center;flex-wrap:wrap}
   footer{background:var(--ink);color:#a9a396;padding:32px 0;text-align:center;font-size:13.5px}
-  footer .org{color:#F0B490;font-weight:700;letter-spacing:.08em;margin-bottom:4px}
 
   @media(max-width:860px){
-    .hero-grid,.pillar-grid,.works .work,.agenda-grid,.after .grid,.info-grid{grid-template-columns:1fr}
-    .hero h1{font-size:34px}
+    .hero-grid,.track-grid,.pillar-grid,.agenda-grid,.prep-grid,.after .grid,.info-grid{grid-template-columns:1fr}
+    .hero h1{font-size:32px}
     h2{font-size:28px}
-    .work.flip .txt{order:0}
     section{padding:60px 0}
     .hero{padding:56px 0 64px}
   }
@@ -148,7 +163,7 @@
 
 <div class="topbar">
   <div class="wrap">
-    <div class="brand"><em>AI</em> 一日上線實戰班</div>
+    <div class="brand"><em>Claude Code</em> 協作開發課程</div>
     <a class="top-cta" href="#signup">立即報名</a>
   </div>
 </div>
@@ -157,15 +172,15 @@
 <div class="hero">
   <div class="wrap hero-grid">
     <div>
-      <span class="pill">🌱 零基礎專班・沒開過終端機也能上</span>
-      <h1>AI <em>一日上線</em>實戰班</h1>
-      <p class="lead">用說的，做出你的線上訂餐系統。</p>
-      <p class="lead-sub">AI 開發實務落地——一天，從零到上線。</p>
+      <span class="pill">🌱 初階零基礎可上 × 🚀 進階直達商用</span>
+      <h1>兩堂課，把一個想法<em>養成能營運的網站</em></h1>
+      <p class="lead">初階 6 小時：做出一個可上線的網站。</p>
+      <p class="lead-sub">進階 6 小時：把它升級成可試營運的產品。</p>
       <ul class="hero-points">
-        <li>下課前，你的<b>線上訂餐系統</b>已上線、收到第一筆訂單</li>
-        <li>可商用：網站、資料庫、網址都是<b>你自己的</b>，課後直接用</li>
-        <li>搞懂 <b>AI Agent 和一般 AI 差在哪</b>，回公司就用得上</li>
-        <li>課後專屬群組<b>老師陪伴</b>，卡關有人救</li>
+        <li><b>同一個專案</b>，兩堂課從想法一路養到商用</li>
+        <li>初階結束：你的網站已經有<b>公開網址</b></li>
+        <li>進階結束：<b>登入、權限、報表、維運文件</b>齊備</li>
+        <li>課堂只用<b>四個指令</b>——程式 AI 寫，你當老闆</li>
       </ul>
       <a class="cta" href="#signup">立即報名</a>
       <div class="cta-note">小班制・名額 <span class="tbd">【待填】</span> 人・報名後寄送行前信</div>
@@ -177,87 +192,80 @@
   </div>
 </div>
 
-<!-- 四大重點 -->
-<section class="pillars">
+<!-- 雙班卡 -->
+<section class="tracks">
+  <div class="wrap">
+    <div class="center">
+      <span class="eyebrow">TWO CLASSES</span>
+      <h2 class="center">雙班制：一個專案，兩段旅程</h2>
+      <p class="sub">初階把你的想法做成真的網站，進階把這個網站變成能做生意的產品。</p>
+    </div>
+    <div class="track-grid">
+      <div class="track">
+        <img src="img/warm-zero.png" alt="初階班：零基礎做出可上線網站">
+        <div class="txt">
+          <span class="lvl">🌱 初階班</span>
+          <h3>Claude Code AI 協作入門</h3>
+          <p class="goal">6 小時，完成一個可上線的網站</p>
+          <div class="flow"><b>主線：</b>想法 → 規格 → 前端 → 資料庫 → CRUD → 測試 → 公開上線</div>
+          <ul>
+            <li>帶走：你的作品<b>公開網址</b></li>
+            <li>帶走：一個 <b>GitHub 專案</b></li>
+            <li>帶走：<b>4D 協作方法</b>（委派・描述・判斷・盡責）</li>
+          </ul>
+        </div>
+      </div>
+      <div class="track">
+        <img src="img/warm-biz.png" alt="進階班：升級成可試營運產品">
+        <div class="txt">
+          <span class="lvl">🚀 進階班</span>
+          <h3>Claude Code 商用專案實戰</h3>
+          <p class="goal">6 小時，完成一個可試營運的產品</p>
+          <div class="flow"><b>主線：</b>登入 → 資料隔離 → 管理功能 → 驗證 → 測試 → 商用部署 → 維運文件</div>
+          <ul>
+            <li>帶走：<b>Production 網址</b></li>
+            <li>帶走：一套<b>商用文件包</b></li>
+            <li>帶走：<b>Go/No-Go 判定能力</b>（該不該正式營運）</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <p class="track-rel">同一個專案：初階把它<em>做出來</em>，進階把它<em>變成生意</em>。</p>
+  </div>
+</section>
+
+<!-- 三個承諾 -->
+<section>
   <div class="wrap">
     <div class="center">
       <span class="eyebrow">WHY THIS COURSE</span>
-      <h2 class="center">這門課的四個承諾</h2>
+      <h2 class="center">這門課的三個承諾</h2>
     </div>
     <div class="pillar-grid">
       <div class="pillar">
-        <img src="img/warm-zero.png" alt="零基礎友善">
+        <img src="img/warm-agent.png" alt="四個指令，AI 寫程式">
         <div class="txt">
           <span class="num">01</span>
-          <h3>零基礎</h3>
-          <p>從「終端機是什麼」教起。指令與提示詞全有範本照抄，打字慢用語音輸入，安裝卡關有急救站。</p>
+          <h3>零基礎，只用四個指令</h3>
+          <p>從「終端機是什麼」教起。課堂全程只用四個指令，程式 AI 寫、你當老闆——把需求講清楚就是你的工作。</p>
         </div>
       </div>
       <div class="pillar">
-        <img src="img/warm-biz.png" alt="可商用成品上線">
+        <img src="img/warm-tool.png" alt="可商用成品上線">
         <div class="txt">
           <span class="num">02</span>
-          <h3>可商用成品上線</h3>
-          <p>不是練習題——你的訂餐系統帶真資料庫、有公開網址，下課直接拿去收單、貼到社群。</p>
-        </div>
-      </div>
-      <div class="pillar">
-        <img src="img/warm-agent.png" alt="AI Agent 實戰思維">
-        <div class="txt">
-          <span class="num">03</span>
-          <h3>AI Agent 實戰思維</h3>
-          <p>一般 AI 只會回答，AI Agent 會動手做事。搞懂差異與邊界，你就知道公司裡哪些事該交給它。</p>
+          <h3>成品是你的，可商用</h3>
+          <p>不是練習題——網站、資料庫、帳號、網址全部歸你，下課直接拿去用、貼到社群、給客戶看。</p>
         </div>
       </div>
       <div class="pillar">
         <img src="img/warm-group.png" alt="課後專屬群組">
         <div class="txt">
-          <span class="num">04</span>
+          <span class="num">03</span>
           <h3>課後才是開始</h3>
           <p>結業即加入專屬課程群組：老師陪伴答疑、作品持續迭代、同學互相支援，不是上完就散。</p>
         </div>
       </div>
-    </div>
-  </div>
-</section>
-
-<!-- 兩個作品 -->
-<section class="works">
-  <div class="wrap">
-    <div class="center">
-      <span class="eyebrow">YOUR WORKS</span>
-      <h2 class="center">一天，帶走兩個上線作品</h2>
-      <p class="sub">難度階梯設計：上午先用小工具走完「建站 → 上線」全流程，下午同一套流程放大、加上真資料庫。</p>
-    </div>
-
-    <div class="work">
-      <div class="txt">
-        <span class="tag">作品一・上午上線</span>
-        <h3>小工具：番茄鐘＋抽獎轉盤</h3>
-        <p>辦公室天天用得到：25 分鐘專注計時＋尾牙抽獎轉盤（名單自己填）。</p>
-        <ul>
-          <li>第一次對 AI 下指令、看它寫出你的網頁</li>
-          <li>第一次把作品部署上網</li>
-          <li>中午前，手機掃自己的 QR code 抽一輪獎</li>
-        </ul>
-      </div>
-      <img src="img/warm-tool.png" alt="番茄鐘與抽獎轉盤">
-    </div>
-
-    <div class="work flip">
-      <div class="txt">
-        <span class="tag alt">作品二・下午上線</span>
-        <h3>你的線上訂餐系統</h3>
-        <p>便當訂餐、飲料團購、課程報名……骨架統一、品項換成你自己的，這次加上<b>真的資料庫</b>。</p>
-        <ul>
-          <li>下單頁：客人選品項＋數量＋姓名，送出</li>
-          <li>老闆管理頁：訂單即時跳出、自動統計</li>
-          <li>課堂高潮：全班互掃 QR 下單，實測你的系統</li>
-          <li>進度快？現場深化成「預約系統」</li>
-        </ul>
-        <span class="biz-badge">💼 可商用：帳號、資料庫、網址全歸你，課後直接收單</span>
-      </div>
-      <img src="img/warm-biz.png" alt="線上訂餐系統">
     </div>
   </div>
 </section>
@@ -267,27 +275,72 @@
   <div class="wrap">
     <div class="center">
       <span class="eyebrow">AGENDA</span>
-      <h2 class="center">一日議程</h2>
+      <h2 class="center">課程時間軸</h2>
+      <p class="sub">兩班各 6 小時。時間為課程進行相對時間（含休息機動調整）。</p>
     </div>
     <div class="agenda-grid">
       <div class="day">
-        <div class="day-head"><h3>上午・觀念與第一次上線</h3><span>09:00–12:00</span></div>
+        <div class="day-head"><h3>🌱 初階班</h3><span>6 小時・想法 → 公開上線</span></div>
         <table>
-          <tr><td class="t">09:00–09:40</td><td><b>AI Agent 與一般 AI 的差異</b>——會回答的 AI vs 會動手的 AI＋Anthropic 官方 <b>AI Fluency 4D 框架</b>（委派・描述・判斷・盡責）；老師現場從零做出訂餐系統、收到第一筆單</td></tr>
-          <tr><td class="t">09:40–10:30</td><td><b>Claude Code 安裝</b>＋終端機除魅（Windows / Mac 急救站）</td></tr>
-          <tr class="hl"><td class="t">10:30–12:00</td><td><b>小工具開發練習：番茄鐘＋抽獎轉盤</b>——做出來、上線、掃 QR 抽獎</td></tr>
+          <tr><td class="t">00:00</td><td><b>看懂完整網站</b>——一個網站由哪些零件組成</td></tr>
+          <tr><td class="t">00:30</td><td><b>Claude Code 與 4D</b>——委派・描述・判斷・盡責</td></tr>
+          <tr><td class="t">01:10</td><td><b>定義專案</b>——把你的想法講成規格</td></tr>
+          <tr><td class="t">02:00</td><td><b>啟動專案</b>——第一次讓 AI 動工</td></tr>
+          <tr class="hl"><td class="t">02:40</td><td><b>前端頁面</b>——做出看得到的畫面</td></tr>
+          <tr class="hl"><td class="t">03:30</td><td><b>串接資料庫</b>——資料存得住、查得到</td></tr>
+          <tr><td class="t">04:30</td><td><b>測試除錯</b>——壞了怎麼跟 AI 說</td></tr>
+          <tr class="hl"><td class="t">05:10</td><td><b>部署</b>——拿到公開網址</td></tr>
+          <tr><td class="t">05:40</td><td><b>發表</b>——展示你的網站＋加入課程群組</td></tr>
         </table>
       </div>
       <div class="day">
-        <div class="day-head"><h3>下午・系統實戰</h3><span>13:00–16:00</span></div>
+        <div class="day-head"><h3>🚀 進階班</h3><span>6 小時・上線 → 可試營運</span></div>
         <table>
-          <tr class="hl"><td class="t">13:00–14:40</td><td><b>線上訂餐系統</b>——AI 訪談你的品項、生成下單頁＋管理頁、接上資料庫</td></tr>
-          <tr class="hl"><td class="t">14:40–15:20</td><td><b>上線</b>＋全班互相下單壓力測試（進度快可深化成預約系統）</td></tr>
-          <tr><td class="t">15:20–15:50</td><td><b>技能與安全</b>——Claude Code skills 初體驗（重複指令變一鍵技能）＋金鑰保管與系統安全邊界</td></tr>
-          <tr><td class="t">15:50–16:00</td><td>回家還能這樣用＋加入課程群組</td></tr>
+          <tr><td class="t">00:00</td><td><b>商用健檢</b>——你的網站離「能做生意」差多遠</td></tr>
+          <tr><td class="t">00:35</td><td><b>CLAUDE.md 與規格</b>——讓 AI 記住你的專案</td></tr>
+          <tr class="hl"><td class="t">01:15</td><td><b>登入</b>——使用者帳號系統</td></tr>
+          <tr class="hl"><td class="t">02:00</td><td><b>資料隔離 RLS</b>——誰能看到誰的資料</td></tr>
+          <tr><td class="t">02:50</td><td><b>管理功能</b>——後台、報表、統計</td></tr>
+          <tr><td class="t">03:40</td><td><b>驗證錯誤處理</b>——擋住錯誤輸入與意外</td></tr>
+          <tr><td class="t">04:20</td><td><b>測試發布</b>——上線前最後檢查</td></tr>
+          <tr class="hl"><td class="t">05:00</td><td><b>商用部署</b>——Production 環境上線</td></tr>
+          <tr><td class="t">05:35</td><td><b>Go/No-Go 評估</b>——維運文件＋該不該正式營運</td></tr>
         </table>
       </div>
     </div>
+  </div>
+</section>
+
+<!-- 行前準備 -->
+<section class="prep">
+  <div class="wrap">
+    <div class="center">
+      <span class="eyebrow">GET READY</span>
+      <h2 class="center">行前準備：四個帳號＋五個軟體</h2>
+      <p class="sub">上課要用的工具都在這裡。不用現在就會——報名後行前信會一步一步帶你完成。</p>
+    </div>
+    <div class="prep-grid">
+      <div class="prep-box">
+        <h3>四個帳號</h3>
+        <ul>
+          <li>Claude Pro<small>上課的 AI 主力（約 US$20／月，需自備）</small></li>
+          <li>GitHub<small>存放你的程式專案（免費）</small></li>
+          <li>Supabase<small>你的雲端資料庫（免費）</small></li>
+          <li>Vercel<small>讓網站上線的部署平台（免費）</small></li>
+        </ul>
+      </div>
+      <div class="prep-box">
+        <h3>五個軟體</h3>
+        <ul>
+          <li>VS Code<small>看程式的編輯器</small></li>
+          <li>Git<small>版本管理工具</small></li>
+          <li>Node.js<small>執行環境</small></li>
+          <li>Claude Code<small>課堂主角——AI 協作開發工具</small></li>
+          <li>Chrome<small>瀏覽器</small></li>
+        </ul>
+      </div>
+    </div>
+    <p class="prep-note">📮 報名後行前信手把手帶你裝好，開課當天直接開工。</p>
   </div>
 </section>
 
@@ -298,10 +351,10 @@
     <div>
       <span class="eyebrow">AFTER CLASS</span>
       <h2>下課那一刻，<br>才是學習真正的開始</h2>
-      <p class="sub" style="margin:14px 0 0;max-width:none">一天的課給你起點，專屬群組陪你走後面的路。結業學員全數加入課程群組：</p>
+      <p class="sub" style="margin:14px 0 0;max-width:none">課堂給你起點，專屬群組陪你走後面的路。初階、進階結業學員全數加入課程群組：</p>
       <div class="promise">
-        <div><b>①</b><p>老師陪伴答疑<small>作品迭代卡關、安裝問題、prompt 怎麼下——在群組問，老師和同學都在</small></p></div>
-        <div><b>②</b><p>作品持續迭代<small>訂餐系統想加功能、想換成自己的生意——群組裡陪你改到能用</small></p></div>
+        <div><b>①</b><p>老師陪伴答疑<small>專案迭代卡關、安裝問題、prompt 怎麼下——在群組問，老師和同學都在</small></p></div>
+        <div><b>②</b><p>作品持續迭代<small>網站想加功能、想換成自己的生意——群組裡陪你改到能用</small></p></div>
         <div><b>③</b><p>持續分享應用場景<small>報表整理、文件自動化、新工具——課堂教不完的，群組慢慢聊</small></p></div>
       </div>
     </div>
@@ -319,8 +372,9 @@
       <div class="info-box">
         <h3>開課資訊</h3>
         <table>
-          <tr><td>日期</td><td><span class="tbd">【待填】</span></td></tr>
-          <tr><td>時間</td><td>09:00–16:00（單日 6 小時，含午休）</td></tr>
+          <tr><td>初階日期</td><td><span class="tbd">【待填】</span></td></tr>
+          <tr><td>進階日期</td><td><span class="tbd">【待填】</span></td></tr>
+          <tr><td>時間</td><td>每班 6 小時（含休息）</td></tr>
           <tr><td>地點</td><td><span class="tbd">【待填】</span></td></tr>
           <tr><td>費用</td><td><span class="tbd">【待填】</span>（含全日課程、教材、課後群組）</td></tr>
           <tr><td>名額</td><td><span class="tbd">【待填】</span> 人（小班制含助教）</td></tr>
@@ -329,11 +383,10 @@
       </div>
       <div class="info-box faq">
         <h3>常見問題</h3>
-        <details open><summary>我完全不會寫程式，真的能上嗎？</summary><p>能。這門課的設計起點就是「沒開過終端機」。程式是 AI 寫的，你負責用中文把需求講清楚——這正是課程要教的能力。</p></details>
+        <details open><summary>我完全不會寫程式，真的能上嗎？</summary><p>能。課堂全程只用四個指令，程式是 AI 寫的，你負責用中文把需求講清楚、判斷結果好不好——這正是課程要教的能力。初階班的設計起點就是「沒開過終端機」。</p></details>
+        <details><summary>初階、進階要一起報嗎？</summary><p>不用，可以只上初階——初階結束你就有一個公開上線的網站。想上進階班，需要有初階班基礎，或已經會用 Claude Code＋Supabase。</p></details>
         <details><summary>Claude Pro 是什麼？一定要買嗎？</summary><p>Claude Pro（約 US$20／月）是上課工具的訂閱方案，需自備；行前信會一步步教你註冊。課後你可以繼續用它工作，也可以隨時取消。</p></details>
-        <details><summary>做出來的系統課後還能用嗎？</summary><p>能。網站、資料庫、帳號全部是你自己的，課後直接拿去收單。課堂也會誠實告訴你它的極限在哪、什麼時候該升級。</p></details>
         <details><summary>下課後卡關了怎麼辦？</summary><p>這正是課程群組存在的理由——老師陪伴答疑、同學互相支援，作品可以一直迭代下去。</p></details>
-        <details><summary>一天真的學得會嗎？</summary><p>一天學不會「寫程式」，但學得會「指揮 AI 幫你做出來」。課程用同一套骨架帶全班走兩輪完整流程（建站→上線→加資料庫），下課時你已經親手上線兩個作品。</p></details>
         <details><summary>上完有證書嗎？</summary><p>本課程教學法採 Anthropic 官方「AI Fluency 4D 框架」。課後我們會在群組帶你挑戰官方免費線上課（AI Fluency: Framework &amp; Foundations），通過測驗即獲 <b>Anthropic 官方完課證書</b>——課堂就是它的實戰版，上完再去考會非常有感。</p></details>
       </div>
     </div>
@@ -344,16 +397,19 @@
 <section class="final" id="signup">
   <div class="wrap">
     <span class="eyebrow">ENROLL NOW</span>
-    <h2>一天後：<em>兩個上線作品</em>、一套 AI Agent 思維、<br>和一群一起走下去的人</h2>
-    <p class="sub" style="margin-bottom:36px">名額有限，報名依繳費順序錄取。</p>
-    <a class="cta" href="https://forms.gle/【待填-報名表單】" target="_blank" rel="noopener">前往報名表單</a>
-    <div class="cta-note">報名後將寄送行前信（帳號申辦教學＋課前準備清單）</div>
+    <h2>兩堂課後：一個<em>能營運的網站</em>、一套 AI 協作方法、<br>和一群一起走下去的人</h2>
+    <p class="sub" style="margin-bottom:36px">名額有限，報名依繳費順序錄取。可只報初階。</p>
+    <div class="btns">
+      <a class="cta" href="https://forms.gle/【待填-初階報名表單】" target="_blank" rel="noopener">報名初階班</a>
+      <a class="cta ghost" href="https://forms.gle/【待填-進階報名或通知表單】" target="_blank" rel="noopener">進階班報名／開課通知</a>
+    </div>
+    <div class="cta-note">報名後將寄送行前信（帳號申辦教學＋軟體安裝清單）</div>
   </div>
 </section>
 
 <footer>
   <div class="wrap">
-    <div>AI 一日上線實戰班 © 2026</div>
+    <div>Claude Code AI 協作開發課程 © 2026</div>
   </div>
 </footer>
 
@@ -363,13 +419,13 @@ const SCRIPT = [
   {t:'$ ',      cls:'t-prompt', instant:true},
   {t:'claude',  cls:'t-user', nl:true},
   {t:'> ',      cls:'t-prompt', instant:true, delay:600},
-  {t:'幫我做一個線上訂餐系統，客人手機點餐，我看得到統計', cls:'t-user', nl:true},
-  {t:'✓ 建立下單頁（品項・數量・姓名）', cls:'t-ok', nl:true, delay:800, instant:true},
-  {t:'✓ 建立老闆管理頁（即時訂單統計）', cls:'t-ok', nl:true, delay:600, instant:true},
-  {t:'✓ 連接資料庫', cls:'t-ok', nl:true, delay:600, instant:true},
-  {t:'✓ 部署上線 → https://你的名字.github.io', cls:'t-ok', nl:true, delay:700, instant:true},
-  {t:'🎉 系統上線了。掃 QR code 收第一筆訂單吧！', cls:'t-user', nl:true, delay:900, instant:true},
-  {t:'— 這就是你下午會親手做到的事 —', cls:'t-dim', nl:true, delay:1200, instant:true},
+  {t:'幫我做一個教室設備借用系統', cls:'t-user', nl:true},
+  {t:'✓ 閱讀專案結構', cls:'t-ok', nl:true, delay:800, instant:true},
+  {t:'✓ 建立清單頁與表單', cls:'t-ok', nl:true, delay:600, instant:true},
+  {t:'✓ 串接資料庫', cls:'t-ok', nl:true, delay:600, instant:true},
+  {t:'✓ 部署上線', cls:'t-ok', nl:true, delay:700, instant:true},
+  {t:'🎉 公開網址完成', cls:'t-user', nl:true, delay:900, instant:true},
+  {t:'— 這是初階班一天內會發生的事 —', cls:'t-dim', nl:true, delay:1200, instant:true},
 ];
 const body = document.getElementById('termBody');
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
