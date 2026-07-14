@@ -3,448 +3,451 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Claude Code AI 協作開發課程｜初階×進階，兩堂課做出能營運的網站</title>
-<meta name="description" content="Claude Code AI 協作開發雙班課程：初階 6 小時做出可上線網站，進階 6 小時升級成可試營運產品。同一個專案從想法養到商用，課後專屬群組老師陪伴。">
+<title>AI 協作開發課｜零基礎也能用 AI 做出自己的網站與系統</title>
+<meta name="description" content="初階 6 小時完成可上線作品，進階 6 小時打造可商用 MVP。學會 Claude Code 與 4D AI 協作架構，完成前端、後端、資料庫與部署。">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;700;900&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#F5F0E6; --bg-soft:#FAF7F0; --card:#FFFDF8;
-    --ink:#262421; --muted:#6f6a60; --line:#E5DDCC;
-    --terra:#C6613F; --terra-deep:#A84D2F; --terra-soft:#F3D9CD;
-    --term-bg:#211F1C; --term-green:#8fd48a; --term-dim:#8a857b;
+    --orange:#FF7A1A; --orange2:#FFA23D; --ink:#111827; --muted:#6B7280;
+    --line:#EEE7DB; --cream:#FAF5EC; --blue:#3B82F6;
   }
   *{margin:0;padding:0;box-sizing:border-box}
   html{scroll-behavior:smooth}
-  body{font-family:"Noto Sans TC",-apple-system,"Microsoft JhengHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.8}
-  h1,h2,h3{font-family:"Noto Serif TC","Noto Sans TC",serif}
+  body{font-family:"Noto Sans TC",-apple-system,"Microsoft JhengHei",sans-serif;color:var(--ink);background:#fff;line-height:1.7;overflow-x:hidden}
   img{max-width:100%;display:block}
-  .wrap{max-width:1100px;margin:0 auto;padding:0 24px}
-  section{padding:84px 0}
-  .eyebrow{display:inline-block;color:var(--terra);font-weight:700;font-size:14px;letter-spacing:.28em;text-indent:.28em;margin-bottom:14px}
-  h2{font-size:36px;font-weight:900;letter-spacing:.03em;line-height:1.35}
+  .grad{background:linear-gradient(135deg,var(--orange2),var(--orange))}
+  .wrap{max-width:1160px;margin:0 auto;padding:0 24px}
+  section{padding:76px 0}
+  .eyebrow{display:inline-block;color:var(--orange);font-weight:900;font-size:13.5px;letter-spacing:.26em;text-indent:.26em;margin-bottom:12px}
+  h2{font-size:34px;font-weight:900;line-height:1.35}
   .center{text-align:center}
-  .sub{color:var(--muted);font-size:16.5px;max-width:660px;margin:16px auto 0}
+  .lead-sub{color:var(--muted);font-size:16px;max-width:640px;margin:14px auto 0}
+  .tbd{color:#B45309;background:#FEF3C7;padding:2px 10px;border-radius:6px;font-size:13px;font-weight:700}
 
-  /* top bar */
-  .topbar{background:var(--bg-soft);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:50}
-  .topbar .wrap{display:flex;justify-content:space-between;align-items:center;height:64px}
-  .brand{font-weight:900;font-size:16px;letter-spacing:.05em}
-  .brand em{font-style:normal;color:var(--terra)}
-  .top-cta{background:var(--ink);color:#fff;text-decoration:none;font-weight:700;font-size:14px;padding:10px 22px;border-radius:999px}
-  .top-cta:hover{background:var(--terra)}
+  /* ===== topbar ===== */
+  .topbar{height:62px;display:flex;align-items:center;justify-content:space-between;padding:0 clamp(16px,4vw,40px);background:rgba(255,255,255,.92);backdrop-filter:blur(8px);position:sticky;top:0;z-index:50;border-bottom:1px solid #F3F4F6}
+  .brand{display:flex;align-items:center;gap:10px;font-size:18px;font-weight:900;white-space:nowrap}
+  .brand .logo{width:33px;height:33px;border-radius:9px;color:#fff;font-size:14px;font-weight:900;display:flex;align-items:center;justify-content:center;flex:none}
+  .nav{display:flex;align-items:center;gap:clamp(14px,2.6vw,34px);font-size:15px;font-weight:700}
+  .nav a{color:var(--ink);text-decoration:none}
+  .nav a:hover{color:var(--orange)}
+  .nav .cta{color:#fff;padding:9px 22px;border-radius:12px;box-shadow:0 6px 16px rgba(255,122,26,.35)}
+  @media(max-width:720px){.nav a:not(.cta){display:none}}
 
-  /* hero */
-  .hero{padding:88px 0 96px;background:
-    radial-gradient(800px 420px at 85% -10%, #F8E3D6 0%, transparent 60%),
-    var(--bg)}
-  .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center}
-  .pill{display:inline-flex;align-items:center;gap:8px;background:var(--terra-soft);color:var(--terra-deep);font-weight:700;font-size:14px;padding:7px 18px;border-radius:999px;margin-bottom:22px}
-  .hero h1{font-size:46px;font-weight:900;line-height:1.32;letter-spacing:.02em}
-  .hero h1 em{font-style:normal;color:var(--terra)}
-  .hero .lead{margin:18px 0 6px;font-size:19px;font-weight:700}
-  .hero .lead-sub{font-size:15px;color:var(--muted)}
-  .hero-points{margin:16px 0 32px}
-  .hero-points li{list-style:none;padding-left:30px;position:relative;font-size:16px;margin-bottom:9px}
-  .hero-points li::before{content:"✓";position:absolute;left:0;top:0;width:21px;height:21px;border-radius:50%;background:var(--terra);color:#fff;font-size:12px;display:flex;align-items:center;justify-content:center;margin-top:6px}
-  .cta{display:inline-block;background:var(--terra);color:#fff;font-weight:900;font-size:18px;padding:17px 46px;border-radius:14px;text-decoration:none;letter-spacing:.08em;box-shadow:0 10px 26px rgba(198,97,63,.32);transition:.2s}
-  .cta:hover{background:var(--terra-deep);transform:translateY(-2px)}
-  .cta.ghost{background:var(--card);color:var(--terra-deep);border:2px solid var(--terra);box-shadow:none}
-  .cta.ghost:hover{background:var(--terra-soft)}
-  .cta-note{font-size:13.5px;color:var(--muted);margin-top:12px}
-  .tbd{color:var(--terra-deep);background:var(--terra-soft);padding:2px 10px;border-radius:6px;font-size:13px;font-weight:700}
+  /* ===== hero ===== */
+  .hero{display:grid;grid-template-columns:44% 56%;position:relative}
+  .hero::after{content:"";position:absolute;top:0;right:0;bottom:0;width:60%;background:var(--cream);z-index:0;border-radius:0 0 0 48px}
+  .left{padding:38px 8px 36px clamp(16px,4vw,40px);position:relative;z-index:2;display:flex;flex-direction:column}
+  h1{font-size:clamp(30px,3.4vw,46px);font-weight:900;line-height:1.26;letter-spacing:.01em}
+  h1 .o{color:var(--orange)}
+  .sub{margin:12px 0 16px;font-size:16px;color:var(--muted);max-width:430px}
+  .pills{display:flex;flex-direction:column;gap:9px;margin-bottom:18px}
+  .pill{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:8px 18px;width:max-content;max-width:100%;box-shadow:0 4px 14px rgba(17,24,39,.06);font-size:14.5px;flex-wrap:wrap}
+  .pill .ic{width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex:none}
+  .pill b{font-weight:900}
+  .pill .sep{color:#D1D5DB}
+  .pill .en{color:var(--muted);font-size:13px}
+  .btns{display:flex;gap:12px;align-items:center;margin-bottom:18px;flex-wrap:wrap}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-weight:900;font-size:16.5px;padding:14px 30px;border-radius:14px;text-decoration:none}
+  .btn.primary{color:#fff;box-shadow:0 10px 24px rgba(255,122,26,.38)}
+  .btn.primary:hover{filter:brightness(1.06)}
+  .btn.ghost{color:var(--ink);background:#fff;border:1.5px solid #E5E7EB}
+  .fit{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:9px 18px;width:max-content;max-width:100%;font-size:13.5px;color:#374151;box-shadow:0 3px 10px rgba(17,24,39,.05);margin-bottom:18px}
+  .fit .ic{color:var(--orange)}
+  .mini-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;max-width:560px;margin-top:auto}
+  .mini{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px 16px 14px;box-shadow:0 8px 22px rgba(17,24,39,.06)}
+  .mini .ic{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;margin-bottom:9px}
+  .mini h3{font-size:16.5px;font-weight:900}
+  .mini .t1{font-size:12.5px;color:var(--muted);margin-top:2px}
+  .mini .t2{font-size:12.5px;color:#374151;font-weight:700}
 
-  /* terminal */
-  .term{background:var(--term-bg);border-radius:16px;box-shadow:0 24px 60px rgba(38,36,33,.28);overflow:hidden;font-family:"Cascadia Code",Consolas,monospace}
-  .term-bar{display:flex;align-items:center;gap:7px;padding:13px 18px;background:#2b2925}
-  .term-bar i{width:12px;height:12px;border-radius:50%;display:block}
-  .term-bar i:nth-child(1){background:#f26d5f}.term-bar i:nth-child(2){background:#f2b64c}.term-bar i:nth-child(3){background:#5fc464}
-  .term-bar span{margin-left:10px;color:#7c776d;font-size:12.5px}
-  .term-body{padding:24px 26px 30px;font-size:14.5px;line-height:2.05;min-height:300px;color:#e8e3d8}
-  .t-prompt{color:var(--terra)}
-  .t-user{color:#f0ddb8}
-  .t-ok{color:var(--term-green)}
-  .t-dim{color:var(--term-dim)}
-  .t-cursor{display:inline-block;width:9px;height:19px;background:var(--terra);vertical-align:-3px;animation:blink 1s steps(1) infinite}
-  @keyframes blink{50%{opacity:0}}
+  /* ===== right composite（固定設計尺寸 900x640，JS 等比縮放）===== */
+  .right{position:relative;z-index:2;padding:30px 34px 0 10px;display:flex;justify-content:center}
+  .stage-box{width:100%}
+  .stage{position:relative;width:900px;height:640px;transform-origin:top left}
+  .codewin{position:absolute;left:0;top:6px;width:300px;background:#12141C;border-radius:14px;box-shadow:0 18px 40px rgba(17,24,39,.25);overflow:hidden;z-index:3}
+  .codewin .bar{display:flex;gap:6px;padding:10px 12px;background:#1B1E2A}
+  .codewin .bar i{width:9px;height:9px;border-radius:50%}
+  .codewin pre{padding:12px 14px 16px;font-family:Consolas,monospace;font-size:10.5px;line-height:1.75;color:#C9D1E3;white-space:pre}
+  .k{color:#C678DD}.s{color:#98C379}.f{color:#61AFEF}.n{color:#D19A66}
+  .flow{position:absolute;left:315px;top:18px;right:0;display:flex;align-items:center;gap:10px;z-index:3}
+  .fcard{background:#fff;border-radius:16px;padding:12px 18px;display:flex;align-items:center;gap:10px;box-shadow:0 10px 26px rgba(17,24,39,.1)}
+  .fcard .ic{width:36px;height:36px;border-radius:10px;background:#EFF6FF;display:flex;align-items:center;justify-content:center;font-size:18px}
+  .fcard b{font-size:14.5px;font-weight:900;display:block;line-height:1.3}
+  .fcard span{font-size:11.5px;color:var(--muted)}
+  .dash{flex:1;border-top:2px dashed #CBD5E1;position:relative;min-width:26px}
+  .dash::after{content:"▸";position:absolute;right:-4px;top:-11px;color:#CBD5E1;font-size:14px}
+  .check{width:24px;height:24px;border-radius:50%;background:#22C55E;color:#fff;font-size:13px;display:flex;align-items:center;justify-content:center;flex:none;box-shadow:0 4px 10px rgba(34,197,94,.4)}
+  .aicard{position:absolute;right:0;top:118px;background:#fff;border-radius:16px;padding:12px 18px;display:flex;align-items:center;gap:10px;box-shadow:0 10px 26px rgba(17,24,39,.12);z-index:4}
+  .aicard .ic{width:34px;height:34px;border-radius:50%;background:#111;color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px}
+  .aicard b{font-size:14px;font-weight:900;display:block;line-height:1.3}
+  .aicard span{font-size:11.5px;color:var(--muted)}
+  .laptop{position:absolute;left:26px;top:122px;width:560px;z-index:2}
+  .screen{background:#0F1117;border-radius:16px 16px 0 0;padding:10px 10px 0;box-shadow:0 30px 60px rgba(17,24,39,.28)}
+  .site{background:#fff;border-radius:8px 8px 0 0;overflow:hidden}
+  .site .snav{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;border-bottom:1px solid #F3F4F6;font-size:9.5px}
+  .site .snav .l{display:flex;gap:6px;align-items:center;font-weight:900;font-size:10.5px}
+  .site .snav .dot{width:14px;height:14px;border-radius:4px}
+  .site .snav .r{display:flex;gap:10px;color:#6B7280;align-items:center}
+  .site .snav .sbtn{background:var(--blue);color:#fff;border-radius:6px;padding:3px 9px;font-weight:700}
+  .shero{display:grid;grid-template-columns:1fr 1fr;background:linear-gradient(120deg,#EFF6FF,#DBEAFE);padding:16px 18px;align-items:center;gap:8px}
+  .shero h4{font-size:16.5px;font-weight:900;line-height:1.4;color:#111827}
+  .shero p{font-size:9.5px;color:#64748B;margin:5px 0 8px}
+  .shero .bb{display:flex;gap:6px}
+  .shero .bb i{font-style:normal;font-size:9px;font-weight:700;padding:4px 10px;border-radius:6px}
+  .shero .bb i.b1{background:var(--blue);color:#fff}
+  .shero .bb i.b2{background:#fff;color:#374151;border:1px solid #E2E8F0}
+  .shero img{width:100%;border-radius:8px}
+  .scards{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:10px 14px 14px}
+  .scard{border:1px solid #F1F5F9;border-radius:8px;padding:8px;font-size:9px;color:#64748B;box-shadow:0 2px 8px rgba(17,24,39,.04)}
+  .scard b{display:flex;align-items:center;gap:4px;font-size:10px;color:#111827}
+  .scard .mi{width:14px;height:14px;border-radius:4px;display:inline-flex;align-items:center;justify-content:center;font-size:8px;color:#fff}
+  .base{height:14px;background:linear-gradient(#E5E7EB,#C7CBD1);border-radius:0 0 18px 18px;margin:0 -26px;box-shadow:0 12px 26px rgba(17,24,39,.18)}
+  .base::after{content:"";display:block;width:90px;height:5px;background:#B6BBC4;border-radius:0 0 8px 8px;margin:0 auto}
+  .chips{position:absolute;right:0;top:206px;display:flex;flex-direction:column;gap:10px;z-index:3}
+  .chip{background:#fff;border-radius:12px;padding:8px 14px;display:flex;align-items:center;gap:9px;box-shadow:0 8px 20px rgba(17,24,39,.1);min-width:150px}
+  .chip .ic{width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;flex:none}
+  .chip b{font-size:12px;font-weight:900;display:block;line-height:1.3}
+  .chip span{font-size:10px;color:var(--muted)}
+  .photo{position:absolute;right:0;bottom:0;width:504px;z-index:5;pointer-events:none}
+  .photo img{width:100%;border-radius:20px 20px 0 0}
+
+  @media(max-width:1100px){
+    .hero{grid-template-columns:1fr}
+    .right{padding:16px 16px 0}
+    .mini-cards{max-width:none}
+  }
+  @media(max-width:560px){
+    .mini-cards{grid-template-columns:1fr 1fr}
+  }
+
+  /* ===== 下半部通用 ===== */
+  .band{background:var(--cream)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:44px}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:44px}
+  @media(max-width:900px){.grid2,.grid3{grid-template-columns:1fr}}
 
   /* 雙班卡 */
-  .tracks{background:var(--bg-soft);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-  .track-grid{display:grid;grid-template-columns:1fr 1fr;gap:26px;margin-top:48px}
-  .track{background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden;transition:.2s;display:flex;flex-direction:column}
-  .track:hover{transform:translateY(-4px);box-shadow:0 14px 34px rgba(38,36,33,.1)}
-  .track img{aspect-ratio:5/2;object-fit:cover;width:100%}
-  .track .txt{padding:28px 30px 32px;flex:1}
-  .track .lvl{display:inline-block;background:var(--terra-soft);color:var(--terra-deep);font-size:13.5px;font-weight:900;padding:5px 16px;border-radius:999px;letter-spacing:.08em}
-  .track h3{font-size:24px;font-weight:900;margin:14px 0 6px}
-  .track .goal{font-size:15.5px;font-weight:700;color:var(--terra-deep);margin-bottom:14px}
-  .track .flow{font-size:14px;color:var(--muted);background:var(--bg-soft);border:1px solid var(--line);border-radius:10px;padding:12px 16px;margin-bottom:16px;line-height:1.9}
-  .track .flow b{color:var(--ink)}
-  .track ul{margin-top:4px}
-  .track li{list-style:none;padding-left:26px;position:relative;font-size:15px;margin-bottom:8px}
-  .track li::before{content:"—";position:absolute;left:0;color:var(--terra);font-weight:900}
-  .track-rel{text-align:center;margin-top:30px;font-size:17px;font-weight:700}
-  .track-rel em{font-style:normal;color:var(--terra)}
-
-  /* 三個承諾 */
-  .pillar-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:48px}
-  .pillar{background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden;transition:.2s}
-  .pillar:hover{transform:translateY(-4px);box-shadow:0 14px 34px rgba(38,36,33,.1)}
-  .pillar img{aspect-ratio:3/2;object-fit:cover;width:100%}
-  .pillar .txt{padding:22px 22px 26px}
-  .pillar .num{color:var(--terra);font-weight:900;font-size:13px;letter-spacing:.2em}
-  .pillar h3{font-size:19.5px;font-weight:900;margin:6px 0 8px}
-  .pillar p{font-size:14.5px;color:var(--muted)}
+  .track{background:#fff;border:1px solid var(--line);border-radius:20px;padding:30px;box-shadow:0 10px 28px rgba(17,24,39,.06);display:flex;flex-direction:column}
+  .track .lvl{display:inline-block;width:max-content;background:#FFF3E6;color:#C2410C;font-size:13.5px;font-weight:900;padding:5px 16px;border-radius:999px}
+  .track h3{font-size:23px;font-weight:900;margin:14px 0 4px}
+  .track .goal{font-size:15.5px;font-weight:700;color:var(--orange);margin-bottom:12px}
+  .track .flowline{font-size:14px;color:var(--muted);background:var(--cream);border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin-bottom:14px;line-height:1.9}
+  .track ul{margin-top:2px}
+  .track li{list-style:none;padding-left:24px;position:relative;font-size:14.5px;margin-bottom:7px}
+  .track li::before{content:"✓";position:absolute;left:0;color:var(--orange);font-weight:900}
+  .track-rel{text-align:center;margin-top:28px;font-size:17px;font-weight:900}
+  .track-rel em{font-style:normal;color:var(--orange)}
 
   /* 議程 */
-  .agenda-grid{display:grid;grid-template-columns:1fr 1fr;gap:26px;margin-top:48px}
-  .day{background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden}
-  .day-head{padding:20px 28px;border-bottom:2px solid var(--terra);display:flex;justify-content:space-between;align-items:baseline}
-  .day-head h3{font-size:21px;font-weight:900}
+  .day{background:#fff;border:1px solid var(--line);border-radius:20px;overflow:hidden;box-shadow:0 10px 28px rgba(17,24,39,.05)}
+  .day-head{padding:18px 26px;border-bottom:3px solid var(--orange);display:flex;justify-content:space-between;align-items:baseline}
+  .day-head h3{font-size:20px;font-weight:900}
   .day-head span{font-size:13.5px;color:var(--muted)}
-  .day table{width:100%;border-collapse:collapse;font-size:14.5px}
-  .day td{padding:11px 28px;border-bottom:1px solid #EFE9DB;vertical-align:top}
-  .day td.t{white-space:nowrap;color:var(--terra);font-weight:700;width:86px;font-variant-numeric:tabular-nums}
+  .day table{width:100%;border-collapse:collapse;font-size:14px}
+  .day td{padding:10px 26px;border-bottom:1px solid #F5F0E6;vertical-align:top}
+  .day td.t{white-space:nowrap;color:var(--orange);font-weight:900;width:78px;font-variant-numeric:tabular-nums}
   .day tr:last-child td{border-bottom:none}
-  .day .hl td{background:#FBF4EC}
 
-  /* 行前準備 */
-  .prep{background:var(--bg-soft);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-  .prep-grid{display:grid;grid-template-columns:1fr 1fr;gap:26px;margin-top:48px}
-  .prep-box{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:32px}
-  .prep-box h3{font-size:20px;font-weight:900;margin-bottom:16px;color:var(--terra-deep)}
-  .prep-box li{list-style:none;padding:10px 0 10px 30px;position:relative;font-size:15px;border-bottom:1px solid #EFE9DB}
-  .prep-box li:last-child{border-bottom:none}
-  .prep-box li::before{content:"✓";position:absolute;left:0;top:12px;width:21px;height:21px;border-radius:50%;background:var(--terra);color:#fff;font-size:12px;display:flex;align-items:center;justify-content:center}
-  .prep-box li small{display:block;color:var(--muted);font-size:13.5px}
-  .prep-note{text-align:center;margin-top:28px;font-size:15.5px;font-weight:700;color:var(--terra-deep)}
+  /* 行前 */
+  .prep-box{background:#fff;border:1px solid var(--line);border-radius:20px;padding:30px;box-shadow:0 10px 28px rgba(17,24,39,.05)}
+  .prep-box h3{font-size:19px;font-weight:900;margin-bottom:14px;color:#C2410C}
+  .prep-box li{list-style:none;padding-left:28px;position:relative;font-size:15px;margin-bottom:9px}
+  .prep-box li::before{content:"▸";position:absolute;left:6px;color:var(--orange);font-weight:900}
+  .prep-note{text-align:center;margin-top:26px;font-size:15px;color:var(--muted)}
 
-  /* 課後陪伴 */
-  .after .grid{display:grid;grid-template-columns:.95fr 1.05fr;gap:56px;align-items:center;margin-top:20px}
-  .after img{border-radius:18px;border:1px solid var(--line);box-shadow:0 16px 40px rgba(38,36,33,.12)}
-  .after h2{margin-top:8px}
-  .promise{margin-top:26px;display:grid;gap:14px}
-  .promise div{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 20px;display:flex;gap:14px;align-items:flex-start}
-  .promise b{color:var(--terra);font-size:20px;line-height:1.4}
-  .promise p{font-size:15px;color:var(--ink)}
+  /* 群組 */
+  .promise{display:grid;gap:14px;margin-top:10px}
+  .promise div{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 20px;display:flex;gap:14px;align-items:flex-start;box-shadow:0 6px 18px rgba(17,24,39,.04)}
+  .promise b{color:var(--orange);font-size:20px;line-height:1.4}
+  .promise p{font-size:15px}
   .promise p small{display:block;color:var(--muted);font-size:13.5px}
+  .after-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:44px;align-items:center;margin-top:20px}
+  .after-grid img{border-radius:20px;box-shadow:0 14px 36px rgba(17,24,39,.12)}
+  @media(max-width:900px){.after-grid{grid-template-columns:1fr}}
 
-  /* 資訊+FAQ */
-  .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:26px;margin-top:48px}
-  .info-box{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:32px}
-  .info-box h3{font-size:20px;font-weight:900;margin-bottom:16px;color:var(--terra-deep)}
-  .info-box table{width:100%;font-size:15px;border-collapse:collapse}
-  .info-box td{padding:10px 0;border-bottom:1px solid #EFE9DB}
-  .info-box td:first-child{color:var(--muted);width:92px}
-  .faq details{border-bottom:1px solid #EFE9DB;padding:14px 0}
-  .faq summary{cursor:pointer;font-weight:700;font-size:15.5px}
-  .faq summary::marker{color:var(--terra)}
+  /* FAQ */
+  .faq{max-width:760px;margin:40px auto 0}
+  .faq details{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 22px;margin-bottom:12px;box-shadow:0 4px 14px rgba(17,24,39,.04)}
+  .faq summary{cursor:pointer;font-weight:900;font-size:15.5px}
+  .faq summary::marker{color:var(--orange)}
   .faq p{font-size:14.5px;color:var(--muted);margin-top:8px}
 
   /* final */
-  .final{text-align:center;background:
-    radial-gradient(700px 320px at 50% 120%, #F8E3D6 0%, transparent 65%),
-    var(--bg)}
-  .final h2{font-size:38px}
-  .final h2 em{font-style:normal;color:var(--terra)}
-  .final .btns{display:flex;gap:18px;justify-content:center;flex-wrap:wrap}
-  footer{background:var(--ink);color:#a9a396;padding:32px 0;text-align:center;font-size:13.5px}
-
-  @media(max-width:860px){
-    .hero-grid,.track-grid,.pillar-grid,.agenda-grid,.prep-grid,.after .grid,.info-grid{grid-template-columns:1fr}
-    .hero h1{font-size:32px}
-    h2{font-size:28px}
-    section{padding:60px 0}
-    .hero{padding:56px 0 64px}
-  }
+  .final{text-align:center;background:linear-gradient(180deg,#fff, var(--cream))}
+  .final h2{font-size:clamp(26px,3vw,36px)}
+  .final h2 em{font-style:normal;color:var(--orange)}
+  .final .stat{color:var(--muted);font-size:14.5px;margin:16px 0 30px}
+  footer{background:#111827;color:#9CA3AF;padding:26px 0;text-align:center;font-size:13px}
 </style>
 </head>
 <body>
 
 <div class="topbar">
-  <div class="wrap">
-    <div class="brand"><em>Claude Code</em> 協作開發課程</div>
-    <a class="top-cta" href="#signup">立即報名</a>
-  </div>
+  <div class="brand"><span class="logo grad">AI</span>AI協作開發課</div>
+  <nav class="nav">
+    <a href="#tracks">課程特色</a>
+    <a href="#agenda">課綱</a>
+    <a href="#fit-sec">適合對象</a>
+    <a href="#signup" class="cta grad">立即報名</a>
+  </nav>
 </div>
 
-<!-- HERO -->
+<!-- ===== HERO ===== -->
 <div class="hero">
-  <div class="wrap hero-grid">
-    <div>
-      <span class="pill">🌱 初階零基礎可上 × 🚀 進階直達商用</span>
-      <h1>兩堂課，把一個想法<em>養成能營運的網站</em></h1>
-      <p class="lead">初階 6 小時：做出一個可上線的網站。</p>
-      <p class="lead-sub">進階 6 小時：把它升級成可試營運的產品。</p>
-      <ul class="hero-points">
-        <li><b>同一個專案</b>，兩堂課從想法一路養到商用</li>
-        <li>初階結束：你的網站已經有<b>公開網址</b></li>
-        <li>進階結束：<b>登入、權限、報表、維運文件</b>齊備</li>
-        <li>課堂只用<b>四個指令</b>——程式 AI 寫，你當老闆</li>
-      </ul>
-      <a class="cta" href="#signup">立即報名</a>
-      <div class="cta-note">小班制・名額 <span class="tbd">【待填】</span> 人・報名後寄送行前信</div>
+  <div class="left">
+    <h1>零基礎也能用 <span class="o">AI</span><br>做出自己的網站與系統</h1>
+    <p class="sub">從想法到上線，學會使用 Claude Code 與 4D AI 協作架構，完成前端、後端、資料庫與部署。</p>
+    <div class="pills">
+      <div class="pill"><span class="ic" style="background:#FFF3E6">🎓</span><b>初階 6HR</b><span class="sep">｜</span>完成可上線作品</div>
+      <div class="pill"><span class="ic" style="background:#FFF3E6">📈</span><b>進階 6HR</b><span class="sep">｜</span>打造可商用 MVP</div>
+      <div class="pill"><span class="ic" style="background:#F3E8FF">👥</span><b>4D 協作</b><span class="sep">｜</span><span class="en">Delegation · Description · Discernment · Diligence</span></div>
     </div>
-    <div class="term">
-      <div class="term-bar"><i></i><i></i><i></i><span>你和 AI 的對話 — 上課實況</span></div>
-      <div class="term-body" id="termBody"></div>
+    <div class="btns">
+      <a class="btn primary grad" href="#signup">⚡ 立即報名</a>
+      <a class="btn ghost" href="#agenda">查看完整課綱 →</a>
+    </div>
+    <div class="fit"><span class="ic">👤</span>適合資訊老師、初學者、教育工作者與想做自己專業的人</div>
+    <div class="mini-cards">
+      <div class="mini"><div class="ic" style="background:#FFF3E6">🕐</div><h3>初階</h3><div class="t1">6 小時</div><div class="t2">完成可上線 MVP</div></div>
+      <div class="mini"><div class="ic" style="background:#FFF3E6">📈</div><h3>進階</h3><div class="t1">6 小時</div><div class="t2">升級商用版本</div></div>
+      <div class="mini"><div class="ic" style="background:#FEF9C3">🏆</div><h3>學習成果</h3><div class="t1">前端＋後端＋</div><div class="t2">資料庫＋部署</div></div>
+    </div>
+  </div>
+
+  <div class="right">
+    <div class="stage-box" id="stageBox">
+      <div class="stage" id="stage">
+        <div class="codewin">
+          <div class="bar"><i style="background:#FF5F57"></i><i style="background:#FEBC2E"></i><i style="background:#28C840"></i></div>
+          <pre><span class="k">import</span> express <span class="k">from</span> <span class="s">'express'</span>;
+<span class="k">import</span> { <span class="n">Client</span> } <span class="k">from</span> <span class="s">'pg'</span>;
+
+<span class="k">const</span> app = <span class="f">express</span>();
+<span class="k">const</span> client = <span class="k">new</span> <span class="f">Client</span>({
+  <span class="n">connectionString</span>: process.<span class="n">env</span>.<span class="n">DATABASE_URL</span>
+});
+
+app.<span class="f">get</span>(<span class="s">'/api/posts'</span>, <span class="k">async</span> (req, res) =&gt; {
+  <span class="k">const</span> { rows } = <span class="k">await</span> client.<span class="f">query</span>(
+    <span class="s">'SELECT * FROM posts ORDER BY created_at DESC'</span>
+  );
+  res.<span class="f">json</span>(rows);
+});</pre>
+        </div>
+        <div class="flow">
+          <span class="dash" style="max-width:34px"></span>
+          <div class="fcard"><div class="ic">🛢️</div><div><b>資料庫</b><span>PostgreSQL</span></div></div>
+          <span class="check">✓</span>
+          <div class="fcard"><div class="ic">☁️</div><div><b>部署上線</b><span>雲端服務</span></div></div>
+        </div>
+        <div class="aicard"><div class="ic">✳</div><div><b>AI 助手</b><span>Claude Code</span></div></div>
+        <div class="laptop">
+          <div class="screen">
+            <div class="site">
+              <div class="snav">
+                <div class="l"><span class="dot" style="background:var(--blue)"></span>痛點解決所</div>
+                <div class="r"><span>痛點</span><span>解法</span><span>成果</span><span class="sbtn">登入</span></div>
+              </div>
+              <div class="shero">
+                <div>
+                  <h4>這些困擾，<br>都能自己做系統解決</h4>
+                  <p>把每天的重複工作，變成一個真的能用的網站。</p>
+                  <div class="bb"><i class="b1">看看怎麼做</i><i class="b2">課程介紹</i></div>
+                </div>
+                <img src="img/hero-illus.png" alt="兩人協作插畫">
+              </div>
+              <div class="scards">
+                <div class="scard"><b><span class="mi" style="background:#3B82F6">📊</span>上班族</b>整理資料整到懷疑人生 → 自動彙整</div>
+                <div class="scard"><b><span class="mi" style="background:#8B5CF6">🌐</span>接案者</b>想要自己的接單網頁 → 自己做</div>
+                <div class="scard"><b><span class="mi" style="background:#F59E0B">🛒</span>電商</b>會員訂單管不動 → 管理後台</div>
+              </div>
+            </div>
+          </div>
+          <div class="base"></div>
+        </div>
+        <div class="chips">
+          <div class="chip"><span class="ic" style="background:#3B82F6">💻</span><div><b>前端開發</b><span>HTML / CSS / JS</span></div></div>
+          <div class="chip"><span class="ic" style="background:#22C55E">⚙️</span><div><b>後端開發</b><span>Node.js / Express</span></div></div>
+          <div class="chip"><span class="ic" style="background:#F59E0B">🛢️</span><div><b>資料庫設計</b><span>SQL / PostgreSQL</span></div></div>
+          <div class="chip"><span class="ic" style="background:#6366F1">🚀</span><div><b>部署實作</b><span>Docker / Cloud</span></div></div>
+        </div>
+        <div class="photo"><img src="img/hero-photo.png" alt="學員討論"></div>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- 雙班卡 -->
-<section class="tracks">
+<!-- ===== 雙班 ===== -->
+<section id="tracks">
   <div class="wrap">
     <div class="center">
-      <span class="eyebrow">TWO CLASSES</span>
-      <h2 class="center">雙班制：一個專案，兩段旅程</h2>
-      <p class="sub">初階把你的想法做成真的網站，進階把這個網站變成能做生意的產品。</p>
+      <span class="eyebrow">TWO COURSES, ONE PROJECT</span>
+      <h2 class="center">兩堂課，把一個想法養成能營運的網站</h2>
+      <p class="lead-sub">統一骨架「預約／報名／紀錄管理系統」，主題自己選：教室借用、社團報名、客戶案件追蹤……</p>
     </div>
-    <div class="track-grid">
+    <div class="grid2">
       <div class="track">
-        <img src="img/warm-zero.png" alt="初階班：零基礎做出可上線網站">
-        <div class="txt">
-          <span class="lvl">🌱 初階班</span>
-          <h3>Claude Code AI 協作入門</h3>
-          <p class="goal">6 小時，完成一個可上線的網站</p>
-          <div class="flow"><b>主線：</b>想法 → 規格 → 前端 → 資料庫 → CRUD → 測試 → 公開上線</div>
-          <ul>
-            <li>帶走：你的作品<b>公開網址</b></li>
-            <li>帶走：一個 <b>GitHub 專案</b></li>
-            <li>帶走：<b>4D 協作方法</b>（委派・描述・判斷・盡責）</li>
-          </ul>
-        </div>
+        <span class="lvl">🌱 初階班</span>
+        <h3>Claude Code AI 協作入門</h3>
+        <div class="goal">6 小時完成可上線網站</div>
+        <div class="flowline"><b>想法 → 規格 → 前端 → 資料庫 → CRUD → 測試 → 公開上線</b></div>
+        <ul>
+          <li>零基礎可上：課堂只用四個指令，程式 AI 寫</li>
+          <li>4D 任務單：委派・描述・判斷・盡責，每個任務都練</li>
+          <li>帶走：公開網址＋GitHub 專案＋4D 協作方法</li>
+        </ul>
       </div>
       <div class="track">
-        <img src="img/warm-biz.png" alt="進階班：升級成可試營運產品">
-        <div class="txt">
-          <span class="lvl">🚀 進階班</span>
-          <h3>Claude Code 商用專案實戰</h3>
-          <p class="goal">6 小時，完成一個可試營運的產品</p>
-          <div class="flow"><b>主線：</b>登入 → 資料隔離 → 管理功能 → 驗證 → 測試 → 商用部署 → 維運文件</div>
-          <ul>
-            <li>帶走：<b>Production 網址</b></li>
-            <li>帶走：一套<b>商用文件包</b></li>
-            <li>帶走：<b>Go/No-Go 判定能力</b>（該不該正式營運）</li>
-          </ul>
-        </div>
+        <span class="lvl">🚀 進階班</span>
+        <h3>Claude Code 商用專案實戰</h3>
+        <div class="goal">6 小時完成可試營運產品</div>
+        <div class="flowline"><b>登入 → 資料隔離 → 管理功能 → 驗證 → 測試 → 商用部署 → 維運文件</b></div>
+        <ul>
+          <li>使用者登入＋每個人只看得到自己的資料（RLS）</li>
+          <li>管理後台、表單驗證、發布前自動檢查</li>
+          <li>帶走：Production 網址＋商用文件包＋Go/No-Go 判定力</li>
+        </ul>
       </div>
     </div>
-    <p class="track-rel">同一個專案：初階把它<em>做出來</em>，進階把它<em>變成生意</em>。</p>
+    <div class="track-rel">同一個專案：<em>初階把它做出來，進階把它變成生意。</em></div>
   </div>
 </section>
 
-<!-- 三個承諾 -->
-<section>
-  <div class="wrap">
-    <div class="center">
-      <span class="eyebrow">WHY THIS COURSE</span>
-      <h2 class="center">這門課的三個承諾</h2>
-    </div>
-    <div class="pillar-grid">
-      <div class="pillar">
-        <img src="img/warm-agent.png" alt="四個指令，AI 寫程式">
-        <div class="txt">
-          <span class="num">01</span>
-          <h3>零基礎，只用四個指令</h3>
-          <p>從「終端機是什麼」教起。課堂全程只用四個指令，程式 AI 寫、你當老闆——把需求講清楚就是你的工作。</p>
-        </div>
-      </div>
-      <div class="pillar">
-        <img src="img/warm-tool.png" alt="可商用成品上線">
-        <div class="txt">
-          <span class="num">02</span>
-          <h3>成品是你的，可商用</h3>
-          <p>不是練習題——網站、資料庫、帳號、網址全部歸你，下課直接拿去用、貼到社群、給客戶看。</p>
-        </div>
-      </div>
-      <div class="pillar">
-        <img src="img/warm-group.png" alt="課後專屬群組">
-        <div class="txt">
-          <span class="num">03</span>
-          <h3>課後才是開始</h3>
-          <p>結業即加入專屬課程群組：老師陪伴答疑、作品持續迭代、同學互相支援，不是上完就散。</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- 議程 -->
-<section class="agenda">
+<!-- ===== 課綱 ===== -->
+<section id="agenda" class="band">
   <div class="wrap">
     <div class="center">
       <span class="eyebrow">AGENDA</span>
-      <h2 class="center">課程時間軸</h2>
-      <p class="sub">兩班各 6 小時。時間為課程進行相對時間（含休息機動調整）。</p>
+      <h2 class="center">完整課綱</h2>
     </div>
-    <div class="agenda-grid">
+    <div class="grid2">
       <div class="day">
-        <div class="day-head"><h3>🌱 初階班</h3><span>6 小時・想法 → 公開上線</span></div>
+        <div class="day-head"><h3>🌱 初階班</h3><span>6 小時</span></div>
         <table>
-          <tr><td class="t">00:00</td><td><b>看懂完整網站</b>——一個網站由哪些零件組成</td></tr>
-          <tr><td class="t">00:30</td><td><b>Claude Code 與 4D</b>——委派・描述・判斷・盡責</td></tr>
-          <tr><td class="t">01:10</td><td><b>定義專案</b>——把你的想法講成規格</td></tr>
-          <tr><td class="t">02:00</td><td><b>啟動專案</b>——第一次讓 AI 動工</td></tr>
-          <tr class="hl"><td class="t">02:40</td><td><b>前端頁面</b>——做出看得到的畫面</td></tr>
-          <tr class="hl"><td class="t">03:30</td><td><b>串接資料庫</b>——資料存得住、查得到</td></tr>
-          <tr><td class="t">04:30</td><td><b>測試除錯</b>——壞了怎麼跟 AI 說</td></tr>
-          <tr class="hl"><td class="t">05:10</td><td><b>部署</b>——拿到公開網址</td></tr>
-          <tr><td class="t">05:40</td><td><b>發表</b>——展示你的網站＋加入課程群組</td></tr>
+          <tr><td class="t">00:00</td><td>看懂完整網站——先看終點長什麼樣</td></tr>
+          <tr><td class="t">00:30</td><td>Claude Code 與 4D 協作架構</td></tr>
+          <tr><td class="t">01:10</td><td>定義個人專案（PROJECT.md）</td></tr>
+          <tr><td class="t">02:00</td><td>啟動 Starter 專案、Plan Mode</td></tr>
+          <tr><td class="t">02:40</td><td>製作前端頁面（首頁、清單、表單）</td></tr>
+          <tr><td class="t">03:30</td><td>串接資料庫（建表、讀寫資料）</td></tr>
+          <tr><td class="t">04:30</td><td>測試與除錯</td></tr>
+          <tr><td class="t">05:10</td><td>GitHub 與部署——公開網址誕生</td></tr>
+          <tr><td class="t">05:40</td><td>發表與 4D 回顧</td></tr>
         </table>
       </div>
       <div class="day">
-        <div class="day-head"><h3>🚀 進階班</h3><span>6 小時・上線 → 可試營運</span></div>
+        <div class="day-head"><h3>🚀 進階班</h3><span>6 小時</span></div>
         <table>
-          <tr><td class="t">00:00</td><td><b>商用健檢</b>——你的網站離「能做生意」差多遠</td></tr>
-          <tr><td class="t">00:35</td><td><b>CLAUDE.md 與規格</b>——讓 AI 記住你的專案</td></tr>
-          <tr class="hl"><td class="t">01:15</td><td><b>登入</b>——使用者帳號系統</td></tr>
-          <tr class="hl"><td class="t">02:00</td><td><b>資料隔離 RLS</b>——誰能看到誰的資料</td></tr>
-          <tr><td class="t">02:50</td><td><b>管理功能</b>——後台、報表、統計</td></tr>
-          <tr><td class="t">03:40</td><td><b>驗證錯誤處理</b>——擋住錯誤輸入與意外</td></tr>
-          <tr><td class="t">04:20</td><td><b>測試發布</b>——上線前最後檢查</td></tr>
-          <tr class="hl"><td class="t">05:00</td><td><b>商用部署</b>——Production 環境上線</td></tr>
-          <tr><td class="t">05:35</td><td><b>Go/No-Go 評估</b>——維運文件＋該不該正式營運</td></tr>
+          <tr><td class="t">00:00</td><td>商用健檢——功能、資料、權限與風險盤點</td></tr>
+          <tr><td class="t">00:35</td><td>CLAUDE.md 與規格</td></tr>
+          <tr><td class="t">01:15</td><td>使用者註冊、登入、登出</td></tr>
+          <tr><td class="t">02:00</td><td>RLS 資料隔離＋雙帳號測試</td></tr>
+          <tr><td class="t">02:50</td><td>管理者功能與商業流程</td></tr>
+          <tr><td class="t">03:40</td><td>驗證與錯誤處理</td></tr>
+          <tr><td class="t">04:20</td><td>測試與發布檢查（release-check）</td></tr>
+          <tr><td class="t">05:00</td><td>商用部署：Preview／Production／回復演練</td></tr>
+          <tr><td class="t">05:35</td><td>Go／No-Go 商用試營運評估</td></tr>
         </table>
       </div>
     </div>
   </div>
 </section>
 
-<!-- 行前準備 -->
-<section class="prep">
+<!-- ===== 行前準備 ===== -->
+<section id="fit-sec">
   <div class="wrap">
     <div class="center">
-      <span class="eyebrow">GET READY</span>
-      <h2 class="center">行前準備：四個帳號＋五個軟體</h2>
-      <p class="sub">上課要用的工具都在這裡。不用現在就會——報名後行前信會一步一步帶你完成。</p>
+      <span class="eyebrow">BEFORE CLASS</span>
+      <h2 class="center">行前準備</h2>
+      <p class="lead-sub">報名後行前信手把手帶你裝好，一步一張圖，裝不起來開課前有線上檢查窗口。</p>
     </div>
-    <div class="prep-grid">
+    <div class="grid2">
       <div class="prep-box">
-        <h3>四個帳號</h3>
+        <h3>🔑 四個帳號</h3>
         <ul>
-          <li>Claude Pro<small>上課的 AI 主力（約 US$20／月，需自備）</small></li>
-          <li>GitHub<small>存放你的程式專案（免費）</small></li>
-          <li>Supabase<small>你的雲端資料庫（免費）</small></li>
-          <li>Vercel<small>讓網站上線的部署平台（免費）</small></li>
+          <li>Claude Pro（上課的 AI 工具，約 US$20/月，課後可取消）</li>
+          <li>GitHub（放你的程式碼）</li>
+          <li>Supabase（你的資料庫）</li>
+          <li>Vercel（部署上線）</li>
         </ul>
       </div>
       <div class="prep-box">
-        <h3>五個軟體</h3>
+        <h3>💻 五個軟體</h3>
         <ul>
-          <li>VS Code<small>看程式的編輯器</small></li>
-          <li>Git<small>版本管理工具</small></li>
-          <li>Node.js<small>執行環境</small></li>
-          <li>Claude Code<small>課堂主角——AI 協作開發工具</small></li>
-          <li>Chrome<small>瀏覽器</small></li>
+          <li>VS Code＋Git＋Node.js（行前信附安裝步驟）</li>
+          <li>Claude Code（一行指令裝好）</li>
+          <li>Chrome 瀏覽器</li>
         </ul>
       </div>
     </div>
-    <p class="prep-note">📮 報名後行前信手把手帶你裝好，開課當天直接開工。</p>
+    <div class="prep-note">自備筆電（Windows / Mac 皆可，8GB 記憶體以上佳）。</div>
   </div>
 </section>
 
-<!-- 課後陪伴 -->
-<section class="after">
-  <div class="wrap grid">
-    <img src="img/warm-group.png" alt="課後專屬群組，老師陪伴">
+<!-- ===== 課後群組 ===== -->
+<section class="band">
+  <div class="wrap after-grid">
+    <img src="img/warm-group.png" alt="課後專屬群組">
     <div>
       <span class="eyebrow">AFTER CLASS</span>
-      <h2>下課那一刻，<br>才是學習真正的開始</h2>
-      <p class="sub" style="margin:14px 0 0;max-width:none">課堂給你起點，專屬群組陪你走後面的路。初階、進階結業學員全數加入課程群組：</p>
+      <h2>下課那一刻，才是學習真正的開始</h2>
+      <p class="lead-sub" style="margin:12px 0 0;max-width:none">初階、進階結業學員全數加入專屬課程群組：</p>
       <div class="promise">
-        <div><b>①</b><p>老師陪伴答疑<small>專案迭代卡關、安裝問題、prompt 怎麼下——在群組問，老師和同學都在</small></p></div>
-        <div><b>②</b><p>作品持續迭代<small>網站想加功能、想換成自己的生意——群組裡陪你改到能用</small></p></div>
-        <div><b>③</b><p>持續分享應用場景<small>報表整理、文件自動化、新工具——課堂教不完的，群組慢慢聊</small></p></div>
+        <div><b>①</b><p>老師陪伴答疑<small>作品迭代卡關、環境問題、prompt 怎麼下——群組裡問，老師和同學都在</small></p></div>
+        <div><b>②</b><p>作品持續迭代<small>想把系統改成自己的生意場景，陪你改到能用</small></p></div>
+        <div><b>③</b><p>持續分享應用<small>新工具、新做法——課堂教不完的，群組慢慢聊</small></p></div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- 資訊 + FAQ -->
+<!-- ===== FAQ ===== -->
 <section>
   <div class="wrap">
     <div class="center">
-      <span class="eyebrow">DETAILS</span>
-      <h2 class="center">開課資訊與常見問題</h2>
+      <span class="eyebrow">FAQ</span>
+      <h2 class="center">常見問題</h2>
     </div>
-    <div class="info-grid">
-      <div class="info-box">
-        <h3>開課資訊</h3>
-        <table>
-          <tr><td>初階日期</td><td><span class="tbd">【待填】</span></td></tr>
-          <tr><td>進階日期</td><td><span class="tbd">【待填】</span></td></tr>
-          <tr><td>時間</td><td>每班 6 小時（含休息）</td></tr>
-          <tr><td>地點</td><td><span class="tbd">【待填】</span></td></tr>
-          <tr><td>費用</td><td><span class="tbd">【待填】</span>（含全日課程、教材、課後群組）</td></tr>
-          <tr><td>名額</td><td><span class="tbd">【待填】</span> 人（小班制含助教）</td></tr>
-          <tr><td>自備</td><td>筆電（Win / Mac 皆可）＋ Claude Pro 訂閱（行前信手把手教你辦）</td></tr>
-        </table>
-      </div>
-      <div class="info-box faq">
-        <h3>常見問題</h3>
-        <details open><summary>我完全不會寫程式，真的能上嗎？</summary><p>能。課堂全程只用四個指令，程式是 AI 寫的，你負責用中文把需求講清楚、判斷結果好不好——這正是課程要教的能力。初階班的設計起點就是「沒開過終端機」。</p></details>
-        <details><summary>初階、進階要一起報嗎？</summary><p>不用，可以只上初階——初階結束你就有一個公開上線的網站。想上進階班，需要有初階班基礎，或已經會用 Claude Code＋Supabase。</p></details>
-        <details><summary>Claude Pro 是什麼？一定要買嗎？</summary><p>Claude Pro（約 US$20／月）是上課工具的訂閱方案，需自備；行前信會一步步教你註冊。課後你可以繼續用它工作，也可以隨時取消。</p></details>
-        <details><summary>下課後卡關了怎麼辦？</summary><p>這正是課程群組存在的理由——老師陪伴答疑、同學互相支援，作品可以一直迭代下去。</p></details>
-        <details><summary>上完有證書嗎？</summary><p>本課程教學法採 Anthropic 官方「AI Fluency 4D 框架」。課後我們會在群組帶你挑戰官方免費線上課（AI Fluency: Framework &amp; Foundations），通過測驗即獲 <b>Anthropic 官方完課證書</b>——課堂就是它的實戰版，上完再去考會非常有感。</p></details>
-      </div>
+    <div class="faq">
+      <details open><summary>我完全不會寫程式，真的能上嗎？</summary><p>能。課堂只用四個指令（npm install／npm run dev／npm run build／git status），程式全部由 AI 撰寫，你負責用中文把需求講清楚——這正是課程要教的能力。</p></details>
+      <details><summary>初階、進階要一起報嗎？</summary><p>可以只上初階：結束時你已有一個公開上線的網站。進階班需要初階基礎（或已會用 Claude Code 做網頁＋接資料庫），兩堂課用同一個專案，一起上效果最好。</p></details>
+      <details><summary>Claude Pro 是什麼？一定要買嗎？</summary><p>Claude Pro（約 US$20／月）是上課工具的訂閱方案，需自備；行前信會一步步教你註冊，課後可隨時取消。</p></details>
+      <details><summary>做出來的網站課後還能用嗎？</summary><p>能。網站、資料庫、程式碼全部在你自己的帳號裡，課後直接繼續用；進階班更會教你維運與回復，出問題救得回來。</p></details>
+      <details><summary>上完有證書嗎？</summary><p>課程教學法採 Anthropic 官方「AI Fluency 4D 框架」。課後我們會在群組帶你挑戰官方免費線上課（AI Fluency: Framework &amp; Foundations），通過測驗即獲 Anthropic 官方完課證書——課堂就是它的實戰版。</p></details>
+      <details><summary>下課後卡關怎麼辦？</summary><p>專屬課程群組就是為這個存在的——老師陪伴答疑、同學互相支援，作品可以一直迭代下去。</p></details>
     </div>
   </div>
 </section>
 
-<!-- FINAL CTA -->
+<!-- ===== FINAL CTA ===== -->
 <section class="final" id="signup">
   <div class="wrap">
     <span class="eyebrow">ENROLL NOW</span>
-    <h2>兩堂課後：一個<em>能營運的網站</em>、一套 AI 協作方法、<br>和一群一起走下去的人</h2>
-    <p class="sub" style="margin-bottom:36px">名額有限，報名依繳費順序錄取。可只報初階。</p>
-    <div class="btns">
-      <a class="cta" href="https://forms.gle/【待填-初階報名表單】" target="_blank" rel="noopener">報名初階班</a>
-      <a class="cta ghost" href="https://forms.gle/【待填-進階報名或通知表單】" target="_blank" rel="noopener">進階班報名／開課通知</a>
-    </div>
-    <div class="cta-note">報名後將寄送行前信（帳號申辦教學＋軟體安裝清單）</div>
+    <h2>下一梯開課，<em>缺一個你</em></h2>
+    <div class="stat">初階班：<span class="tbd">【待填】</span>・進階班：<span class="tbd">【待填】</span>・費用 <span class="tbd">【待填】</span>・小班制 <span class="tbd">【待填】</span> 人</div>
+    <a class="btn primary grad" href="https://forms.gle/【待填-報名表單】" target="_blank" rel="noopener">⚡ 報名初階班</a>
+    <a class="btn ghost" href="https://forms.gle/【待填-進階通知】" target="_blank" rel="noopener">進階班報名／開課通知</a>
   </div>
 </section>
 
-<footer>
-  <div class="wrap">
-    <div>Claude Code AI 協作開發課程 © 2026</div>
-  </div>
-</footer>
+<footer>AI 協作開發課 © 2026</footer>
 
 <script>
-// 終端機打字動畫：模擬課堂上「用說的做出系統」
-const SCRIPT = [
-  {t:'$ ',      cls:'t-prompt', instant:true},
-  {t:'claude',  cls:'t-user', nl:true},
-  {t:'> ',      cls:'t-prompt', instant:true, delay:600},
-  {t:'幫我做一個教室設備借用系統', cls:'t-user', nl:true},
-  {t:'✓ 閱讀專案結構', cls:'t-ok', nl:true, delay:800, instant:true},
-  {t:'✓ 建立清單頁與表單', cls:'t-ok', nl:true, delay:600, instant:true},
-  {t:'✓ 串接資料庫', cls:'t-ok', nl:true, delay:600, instant:true},
-  {t:'✓ 部署上線', cls:'t-ok', nl:true, delay:700, instant:true},
-  {t:'🎉 公開網址完成', cls:'t-user', nl:true, delay:900, instant:true},
-  {t:'— 這是初階班一天內會發生的事 —', cls:'t-dim', nl:true, delay:1200, instant:true},
-];
-const body = document.getElementById('termBody');
-const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-let cursor = document.createElement('span'); cursor.className='t-cursor';
-async function play(){
-  body.innerHTML=''; body.appendChild(cursor);
-  for(const step of SCRIPT){
-    if(step.delay && !reduce) await new Promise(r=>setTimeout(r,step.delay));
-    const span = document.createElement('span'); span.className=step.cls;
-    body.insertBefore(span, cursor);
-    if(step.instant || reduce){ span.textContent = step.t; }
-    else{
-      for(const ch of step.t){ span.textContent += ch; await new Promise(r=>setTimeout(r,70)); }
-    }
-    if(step.nl) body.insertBefore(document.createElement('br'), cursor);
+// 右側合成區：固定設計尺寸 900x640，依容器寬度等比縮放（真 RWD）
+(function(){
+  const box = document.getElementById('stageBox');
+  const stage = document.getElementById('stage');
+  function fit(){
+    const w = box.clientWidth;
+    const s = Math.min(1, w / 900);
+    stage.style.transform = 'scale(' + s + ')';
+    box.style.height = (640 * s) + 'px';
   }
-  if(!reduce){ await new Promise(r=>setTimeout(r,9000)); play(); }
-}
-play();
+  new ResizeObserver(fit).observe(box);
+  fit();
+})();
 </script>
 
 </body>
