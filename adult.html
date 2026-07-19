@@ -3,8 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>零基礎，也能做出自己的網站｜AI 協作建站課（成人班）</title>
-<meta name="description" content="零基礎，也能做出自己的網站。不會寫程式沒關係——學一套工具換了也帶得走的 AI 協作方法，六小時後帶一個能用的網站走。">
+<title>零基礎，六小時做出自己的網站｜AI 協作建站課（成人班）</title>
+<meta name="description" content="零基礎，六小時做出自己的網站。不會寫程式沒關係——學一套工具換了也帶得走的 AI 協作方法，六小時後帶一個能用的網站走。">
+<meta property="og:type" content="website">
+<meta property="og:title" content="零基礎，六小時做出自己的網站｜AI 協作建站課（成人班）">
+<meta property="og:description" content="不會寫程式沒關係——學一套工具換了也帶得走的 AI 協作方法，六小時後帶一個能用的網站走。">
+<meta property="og:url" content="https://youming3853885.github.io/ai-camp-2026/adult.html">
+<meta property="og:image" content="https://youming3853885.github.io/ai-camp-2026/img/og-cover.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
@@ -145,6 +153,23 @@ details p{margin-top:12px;color:var(--muted);font-size:.97rem}
   color:var(--muted);font-size:.95rem}
 .notwho li::before{content:"✕";position:absolute;left:0;color:var(--orange-deep);font-weight:900}
 
+/* ===== 講師區 ===== */
+.teacher{display:grid;grid-template-columns:280px 1fr;gap:36px;align-items:center;
+  padding:36px 40px;max-width:920px;margin:0 auto}
+.tphoto{width:100%;height:auto;border-radius:20px}
+.teacher h3{font-size:1.45rem;margin-bottom:4px}
+.trole{color:var(--muted);font-size:.95rem;margin-bottom:12px}
+.thook{font-weight:700;color:var(--orange-deep);margin-bottom:8px}
+.tbio{color:var(--muted);font-size:.95rem;margin-bottom:16px}
+.tchips{display:flex;flex-wrap:wrap;gap:8px}
+.tchips span{background:var(--cream2);border:1.5px solid var(--line);border-radius:999px;
+  font-size:.82rem;font-weight:700;padding:5px 14px}
+@media(max-width:720px){
+  .teacher{grid-template-columns:1fr;text-align:center;padding:28px 22px}
+  .tphoto{max-width:220px;margin:0 auto}
+  .tchips{justify-content:center}
+}
+
 /* ===== CTA 區（Task 5，即 section.cta；id 仍為 #signup） ===== */
 section.cta{padding:80px 0;text-align:center;position:relative;overflow:hidden;
   background:linear-gradient(180deg,var(--cream) 0%,var(--cream2) 100%)}
@@ -177,7 +202,7 @@ footer nav a:hover{color:var(--orange-deep);text-decoration:underline}
   <div class="wrap">
     <div>
       <span class="zerobadge">🌱 零基礎 OK</span>
-      <h1><span class="hl">零基礎</span>，也能做出自己的網站</h1>
+      <h1><span class="hl">零基礎</span>，六小時<br>做出自己的網站</h1>
       <p class="sub">不會寫程式沒關係——<br>學一套工具換了也帶得走的 AI 協作方法</p>
       <div class="btns">
         <a class="btn-primary" href="#course">查看課程</a>
@@ -252,12 +277,12 @@ footer nav a:hover{color:var(--orange-deep);text-decoration:underline}
     <p class="note">前兩個為 6 小時課堂範例，題目可以換成你自己的；波波聚是學員課後持續開發、實際上線營運的作品。</p>
     <div class="quotes">
       <div class="card quote">
-        <p>「原本只是想做個報名表單，六小時後我真的把網址傳到班群給家長用。」</p>
-        <span class="who">——初階學員・國中教師</span>
+        <p>「本來以為會像之前上電腦課一樣鴨子聽雷。第四階段卡在資料庫存不進去，照著檢查表一步步找，最後是自己修好的——那一刻真的有成就感。」</p>
+        <span class="who">——試教場學員・國小行政</span>
       </div>
       <div class="card quote">
-        <p>「最值錢的是那套方法：現在換一個 AI 工具，我還是知道怎麼交代任務、怎麼驗收。」</p>
-        <span class="who">——進階學員・行政企劃</span>
+        <p>「回家自己重做一個，中間還是出錯兩次，但我已經知道怎麼跟 AI 描述問題了。現在報名表單直接給家長填，省掉一半的訊息往返。」</p>
+        <span class="who">——試教場學員・補教老師</span>
       </div>
     </div>
   </div>
@@ -334,6 +359,32 @@ footer nav a:hover{color:var(--orange-deep);text-decoration:underline}
   </div>
 </section>
 
+<!-- ⑥.5 講師 -->
+<section id="teacher" class="band">
+  <div class="wrap">
+    <h2 class="center">帶你上課的老師</h2>
+    <div class="teacher card">
+      <img class="tphoto" src="img/eddie.webp" alt="講師陳又鳴 Eddie Chen" loading="lazy" width="440" height="619">
+      <div>
+        <h3>陳又鳴 Eddie Chen</h3>
+        <p class="trole">現任國中教師・智造教育實驗室創辦人</p>
+        <p class="thook">波波聚那位國二學員，就是他帶出來的。</p>
+        <p class="tbio">十多年科技教育經驗，從系統工程師走進教室，專長 AI、物聯網與機器人教育。</p>
+        <div class="tchips">
+          <span>經濟部「金塾獎」（2022）</span>
+          <span>教師研習 200+ 場</span>
+          <span>輔導教育機構 100+ 間</span>
+          <span>IEYE 世界青少年發明展 2 金 1 銀（帶隊）</span>
+          <span>機器人與創意競賽金牌 6+</span>
+          <span>經濟部工業局 AIGO 講師</span>
+          <span>Google Certified Educator LV2</span>
+          <span>Anthropic Claude 認證（CCA-F）</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ⑦ FAQ -->
 <section id="faq" class="band cream2">
   <div class="wrap">
@@ -364,8 +415,8 @@ footer nav a:hover{color:var(--orange-deep);text-decoration:underline}
   <div class="wrap center">
     <h2>你的想法，不必停在「有一天」</h2>
     <p>帶一個想解決的問題來，六小時後帶一個能用的網站走。</p>
-    <a class="btn-primary" href="#signup" rel="noopener">立即報名</a><!-- 報名表單上線後換成 forms.gle 連結 -->
-    <p class="prep">開課資訊：<span class="tbd">【籌備中】</span>日期・費用・名額公布前，歡迎先看課綱</p>
+    <a class="btn-primary" href="https://line.me/ti/p/~0958780772" target="_blank" rel="noopener">加 LINE，開課第一時間通知你</a><!-- 報名表單上線後可再加正式報名按鈕 -->
+    <p class="prep">開課資訊：<span class="tbd">【籌備中】</span>日期・費用・名額確定後，LINE 好友最先收到早鳥通知</p>
   </div>
 </section>
 
