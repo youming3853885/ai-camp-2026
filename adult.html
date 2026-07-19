@@ -60,7 +60,7 @@ a{color:inherit;text-decoration:none}
 .grid3{grid-template-columns:repeat(3,1fr)}
 .grid4{grid-template-columns:repeat(4,1fr)}
 @media(max-width:960px){.grid3,.grid4{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:640px){.grid2,.grid3,.grid4,.quotes{grid-template-columns:1fr}}
+@media(max-width:640px){.grid2,.grid3,.grid4{grid-template-columns:1fr}}
 
 /* ===== Hero ===== */
 .hero{padding:80px 0 72px;
@@ -123,12 +123,6 @@ details p{margin-top:12px;color:var(--muted);font-size:.97rem}
 .badge-real{display:inline-block;background:var(--green-bg);color:#33691E;font-size:.8rem;
   font-weight:700;padding:2px 12px;border-radius:999px;margin-bottom:8px}
 .note{text-align:center;color:var(--muted);font-size:.9rem}
-
-/* ===== 學員感言 ===== */
-.quotes{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:36px 0 28px}
-.quote{padding:24px 26px}
-.quote p{font-size:1rem;line-height:1.8}
-.quote .who{display:block;margin-top:12px;font-size:.88rem;color:var(--muted);font-weight:700}
 
 /* ===== 課程雙軌（Task 5）
    命名裁定：結業成果句用 .final-line（勿用 p.final）、CTA 區用 section.cta（勿用
@@ -277,16 +271,6 @@ footer nav a:hover{color:var(--orange-deep);text-decoration:underline}
       </div>
     </div>
     <p class="note">前兩個為 6 小時課堂範例，題目可以換成你自己的——設備點檢、報修登記、領料紀錄都行；波波聚是學員課後持續開發、實際上線營運的作品。</p>
-    <div class="quotes">
-      <div class="card quote">
-        <p>「本來以為會像之前上電腦課一樣鴨子聽雷。第四階段卡在資料庫存不進去，照著檢查表一步步找，最後是自己修好的——那一刻真的有成就感。」</p>
-        <span class="who">——試教場學員・國小行政</span>
-      </div>
-      <div class="card quote">
-        <p>「回家自己重做一個，中間還是出錯兩次，但我已經知道怎麼跟 AI 描述問題了。現在報名表單直接給家長填，省掉一半的訊息往返。」</p>
-        <span class="who">——試教場學員・補教老師</span>
-      </div>
-    </div>
   </div>
 </section>
 
