@@ -62,7 +62,7 @@ a{color:inherit;text-decoration:none}
   letter-spacing:.02em}
 .hero .sub{font-size:clamp(1.05rem,2.2vw,1.2rem);color:var(--muted);margin:0 0 36px}
 .hero .btns{display:flex;gap:16px;flex-wrap:wrap}
-.hero .art{width:100%;border-radius:20px}
+.hero .art{width:100%;height:auto;border-radius:20px}
 @media(max-width:860px){
   .hero .wrap{grid-template-columns:1fr;text-align:center}
   .hero .sub{margin:0 auto 32px;max-width:640px}
@@ -149,9 +149,6 @@ details p{margin-top:12px;color:var(--muted);font-size:.97rem}
 section.cta{padding:80px 0;text-align:center;position:relative;overflow:hidden;
   background:linear-gradient(180deg,var(--cream) 0%,var(--cream2) 100%)}
 section.cta .wrap{position:relative;z-index:1}
-section.cta .deco{position:absolute;right:-36px;bottom:-28px;width:260px;opacity:.45;z-index:0;
-  pointer-events:none}
-@media(max-width:640px){section.cta .deco{width:170px;opacity:.3}}
 section.cta h2{font-size:clamp(1.5rem,3.6vw,2.1rem);margin-bottom:10px}
 section.cta p{color:var(--muted);margin-bottom:28px}
 .prep{margin-top:24px;font-size:.93rem}
@@ -364,7 +361,6 @@ footer nav a:hover{color:var(--orange-deep);text-decoration:underline}
 
 <!-- ⑧ CTA -->
 <section class="cta" id="signup">
-  <img class="deco" src="img/cta-deco.webp" alt="" loading="lazy">
   <div class="wrap center">
     <h2>你的想法，不必停在「有一天」</h2>
     <p>帶一個想解決的問題來，六小時後帶一個能用的網站走。</p>
