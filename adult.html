@@ -55,13 +55,20 @@ a{color:inherit;text-decoration:none}
 @media(max-width:640px){.grid2,.grid3,.grid4,.quotes{grid-template-columns:1fr}}
 
 /* ===== Hero ===== */
-.hero{padding:96px 0 84px;text-align:center;
+.hero{padding:80px 0 72px;
   background:linear-gradient(180deg,var(--cream2) 0%,var(--cream) 100%)}
-.hero h1{font-size:clamp(2.1rem,6vw,3.4rem);line-height:1.35;margin:22px 0 18px;
+.hero .wrap{display:grid;grid-template-columns:1.05fr 1fr;gap:44px;align-items:center}
+.hero h1{font-size:clamp(2.1rem,4.5vw,3.1rem);line-height:1.35;margin:22px 0 18px;
   letter-spacing:.02em}
-.hero .sub{font-size:clamp(1.05rem,2.6vw,1.25rem);color:var(--muted);
-  max-width:640px;margin:0 auto 36px}
-.hero .btns{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+.hero .sub{font-size:clamp(1.05rem,2.2vw,1.2rem);color:var(--muted);margin:0 0 36px}
+.hero .btns{display:flex;gap:16px;flex-wrap:wrap}
+.hero .art{width:100%;border-radius:20px}
+@media(max-width:860px){
+  .hero .wrap{grid-template-columns:1fr;text-align:center}
+  .hero .sub{margin:0 auto 32px;max-width:640px}
+  .hero .btns{justify-content:center}
+  .hero .art{max-width:480px;margin:8px auto 0}
+}
 
 /* ===== 情境卡 ===== */
 .card.pain{overflow:hidden;display:flex;flex-direction:column;text-align:left}
@@ -139,8 +146,12 @@ details p{margin-top:12px;color:var(--muted);font-size:.97rem}
 .notwho li::before{content:"✕";position:absolute;left:0;color:var(--orange-deep);font-weight:900}
 
 /* ===== CTA 區（Task 5，即 section.cta；id 仍為 #signup） ===== */
-section.cta{padding:80px 0;text-align:center;
+section.cta{padding:80px 0;text-align:center;position:relative;overflow:hidden;
   background:linear-gradient(180deg,var(--cream) 0%,var(--cream2) 100%)}
+section.cta .wrap{position:relative;z-index:1}
+section.cta .deco{position:absolute;right:-36px;bottom:-28px;width:260px;opacity:.45;z-index:0;
+  pointer-events:none}
+@media(max-width:640px){section.cta .deco{width:170px;opacity:.3}}
 section.cta h2{font-size:clamp(1.5rem,3.6vw,2.1rem);margin-bottom:10px}
 section.cta p{color:var(--muted);margin-bottom:28px}
 .prep{margin-top:24px;font-size:.93rem}
@@ -167,13 +178,16 @@ footer nav a:hover{color:var(--orange-deep);text-decoration:underline}
 <!-- ① Hero -->
 <header class="hero">
   <div class="wrap">
-    <span class="zerobadge">🌱 零基礎 OK</span>
-    <h1><span class="hl">零基礎</span>，也能做出自己的網站</h1>
-    <p class="sub">不會寫程式沒關係——<br>學一套工具換了也帶得走的 AI 協作方法</p>
-    <div class="btns">
-      <a class="btn-primary" href="#course">查看課程</a>
-      <a class="btn-ghost" href="#cases">看學員會做出什麼</a>
+    <div>
+      <span class="zerobadge">🌱 零基礎 OK</span>
+      <h1><span class="hl">零基礎</span>，也能做出自己的網站</h1>
+      <p class="sub">不會寫程式沒關係——<br>學一套工具換了也帶得走的 AI 協作方法</p>
+      <div class="btns">
+        <a class="btn-primary" href="#course">查看課程</a>
+        <a class="btn-ghost" href="#cases">看學員會做出什麼</a>
+      </div>
     </div>
+    <img class="art" src="img/hero-idea.webp" alt="從一個想法到完成網站的插畫" width="1100" height="604">
   </div>
 </header>
 
@@ -350,6 +364,7 @@ footer nav a:hover{color:var(--orange-deep);text-decoration:underline}
 
 <!-- ⑧ CTA -->
 <section class="cta" id="signup">
+  <img class="deco" src="img/cta-deco.webp" alt="" loading="lazy">
   <div class="wrap center">
     <h2>你的想法，不必停在「有一天」</h2>
     <p>帶一個想解決的問題來，六小時後帶一個能用的網站走。</p>
